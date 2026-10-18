@@ -1,0 +1,289 @@
+@use '../styles/mixins' as *;
+
+.hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 100svh;
+  overflow: hidden;
+
+  &__background {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: right center;
+    background-repeat: no-repeat;
+  }
+
+  &__veil {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(
+        90deg,
+        rgba(var(--color-cream-rgb), 0.98) 0%,
+        rgba(var(--color-cream-rgb), 0.94) 38%,
+        rgba(var(--color-cream-rgb), 0.82) 48%,
+        rgba(var(--color-cream-rgb), 0.35) 60%,
+        rgba(var(--color-cream-rgb), 0) 72%
+      ),
+      linear-gradient(
+        180deg,
+        rgba(var(--color-cream-rgb), 0.55) 0%,
+        rgba(var(--color-cream-rgb), 0.15) 14%,
+        rgba(var(--color-cream-rgb), 0) 28%
+      );
+  }
+
+  &__content {
+    position: relative;
+    z-index: 2;
+    width: min(42rem, calc(100% - var(--content-inset)));
+    max-width: 42rem;
+    margin-left: var(--content-inset);
+    padding: calc(var(--navbar-height) + 2rem) 0 clamp(4rem, 8vh, 5.5rem);
+    text-align: left;
+  }
+
+  &__eyebrow {
+    @include eyebrow(left);
+    margin-bottom: 1.75rem;
+  }
+
+  &__title {
+    margin: 0 0 1.75rem;
+    font-family: var(--font-heading);
+    font-weight: 400;
+    letter-spacing: -0.03em;
+    color: var(--color-text-dark);
+  }
+
+  &__title-line {
+    display: block;
+    font-size: var(--text-display);
+    line-height: var(--line-display);
+    text-wrap: balance;
+
+    &--accent {
+      margin-top: 0.12em;
+      font-size: clamp(2.1rem, 1.2rem + 2.4vw, 3.85rem);
+      font-style: italic;
+      font-weight: 400;
+      letter-spacing: -0.035em;
+      color: var(--color-text);
+    }
+  }
+
+  &__description {
+    margin: 0 0 2.25rem;
+    max-width: 31rem;
+    font-family: var(--font-body);
+    font-size: var(--text-lead);
+    font-weight: 400;
+    line-height: var(--line-editorial);
+    color: var(--color-text);
+  }
+
+  &__highlights {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+    list-style: none;
+    padding: 1.35rem 0 0;
+    margin: 0 0 2.5rem;
+    border-top: 1px solid var(--border-subtle);
+    max-width: 36rem;
+  }
+
+  &__highlight-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding-right: 1rem;
+
+    &:not(:last-child) {
+      border-right: 1px solid var(--border-subtle);
+      margin-right: 1rem;
+      padding-right: 1rem;
+    }
+  }
+
+  &__highlight-primary {
+    font-family: var(--font-body);
+    font-size: var(--text-eyebrow);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--tekst);
+    line-height: 1.35;
+  }
+
+  &__highlight-secondary {
+    font-family: var(--font-body);
+    font-size: clamp(0.875rem, 0.84rem + 0.15vw, 0.96rem);
+    font-weight: 400;
+    line-height: 1.45;
+    color: var(--color-text-muted);
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem 1rem;
+  }
+
+  @media (min-width: 1600px) {
+    &__content {
+      width: min(46rem, calc(100% - var(--content-inset)));
+      max-width: 46rem;
+    }
+  }
+
+  @media (max-height: 820px) and (min-width: 901px) {
+    min-height: 100svh;
+
+    &__content {
+      padding: calc(var(--navbar-height) + 1.15rem) 0 2.25rem;
+    }
+
+    &__eyebrow {
+      margin-bottom: 1rem;
+    }
+
+    &__title {
+      margin-bottom: 1rem;
+    }
+
+    &__title-line {
+      font-size: clamp(2.1rem, 3.6vw, 3.25rem);
+
+      &--accent {
+        font-size: clamp(1.9rem, 3.2vw, 2.85rem);
+      }
+    }
+
+    &__description {
+      margin-bottom: 1.25rem;
+      font-size: 0.96rem;
+    }
+
+    &__highlights {
+      margin-bottom: 1.5rem;
+      padding-top: 1rem;
+    }
+
+    &__actions .btn {
+      min-height: 2.85rem;
+    }
+  }
+
+  @media (max-width: 1100px) {
+    &__highlights {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      row-gap: 1.15rem;
+      max-width: 100%;
+    }
+
+    &__highlight-item {
+      &:nth-child(odd) {
+        border-right: 1px solid var(--border-subtle);
+        margin-right: 0.75rem;
+        padding-right: 0.75rem;
+      }
+
+      &:nth-child(even) {
+        border-right: none;
+        margin-right: 0;
+        padding-right: 0;
+      }
+
+      &:nth-child(1),
+      &:nth-child(2) {
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border-subtle);
+      }
+    }
+  }
+
+  @media (max-width: 900px) {
+    min-height: auto;
+    min-height: 100svh;
+
+    &__background {
+      background-position: 74% center;
+    }
+
+    &__veil {
+      background:
+        linear-gradient(
+          180deg,
+          rgba(var(--color-cream-rgb), 0.98) 0%,
+          rgba(var(--color-cream-rgb), 0.92) 28%,
+          rgba(var(--color-cream-rgb), 0.68) 55%,
+          rgba(var(--color-cream-rgb), 0.25) 80%,
+          rgba(39, 30, 26, 0.1) 100%
+        ),
+        linear-gradient(
+          90deg,
+          rgba(var(--color-cream-rgb), 0.7) 0%,
+          rgba(var(--color-cream-rgb), 0) 80%
+        );
+    }
+
+    &__content {
+      width: auto;
+      max-width: 100%;
+      margin-right: var(--page-padding-x);
+      padding: calc(var(--navbar-height) + 1.5rem) 0 3.25rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    min-height: auto;
+    overflow: visible;
+
+    &__content {
+      padding-bottom: calc(3.25rem + var(--mobile-bar-height));
+    }
+  }
+
+  @media (max-width: 640px) {
+    &__actions .btn--booking {
+      display: none;
+    }
+  }
+
+  @media (max-width: 560px) {
+    &__actions {
+      flex-direction: column;
+      align-items: stretch;
+
+      .btn {
+        width: 100%;
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    min-height: 0;
+
+    &__highlights {
+      grid-template-columns: 1fr;
+    }
+
+    &__highlight-item {
+      border-right: none !important;
+      margin-right: 0 !important;
+      padding-right: 0 !important;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border-subtle);
+
+      &:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+    }
+  }
+}

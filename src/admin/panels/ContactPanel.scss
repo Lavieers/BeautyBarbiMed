@@ -1,0 +1,236 @@
+.adm-contact {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  max-width: none;
+
+  &__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    grid-template-rows: minmax(0, 1fr);
+    gap: clamp(0.55rem, 1vw, 0.75rem);
+    flex: 1;
+    min-height: 0;
+    align-items: stretch;
+  }
+
+  &__stage {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    padding: clamp(0.75rem, 1.3vw, 0.95rem);
+    background: #fff;
+    border: 1px solid rgba(var(--zloto-rgb), 0.34);
+    border-radius: calc(var(--radius) + 4px);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.95) inset,
+      0 8px 22px rgba(42, 33, 28, 0.05);
+    overflow: hidden;
+
+    &--map {
+      .adm-contact__map-wrap {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+      }
+    }
+  }
+
+  &__head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+    margin-bottom: clamp(0.45rem, 1vh, 0.65rem);
+    padding-bottom: clamp(0.4rem, 0.9vh, 0.55rem);
+    border-bottom: 1px solid rgba(var(--zloto-rgb), 0.2);
+  }
+
+  &__title {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: clamp(0.9375rem, 1.1vw, 1.05rem);
+    font-weight: 500;
+    color: var(--bordo);
+  }
+
+  &__body {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1.25fr) minmax(0, 1fr);
+    flex: 1;
+    gap: clamp(0.55rem, 1.5vh, 0.85rem);
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  &__row {
+    display: grid;
+    grid-template-columns: minmax(0, 1.45fr) minmax(0, 0.95fr);
+    gap: clamp(0.45rem, 1vw, 0.75rem);
+    align-items: end;
+  }
+
+  &__block {
+    min-width: 0;
+
+    &--hours {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+
+      .adm-list {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        gap: clamp(0.35rem, 1vh, 0.55rem);
+        margin-bottom: clamp(0.25rem, 0.8vh, 0.45rem);
+      }
+
+      .adm-list__row {
+        align-items: center;
+        gap: 0.45rem;
+      }
+    }
+
+    &--social {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+      min-height: 0;
+      gap: clamp(0.35rem, 1.2vh, 0.65rem);
+      padding-top: clamp(0.35rem, 1vh, 0.55rem);
+      border-top: 1px solid rgba(var(--color-deep-rgb), 0.08);
+    }
+  }
+
+  &__hours .adm-field__label {
+    flex-shrink: 0;
+  }
+
+  &__add-line {
+    align-self: flex-start;
+    flex-shrink: 0;
+    padding: 0.4rem 0.65rem;
+    font-size: 0.75rem;
+  }
+
+  &__hours .adm-btn--quiet {
+    flex-shrink: 0;
+    padding: 0.35rem 0.55rem;
+    font-size: 0.75rem;
+  }
+
+  &__social-title {
+    margin: 0;
+    flex-shrink: 0;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-deep-soft);
+  }
+
+  &__social-field {
+    display: grid;
+    grid-template-columns: 2.15rem minmax(0, 1fr);
+    gap: 0.55rem;
+    align-items: center;
+  }
+
+  &__social-icon-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.15rem;
+    height: 2.15rem;
+    background: rgba(var(--krem-rgb), 0.85);
+    border: 1px solid rgba(var(--zloto-rgb), 0.35);
+    border-radius: 50%;
+    color: var(--bordo);
+  }
+
+  &__social-icon {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+
+  &__map-wrap {
+    overflow: hidden;
+    border: 1px solid rgba(var(--zloto-rgb), 0.35);
+    border-radius: var(--radius);
+    background: var(--color-pink-soft);
+  }
+
+  &__map {
+    display: block;
+    width: 100%;
+    flex: 1;
+    min-height: 8rem;
+    height: 100%;
+    border: 0;
+  }
+
+  &__save {
+    flex-shrink: 0;
+    align-items: center;
+    min-height: 2.85rem;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+  }
+
+  &__save-btn {
+    min-width: 11rem;
+  }
+
+  &__status {
+    display: flex;
+    align-items: center;
+    min-height: 1.25rem;
+    flex: 1;
+  }
+
+  .adm-field {
+    gap: 0.28rem;
+  }
+
+  .adm-field__label {
+    font-size: 0.8125rem;
+    line-height: 1.25;
+  }
+
+  .adm-input {
+    padding: clamp(0.45rem, 1.1vh, 0.58rem) 0.65rem;
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+}
+
+@media (max-width: 900px) {
+  .adm-contact__grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    overflow-y: auto;
+  }
+
+  .adm-contact__row {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .adm-contact__body {
+    grid-template-rows: auto auto auto;
+    overflow-y: auto;
+  }
+
+  .adm-contact__block--hours .adm-list,
+  .adm-contact__block--social {
+    justify-content: flex-start;
+  }
+
+  .adm-contact__stage--map .adm-contact__map {
+    min-height: 12rem;
+  }
+}

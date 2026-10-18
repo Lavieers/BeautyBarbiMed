@@ -1,0 +1,30 @@
+.mobile-bar {
+  display: none;
+
+  @media (max-width: 640px) {
+    display: block;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 90;
+    padding: 0.65rem 1rem calc(0.65rem + env(safe-area-inset-bottom, 0px));
+    background: rgba(var(--color-cream-rgb), 0.97);
+    border-top: 1px solid var(--border-subtle);
+
+    &__inner {
+      display: grid;
+      grid-template-columns: 1fr 1.25fr;
+      gap: 0.65rem;
+      max-width: 28rem;
+      margin: 0 auto;
+
+      .btn {
+        min-height: 2.85rem;
+        padding-left: 0.85rem;
+        padding-right: 0.85rem;
+        letter-spacing: 0.1em;
+      }
+    }
+  }
+}

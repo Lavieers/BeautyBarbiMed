@@ -1,0 +1,209 @@
+@use '../styles/mixins' as *;
+
+.pricing {
+  @include section-shell;
+  background: var(--color-cream);
+  // Bez kickera nad kreską sekcja może mieć nieco mniej miejsca na górze
+  padding-top: calc(clamp(2rem, 4vw, 3.5rem) - 200px);
+
+  // Fix scroll-to: ensure section header lands just below the compact navbar
+  // (nadpisuje globalne section[id] z index.css – stąd wyższa specyficzność w bloku niżej)
+  scroll-margin-top: calc(var(--navbar-height-compact) + var(--notice-height, 0px) + 0.5rem);
+
+  &[id] {
+    // Wcześniej: navbar - 70px (≈ -4px). +65px = strona przewija się o 65px mniej,
+    // dzięki czemu nagłówek „Cennik zabiegów” jest w całości widoczny pod navbarem
+    scroll-margin-top: calc(var(--navbar-height-compact) + var(--notice-height, 0px) + 25px);
+  }
+
+  // ── Header ──────────────────────────────────────────────────────────────────
+  &__header {
+    @include section-inner(52rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: clamp(1.5rem, 2.5vw, 2.5rem);
+  }
+
+  &__kicker {
+    @include section-kicker;
+    margin-bottom: 1.1rem;
+  }
+
+  &__ornament {
+    @include gold-ornament(16rem);
+    display: block;
+    margin-top: clamp(0.6rem, 1vw, 0.9rem);
+  }
+
+  &__title {
+    @include section-title-unified;
+    margin-bottom: 0;
+  }
+
+  // ── Price list ───────────────────────────────────────────────────────────────
+  &__list {
+    @include section-inner(80rem);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 clamp(3rem, 5vw, 6rem);
+    align-items: start;
+  }
+
+  &__col {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2.5rem, 4vw, 3.5rem);
+  }
+
+  &__group {
+    // Flat section — no card chrome
+  }
+
+  &__group-header {
+    margin-bottom: 0.6rem;
+  }
+
+  &__label {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: clamp(1.125rem, 0.92rem + 0.55vw, 1.35rem);
+    font-weight: 400;
+    font-style: italic;
+    color: var(--bordo);
+    letter-spacing: 0.01em;
+    line-height: 1.2;
+  }
+
+  // Solid separator line directly under the category label
+  &__divider {
+    width: 100%;
+    height: 1px;
+    background: rgba(var(--color-gold-rgb), 0.5);
+    margin-bottom: 0.25rem;
+  }
+
+  // ── Rows ─────────────────────────────────────────────────────────────────────
+  &__rows {
+    margin: 0;
+  }
+
+  &__row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.65rem;
+    padding: 0.85rem 0;
+
+    & + & {
+      border-top: 1px solid rgba(var(--color-gold-rgb), 0.14);
+    }
+  }
+
+  // Zabieg z opisem: cały wiersz klika się (rozciągnięty ::after), a mały „+” przy nazwie
+  // podpowiada, że kryje się za nim okno z opisem.
+  &__row--info {
+    position: relative;
+    cursor: pointer;
+  }
+
+  &__info {
+    display: inline;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    line-height: inherit;
+    text-align: left;
+    color: inherit;
+    cursor: pointer;
+    transition: color 0.2s ease;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+    }
+
+    // bez ramki po powrocie z okna klawiszem Esc (fokus wraca na przycisk wiersza)
+    &:focus,
+    &:focus-visible {
+      outline: none;
+    }
+  }
+
+  &__info-icon {
+    position: relative;
+    display: inline-block;
+    width: 1.1rem;
+    height: 1.1rem;
+    margin-left: 0.55rem;
+    vertical-align: -0.2em;
+    border: 1px solid rgba(var(--color-gold-rgb), 0.7);
+    border-radius: 50%;
+    color: var(--color-gold-ink);
+
+    // plus rysowany dwiema cienkimi kreskami
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      background: currentColor;
+      transform: translate(-50%, -50%);
+    }
+
+    &::before {
+      width: 0.5rem;
+      height: 1px;
+    }
+
+    &::after {
+      width: 1px;
+      height: 0.5rem;
+    }
+  }
+
+  // po najechaniu zmienia się tylko kolor nazwy – „+” zostaje bez zmian
+  &__row--info:hover &__info {
+    color: var(--bordo);
+  }
+
+  &__name {
+    margin: 0;
+    flex: 0 1 auto;
+    font-family: var(--font-body);
+    font-size: 0.93rem;
+    line-height: 1.55;
+    color: var(--color-text-dark);
+  }
+
+  &__leader {
+    flex: 1 1 auto;
+    min-width: 1rem;
+    border-bottom: 1px dotted rgba(var(--color-gold-rgb), 0.45);
+    transform: translateY(-0.25rem);
+  }
+
+  &__price {
+    margin: 0;
+    flex-shrink: 0;
+    font-family: var(--font-body);
+    font-size: 0.93rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    color: var(--color-gold-ink);
+  }
+
+  // ── Responsive ───────────────────────────────────────────────────────────────
+  @media (max-width: 720px) {
+    &__list {
+      grid-template-columns: 1fr;
+      gap: clamp(2.5rem, 4vw, 3.5rem) 0;
+    }
+  }
+
+}

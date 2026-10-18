@@ -1,0 +1,148 @@
+@use '../styles/mixins' as *;
+
+.faq {
+  @include section-shell;
+  background: var(--color-deep-tint);
+
+  &__header {
+    @include section-inner(52rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: clamp(1.75rem, 3vw, 2.5rem);
+  }
+
+  &__ornament {
+    @include gold-ornament(16rem);
+    display: block;
+    margin: clamp(0.6rem, 1vw, 0.9rem) 0 0;
+  }
+
+  &__title {
+    @include section-title-unified;
+    margin-bottom: 0;
+
+    span {
+      display: inline;
+      margin-left: 0.4rem;
+    }
+  }
+
+  &__list {
+    @include section-inner(58rem);
+  }
+
+  &__item {
+    border-bottom: 1px solid rgba(197, 160, 89, 0.28);
+
+    &:first-child {
+      border-top: 1px solid rgba(197, 160, 89, 0.28);
+    }
+  }
+
+  &__question {
+    margin: 0;
+    font-weight: 400;
+  }
+
+  &__trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    width: 100%;
+    padding: 1.15rem 0;
+    background: none;
+    border: 0;
+    text-align: left;
+    cursor: pointer;
+    font-family: var(--font-heading);
+    font-size: clamp(1.02rem, 1.5vw, 1.2rem);
+    font-weight: 400;
+    line-height: 1.4;
+    color: var(--color-text-dark);
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: var(--color-gold-ink);
+    }
+  }
+
+  // Marker plus/minus rysowany dwiema kreskami — pionowa znika przy otwarciu.
+  &__marker {
+    position: relative;
+    flex-shrink: 0;
+    width: 1.5rem;
+    height: 1.5rem;
+    border: 1px solid rgba(197, 160, 89, 0.5);
+    border-radius: 50%;
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0.6rem;
+      height: 1px;
+      background: var(--color-gold-ink);
+      transform: translate(-50%, -50%);
+      transition: transform 0.3s ease, opacity 0.25s ease;
+    }
+
+    &::after {
+      transform: translate(-50%, -50%) rotate(90deg);
+    }
+  }
+
+  &__item--open &__marker {
+    background: var(--color-gold-ink);
+    border-color: var(--color-gold-ink);
+
+    &::before,
+    &::after {
+      background: var(--color-cream);
+    }
+
+    &::after {
+      opacity: 0;
+      transform: translate(-50%, -50%) rotate(0deg);
+    }
+  }
+
+  &__item--open &__trigger {
+    color: var(--color-gold-ink);
+  }
+
+  &__panel {
+    overflow: hidden;
+
+    p {
+      @include body-copy;
+      max-width: 46rem;
+      padding: 0 3rem 1.4rem 0;
+      font-size: 0.92rem;
+      line-height: 1.9;
+    }
+  }
+
+  // Odnośnik w odpowiedzi (np. pogrubione „Booksy”)
+  &__link {
+    color: var(--color-berry);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(var(--color-berry-rgb), 0.35);
+    transition: color 0.2s ease, border-color 0.2s ease;
+
+    &:hover {
+      color: var(--color-berry-deep);
+      border-bottom-color: var(--color-berry-deep);
+    }
+  }
+
+  @media (max-width: 560px) {
+    &__panel p {
+      padding-right: 0;
+    }
+  }
+}

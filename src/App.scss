@@ -1,0 +1,35 @@
+.app {
+  min-height: 100svh;
+  background-color: var(--color-cream);
+  padding-bottom: var(--mobile-bar-height);
+}
+
+.between-quote {
+  background: var(--color-cream);
+  /* połowa łącznej przestrzeni: (padding-bottom SkinGuide + margin-top Process) / 2 */
+  padding-block: clamp(2.7rem, calc(2.5vh + 3vw), 4.6rem);
+  text-align: center;
+
+  &__text {
+    max-width: 40rem;
+    margin-inline: auto;
+    margin-block: 0;
+    font-family: var(--font-heading);
+    font-size: clamp(1.05rem, 0.92rem + 0.55vw, 1.35rem);
+    font-style: italic;
+    font-weight: 400;
+    line-height: 1.45;
+    color: var(--color-text-dark);
+    text-wrap: balance;
+  }
+
+  &__sign {
+    margin: 0.65rem 0 0;
+    font-family: var(--font-body);
+    font-size: var(--text-eyebrow);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--tekst-miekki);
+  }
+}

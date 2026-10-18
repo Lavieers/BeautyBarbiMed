@@ -1,0 +1,123 @@
+@use '../styles/mixins' as *;
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 3rem;
+  padding: 0.75rem 1.85rem;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  text-align: center;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition:
+    background 0.22s ease,
+    border-color 0.22s ease,
+    color 0.22s ease,
+    box-shadow 0.22s ease;
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--bordo);
+    outline-offset: 3px;
+  }
+
+  &--compact {
+    min-height: 2.75rem;
+    padding: 0.55rem 1.35rem;
+    font-size: 0.8125rem;
+  }
+
+  &--block {
+    width: 100%;
+  }
+
+  &--primary {
+    color: var(--krem);
+    background: var(--bordo);
+    border-color: var(--bordo);
+
+    &:hover {
+      background: var(--color-berry-deep);
+      border-color: var(--color-berry-deep);
+      color: var(--krem);
+    }
+
+    &:focus-visible {
+      outline-color: var(--bordo);
+      box-shadow: 0 0 0 3px rgba(var(--bordo-rgb), 0.28);
+    }
+  }
+
+  &--booking {
+    color: var(--tekst);
+    background: var(--gold-gradient);
+    border-color: var(--color-gold-dark);
+
+    &:hover {
+      background: var(--gold-gradient-hover);
+      border-color: var(--zloto);
+      color: var(--tekst);
+    }
+
+    &:focus-visible {
+      outline-color: var(--color-gold-dark);
+      box-shadow: 0 0 0 3px rgba(var(--zloto-rgb), 0.35);
+    }
+  }
+
+  &--secondary {
+    color: var(--bordo);
+    background: transparent;
+    border-color: var(--bordo);
+
+    &:hover {
+      color: var(--color-berry-deep);
+      border-color: var(--color-berry-deep);
+      background: rgba(var(--bordo-rgb), 0.06);
+    }
+  }
+
+  &--link {
+    min-height: auto;
+    padding: 0.15rem 0;
+    font-size: 0.875rem;
+    letter-spacing: 0.04em;
+    text-transform: none;
+    color: var(--bordo);
+    background: none;
+    border: none;
+    border-radius: 0;
+    border-bottom: 1px solid rgba(var(--bordo-rgb), 0.35);
+
+    &:hover {
+      color: var(--color-berry-deep);
+      border-bottom-color: var(--color-berry-deep);
+    }
+
+    &:focus-visible {
+      outline-offset: 2px;
+      box-shadow: none;
+    }
+  }
+
+  &__arrow {
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+  }
+
+  &--link:hover &__arrow {
+    transform: translateX(3px);
+  }
+}

@@ -1,0 +1,304 @@
+.adm-pricing {
+  position: relative;
+  max-width: none;
+  padding-bottom: 1rem;
+
+  &__stage {
+    padding: clamp(0.85rem, 1.4vw, 1.05rem);
+    background: rgba(255, 255, 255, 0.58);
+    border: 1px solid rgba(var(--zloto-rgb), 0.34);
+    border-radius: calc(var(--radius) + 4px);
+    box-shadow: 0 8px 22px rgba(42, 33, 28, 0.05);
+  }
+
+  &__empty {
+    margin: 0;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    font-size: 0.9375rem;
+    color: var(--color-deep-soft);
+  }
+
+  &__table-wrap {
+    overflow-x: auto;
+  }
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+
+    thead th {
+      padding: 0.5rem 0.65rem 0.55rem;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      text-align: left;
+      color: var(--color-deep-soft);
+      border-bottom: 1px solid rgba(var(--color-deep-rgb), 0.12);
+    }
+
+    tbody td {
+      padding: 0;
+      vertical-align: middle;
+      border-bottom: 1px solid rgba(var(--color-deep-rgb), 0.08);
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    th:nth-child(3),
+    td.adm-pricing__price {
+      text-align: right;
+      white-space: nowrap;
+    }
+  }
+
+  &__row-hit {
+    display: block;
+    width: 100%;
+    padding: 0.55rem 0.65rem;
+    text-align: left;
+    font: inherit;
+    color: inherit;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+
+    &:hover .adm-pricing__hint {
+      opacity: 1;
+    }
+
+    // po zamknięciu okna (np. Esc) fokus wraca na wiersz – bez ramki
+    &:focus,
+    &:focus-visible {
+      outline: none;
+    }
+  }
+
+  &__name {
+    display: block;
+    font-weight: 500;
+    color: var(--color-text-dark);
+    line-height: 1.35;
+  }
+
+  &__hint {
+    display: block;
+    margin-top: 0.15rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-deep-soft);
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+
+  &__price {
+    padding: 0.55rem 0.65rem !important;
+    font-family: var(--font-heading);
+    font-size: 0.9375rem;
+    color: var(--bordo);
+  }
+
+  tbody td:nth-child(2) {
+    padding: 0.55rem 0.65rem;
+    color: var(--color-text);
+  }
+
+  &__save {
+    align-items: center;
+    min-height: 3.25rem;
+    margin-top: 0.85rem;
+    padding-top: 0.65rem;
+    padding-right: 4rem;
+  }
+
+  &__save-btn {
+    min-width: 11rem;
+  }
+
+  &__status {
+    display: flex;
+    align-items: center;
+    min-height: 1.35rem;
+    flex: 1;
+  }
+
+  &__delete {
+    margin-left: auto;
+    color: #a3283f;
+  }
+
+  // ── Okno edycji pozycji: formularz + podgląd okna „Dowiedz się więcej” ───────
+  &__editor {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.25rem;
+  }
+
+  // formularz jest zwarty – liczy się podgląd, więc pola mogą być małe
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    min-width: 0;
+
+    .adm-field__label {
+      font-size: 0.75rem;
+    }
+
+    .adm-field__hint {
+      font-size: 0.7rem;
+      line-height: 1.35;
+    }
+
+    .adm-input {
+      padding: 0.35rem 0.55rem;
+      font-size: 0.8125rem;
+      line-height: 1.35;
+    }
+
+    .adm-input--area {
+      min-height: 2.9rem;
+      resize: vertical;
+    }
+
+    .adm-btn {
+      padding: 0.4rem 0.75rem;
+      font-size: 0.75rem;
+    }
+  }
+
+  // pole ceny z nieedytowalnym „zł” po prawej
+  &__price-input {
+    position: relative;
+    display: block;
+
+    .adm-input {
+      padding-right: 1.9rem;
+    }
+  }
+
+  &__price-unit {
+    position: absolute;
+    top: 50%;
+    right: 0.6rem;
+    transform: translateY(-50%);
+    font-size: 0.8125rem;
+    color: var(--color-deep-soft);
+    pointer-events: none;
+  }
+
+  &__pair {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
+    gap: 0.6rem;
+  }
+
+  // nagłówek części formularza dotyczącej okna zabiegu
+  &__section {
+    margin: 0.5rem 0 0.1rem;
+    padding-top: 0.6rem;
+    border-top: 1px solid rgba(var(--zloto-rgb), 0.34);
+  }
+
+  &__section-title {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--bordo);
+  }
+
+  // chwilowe podświetlenie świeżo dodanej pozycji
+  &__row--flash td {
+    animation: adm-pricing-flash 2.6s ease-out;
+  }
+
+  &__modal-error {
+    align-self: center;
+    margin-left: 0.4rem;
+  }
+
+  // podgląd widać tylko na szerszych ekranach – na wąskich nie zmieściłby się obok formularza
+  &__preview {
+    display: none;
+    min-width: 0;
+  }
+
+  &__preview-title {
+    margin: 0 0 0.5rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--color-deep-soft);
+  }
+
+  // okno zawsze w prawdziwej wielkości, tu tylko pomniejszone do szerokości kolumny
+  &__scale {
+    position: relative;
+    width: 100%;
+    margin-bottom: 0.6rem;
+    overflow: hidden;
+    border-radius: var(--radius);
+    box-shadow: 0 10px 28px rgba(42, 33, 28, 0.18);
+  }
+
+  &__scale-inner {
+    width: 54rem;
+    transform-origin: top left;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  &__preview-card {
+    margin: 0;
+  }
+
+  // stopka okna edycji: przyciski zawsze widoczne pod przewijaną treścią
+  &__modal-foot {
+    flex-shrink: 0;
+    margin: 0;
+    padding: 0.85rem 1.15rem;
+  }
+}
+
+@media (min-width: 60rem) {
+  .adm-modal__panel.adm-modal__panel--pricing {
+    width: min(72rem, 100%);
+  }
+
+  .adm-pricing__editor {
+    grid-template-columns: minmax(0, 24rem) minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .adm-pricing__preview {
+    display: block;
+    position: sticky;
+    top: 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .adm-pricing__save {
+    padding-right: 0;
+    padding-bottom: 3.5rem;
+  }
+}
+
+@keyframes adm-pricing-flash {
+  0%,
+  45% {
+    background: rgba(var(--zloto-rgb), 0.28);
+  }
+
+  100% {
+    background: transparent;
+  }
+}

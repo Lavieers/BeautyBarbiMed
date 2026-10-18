@@ -1,0 +1,752 @@
+@use '../styles/mixins' as *;
+
+$marker-size: 0.6rem;
+$marker-top: 0.32rem;
+$marker-gap: 1.5rem;
+
+// Okno pakietu: ciemna, wiśniowa karta bez zaokrągleń – zdjęcie w złotej ramce po lewej (45%),
+// treść po prawej (55%). Tło za oknem i przycisk zamknięcia pochodzą z okna rezerwacji (.booking*).
+// Na telefonie kolumny układają się jedna pod drugą.
+.package-modal {
+  --pm-gold: var(--color-gold);
+  --pm-gold-rgb: var(--color-gold-rgb);
+  --pm-gold-gradient: linear-gradient(
+    135deg,
+    var(--color-gold) 0%,
+    color-mix(in srgb, var(--color-gold) 55%, #fff) 50%,
+    var(--color-gold) 100%
+  );
+  --pm-font-body: 'Montserrat', var(--font-body), sans-serif;
+
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 45fr) minmax(0, 55fr);
+  grid-template-rows: minmax(0, 1fr);
+  width: 100%;
+  max-width: 54rem;
+  // na wysokich ekranach karta rośnie razem z tekstem
+  height: min(clamp(44rem, 78svh, 58rem), calc(100svh - 2.5rem));
+  overflow: hidden;
+  border: 1px solid rgba(var(--pm-gold-rgb), 0.28);
+  border-radius: 0;
+  background: radial-gradient(
+    circle at 25% 0%,
+    var(--color-berry) 0%,
+    color-mix(in srgb, var(--color-berry) 35%, #000) 100%
+  );
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
+  color: rgba(255, 255, 255, 0.9);
+  font-family: var(--pm-font-body);
+  outline: none;
+
+  // przycisk zamknięcia: szkło na ciemnej karcie
+  .booking__close {
+    z-index: 3;
+    top: clamp(1rem, 2.2vw, 1.5rem);
+    right: clamp(1rem, 2.2vw, 1.5rem);
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+
+    span {
+      background: rgba(255, 255, 255, 0.85);
+    }
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.16);
+      border-color: rgba(var(--pm-gold-rgb), 0.6);
+    }
+  }
+
+  // ── Zdjęcie w złotej ramce ─────────────────────────────────────────────────
+  &__media {
+    position: relative;
+    min-height: 0;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--color-berry) 35%, #000);
+
+    img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    // delikatne przyciemnienie zdjęcia – wtapia się w ciemną kartę
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background:
+        linear-gradient(180deg, rgba(0, 0, 0, 0.12) 0%, rgba(0, 0, 0, 0) 30%, rgba(0, 0, 0, 0.5) 100%),
+        linear-gradient(90deg, rgba(0, 0, 0, 0) 70%, rgba(var(--color-berry-rgb), 0.35) 100%);
+      pointer-events: none;
+    }
+
+    // złota ramka we wnętrzu zdjęcia
+    &::after {
+      content: '';
+      position: absolute;
+      inset: clamp(0.6rem, 1.4vw, 1rem);
+      z-index: 2;
+      border: 1px solid rgba(var(--pm-gold-rgb), 0.85);
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12);
+      pointer-events: none;
+    }
+  }
+
+  // przechodzenie między pakietami: szklana plakietka ze strzałkami
+  &__nav {
+    position: absolute;
+    left: 50%;
+    bottom: clamp(1.4rem, 2.6vw, 2rem);
+    z-index: 3;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 0.15rem;
+    padding: 0.2rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.28);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+
+    span {
+      min-width: 2.6rem;
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-align: center;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    button {
+      display: grid;
+      place-items: center;
+      width: 2rem;
+      height: 2rem;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.9);
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease;
+
+      &:hover {
+        background: rgba(var(--pm-gold-rgb), 0.9);
+        color: color-mix(in srgb, var(--color-berry) 55%, #000);
+      }
+
+      svg {
+        width: 1.05rem;
+        height: 1.05rem;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+    }
+  }
+  // ── Kolumna z treścią ──────────────────────────────────────────────────────
+  &__content {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    padding: clamp(1.4rem, 4.4svh, 3rem) clamp(1.4rem, 3.2vw, 3rem) clamp(1rem, 3.4svh, 2rem);
+  }
+
+  // przewija się tylko wtedy, gdy treść się nie mieści
+  &__body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    // lewy zapas, żeby poświata punktów nie była ucinana przez przewijany obszar
+    margin-left: -1.2rem;
+    padding: 0.4rem 0.3rem 0.4rem 1.2rem;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(var(--pm-gold-rgb), 0.35) transparent;
+  }
+
+  // mała etykieta ze złotą kreską
+  &__kicker {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 0 0 clamp(0.7rem, 2.4svh, 1.4rem);
+    padding-right: 3rem; // miejsce na przycisk zamknięcia
+    font-size: 0.625rem;
+    font-weight: 500;
+    letter-spacing: 0.5em;
+    text-transform: uppercase;
+    color: rgba(var(--pm-gold-rgb), 0.95);
+
+    &::before {
+      content: '';
+      flex: none;
+      width: 2.6rem;
+      height: 1px;
+      background: rgba(var(--pm-gold-rgb), 0.55);
+    }
+  }
+
+  &__title {
+    margin: 0 0 clamp(0.7rem, 2.4svh, 1.6rem);
+    font-family: var(--font-heading);
+    font-size: clamp(1.6rem, min(2.7vw, 5.4svh), 2.6rem);
+    font-weight: 400;
+    line-height: 1.15;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.95);
+    overflow-wrap: break-word;
+  }
+
+  // każda linijka nagłówka osobno (np. „Mezoterapia / igłowa / 3 zabiegi”)
+  &__title-line {
+    display: block;
+  }
+
+  &__lead {
+    margin: 0 0 clamp(0.85rem, 3svh, 2.4rem);
+    max-width: 30rem;
+    font-size: clamp(0.84rem, 0.62rem + 0.4svh, 0.94rem);
+    font-weight: 400;
+    line-height: 1.65;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  // ── Kolejne kroki: subtelna oś z punktami ──────────────────────────────────
+  &__flow {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__step {
+    position: relative;
+    display: grid;
+    grid-template-columns: $marker-size minmax(0, 1fr);
+    column-gap: $marker-gap;
+    padding-bottom: clamp(0.65rem, 2.2svh, 1.6rem);
+
+    // linia 1px: od punktu do następnego, złoto zanikające ku dołowi
+    &::before {
+      content: '';
+      position: absolute;
+      top: calc(#{$marker-top} + #{$marker-size} + 0.5rem);
+      bottom: 0.25rem;
+      left: calc(#{$marker-size} / 2 - 0.5px);
+      width: 1px;
+      background: linear-gradient(
+        180deg,
+        rgba(var(--pm-gold-rgb), 0.55) 0%,
+        rgba(var(--pm-gold-rgb), 0) 100%
+      );
+    }
+
+    &--last {
+      padding-bottom: 0;
+
+      &::before {
+        display: none;
+      }
+    }
+  }
+
+  // złoty, świecący punkt; ostatni krok jest „pusty” – cel całej drogi
+  &__marker {
+    width: $marker-size;
+    height: $marker-size;
+    margin-top: $marker-top;
+    border-radius: 50%;
+    background: var(--pm-gold);
+    box-shadow:
+      0 0 0 3px rgba(var(--pm-gold-rgb), 0.16),
+      0 0 12px rgba(var(--pm-gold-rgb), 0.6);
+
+    .package-modal__step--last & {
+      background: color-mix(in srgb, var(--color-berry) 35%, #000);
+      box-shadow:
+        0 0 0 3px rgba(var(--pm-gold-rgb), 0.12),
+        inset 0 0 0 1px rgba(var(--pm-gold-rgb), 0.5);
+    }
+  }
+
+  &__step-body {
+    padding-top: 0;
+  }
+
+  &__step-title {
+    margin: 0 0 0.25rem;
+    font-family: var(--pm-font-body);
+    font-size: clamp(0.875rem, 0.6rem + 0.5svh, 0.92rem);
+    font-weight: 600;
+    line-height: 1.35;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.95);
+  }
+
+  &__step-text {
+    margin: 0;
+    font-size: clamp(0.72rem, 0.55rem + 0.4svh, 0.8rem);
+    font-weight: 300;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  // ── Cena, telefon i informacje ─────────────────────────────────────────────
+  &__footer {
+    flex: none;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 1.2rem;
+    row-gap: clamp(0.5rem, 1.7svh, 1.1rem);
+    margin-top: clamp(0.6rem, 2svh, 1.2rem);
+    padding-top: clamp(0.7rem, 2.4svh, 1.5rem);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  &__price-main {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, min(3vw, 5.4svh), 2.7rem);
+    font-weight: 400;
+    line-height: 1;
+    color: rgba(255, 255, 255, 0.95);
+
+    span {
+      margin-left: 0.15em;
+      font-size: 0.42em;
+      letter-spacing: 0.08em;
+      color: rgba(255, 255, 255, 0.55);
+    }
+  }
+
+  &__price-info {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 0.55rem 0 0;
+    font-size: 0.68rem;
+    color: rgba(255, 255, 255, 0.4);
+
+    s {
+      text-decoration-thickness: 1px;
+    }
+  }
+
+  // plakietka oszczędności: półprzezroczyste złoto
+  &__save {
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    background: rgba(var(--pm-gold-rgb), 0.12);
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: rgba(var(--pm-gold-rgb), 0.95);
+  }
+
+  // przycisk: złoty metaliczny gradient, pełne zaokrąglenie, głęboki cień
+  .package-modal__call {
+    gap: 0.6rem;
+    min-height: 3rem;
+    padding: 0.8rem 1.6rem;
+    border: 0;
+    border-radius: 999px;
+    background: var(--pm-gold-gradient);
+    box-shadow: 0 25px 50px -12px rgba(var(--pm-gold-rgb), 0.3);
+    font-family: var(--pm-font-body);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+    color: color-mix(in srgb, var(--color-berry) 55%, #000);
+    transition: filter 0.2s ease, transform 0.2s ease;
+
+    &:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+
+    svg {
+      width: 1rem;
+      height: 1rem;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.7;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+  }
+
+  // stopka informacyjna: delikatne złoto, niżej niż cena
+  &__notes {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    gap: 1.5rem;
+
+    p {
+      margin: 0;
+      font-size: 0.58rem;
+      font-weight: 500;
+      line-height: 1.8;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(var(--pm-gold-rgb), 0.5);
+    }
+
+    p:last-child {
+      text-align: left;
+    }
+  }
+
+  // ── Okno zabiegu (cennik i „Dobierz pielęgnację”) ──────────────────────────
+  // Ta sama karta co pakiet: nagłówek, czas zabiegu, szeroki opis, a pod nim bloki
+  // (tytuł, ozdobna kreska, treść) jeden pod drugim – bez ramek i kolumn. Uwaga „Ważne”
+  // stoi na dole, na środku, tuż nad kreską z ceną. Całość ma się mieścić bez przewijania.
+  &--treatment {
+    .package-modal__kicker {
+      margin-bottom: clamp(0.5rem, 1.8svh, 1rem);
+    }
+
+    .package-modal__title {
+      margin-bottom: clamp(0.5rem, 1.6svh, 0.9rem);
+      font-size: clamp(1.15rem, min(1.8vw, 4svh), 1.55rem);
+      line-height: 1.2;
+      letter-spacing: 0.04em;
+      text-wrap: balance; // bez osieroconych słów w drugiej linii
+    }
+
+    // czas zabiegu: złota ikonka zegara i cienka linia oddzielająca od opisu
+    .package-modal__duration {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0 0 clamp(0.7rem, 2svh, 1.1rem);
+      padding-bottom: clamp(0.6rem, 1.8svh, 0.9rem);
+      border-bottom: 1px solid rgba(var(--pm-gold-rgb), 0.28);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(var(--pm-gold-rgb), 0.95);
+
+      svg {
+        flex: none;
+        width: 1.05rem;
+        height: 1.05rem;
+        stroke: currentColor;
+        stroke-width: 1.6;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+    }
+
+    // szeroki opis zabiegu – bez etykiety i bez kropki, kursywą
+    .package-modal__what {
+      margin: 0 0 clamp(0.9rem, 2.6svh, 1.5rem);
+      font-size: clamp(0.82rem, 0.62rem + 0.42svh, 0.92rem);
+      font-style: italic;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.78);
+    }
+
+    // bloki „Dla kogo”, „Efekty”, „Przeciwwskazania”: jeden pod drugim
+    .package-modal__sections {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(0.8rem, 2.4svh, 1.4rem);
+    }
+
+    .package-modal__block-title {
+      margin: 0 0 0.4rem;
+      font-family: var(--pm-font-body);
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(var(--pm-gold-rgb), 0.95);
+    }
+
+    // treść bloku: mały złoty romb z lewej, tekst wcięty obok niego
+    .package-modal__block-text {
+      position: relative;
+      margin: 0;
+      padding-left: 1.1rem;
+      font-size: clamp(0.76rem, 0.58rem + 0.42svh, 0.84rem);
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.72);
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0.62em;
+        left: 0.1rem;
+        width: 0.3rem;
+        height: 0.3rem;
+        background: var(--pm-gold);
+        transform: rotate(45deg);
+      }
+    }
+
+    // „Ważne”: na dole, na środku, nad kreską z ceną
+    .package-modal__important {
+      flex: none;
+      margin: clamp(0.5rem, 1.5svh, 0.9rem) 0 0;
+      text-align: center;
+      font-size: 0.74rem;
+      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.72);
+
+      strong {
+        margin-right: 0.4rem;
+        font-size: 0.64rem;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: rgba(var(--pm-gold-rgb), 0.95);
+      }
+    }
+
+    .package-modal__footer {
+      margin-top: clamp(0.5rem, 1.6svh, 1rem);
+    }
+
+    // cena: równe cyfry (lining), nie „stare” z elementami zjeżdżającymi pod linię
+    .package-modal__price-main {
+      font-size: clamp(1.9rem, min(2.8vw, 5svh), 2.5rem);
+      font-variant-numeric: lining-nums;
+      font-feature-settings: 'lnum' 1;
+      letter-spacing: 0.01em;
+    }
+
+    // telefon i tablet w pionie: niższe zdjęcie, gęstszy tekst, cena i przycisk w jednym rzędzie –
+    // opis ma się mieścić w oknie bez przewijania
+    @media (max-width: 52rem) {
+      .package-modal__media {
+        height: clamp(4.5rem, 10svh, 7rem);
+      }
+
+      .package-modal__content {
+        padding: 1rem 1.2rem 0.9rem;
+      }
+
+      .package-modal__kicker {
+        margin-bottom: 0.5rem;
+        font-size: 0.58rem;
+      }
+
+      .package-modal__title {
+        margin-bottom: 0.5rem;
+        font-size: clamp(1.05rem, 4.3vw, 1.55rem); // najdłuższa linijka musi się zmieścić w jednej linii
+      }
+
+      .package-modal__duration {
+        margin-bottom: 0.6rem;
+        padding-bottom: 0.5rem;
+      }
+
+      .package-modal__what {
+        margin-bottom: 0.7rem;
+        font-size: 0.8rem;
+        line-height: 1.5;
+      }
+
+      .package-modal__sections {
+        gap: 0.55rem;
+      }
+
+      .package-modal__block-text {
+        font-size: 0.76rem;
+        line-height: 1.45;
+      }
+
+      .package-modal__important {
+        margin-top: 0.5rem;
+        font-size: 0.72rem;
+      }
+
+      .package-modal__footer {
+        grid-template-columns: minmax(0, 1fr) auto;
+        justify-items: stretch;
+        margin-top: 0.4rem;
+        padding-top: 0.7rem;
+      }
+
+      .package-modal__contact .package-modal__call {
+        width: auto;
+        min-height: 2.7rem;
+        padding: 0.7rem 1.3rem;
+      }
+    }
+
+    // niskie ekrany (laptopy): ciaśniej, żeby najdłuższy opis nadal mieścił się bez przewijania
+    @media (max-height: 720px) and (min-width: 52.01rem) {
+      .package-modal__content {
+        padding-top: 1.2rem;
+        padding-bottom: 0.9rem;
+      }
+
+      .package-modal__title {
+        margin-bottom: 0.4rem;
+      }
+
+      .package-modal__duration {
+        margin-bottom: 0.55rem;
+        padding-bottom: 0.45rem;
+      }
+
+      .package-modal__what {
+        margin-bottom: 0.6rem;
+        font-size: 0.78rem;
+        line-height: 1.5;
+      }
+
+      .package-modal__sections {
+        gap: 0.5rem;
+      }
+
+      .package-modal__block-text {
+        font-size: 0.72rem;
+        line-height: 1.42;
+      }
+
+      .package-modal__important {
+        margin-top: 0.35rem;
+        font-size: 0.7rem;
+        line-height: 1.4;
+      }
+
+      .package-modal__footer {
+        margin-top: 0.3rem;
+        padding-top: 0.55rem;
+      }
+    }
+  }
+
+  // Okno zabiegu dopasowuje wysokość do treści, więc pasek z ceną i przyciskiem leży tuż pod nią
+  // (nie przy samym dole pustej karty). Górny limit jak w oknie pakietu – dłuższe teksty by się
+  // przewijały, ale przy obecnych opisach to się nie zdarza.
+  &.package-modal--treatment {
+    height: auto;
+    min-height: min(32rem, calc(100svh - 2.5rem));
+    max-height: min(clamp(44rem, 78svh, 58rem), calc(100svh - 2.5rem));
+
+    .package-modal__content {
+      padding-bottom: clamp(1.4rem, 3.6svh, 2.2rem);
+    }
+
+    @media (max-width: 52rem) {
+      min-height: 0;
+      max-height: min(52rem, calc(100svh - 2.5rem));
+
+      .package-modal__content {
+        padding-bottom: 1.3rem;
+      }
+    }
+  }
+
+  // ── Telefon i wąskie okna: jedna kolumna, całość treści przewija się razem ──
+  @media (max-width: 52rem) {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    max-width: 30rem;
+    height: min(52rem, calc(100svh - 2.5rem));
+
+    &__media {
+      height: clamp(6rem, 17svh, 10rem);
+    }
+
+    &__content {
+      overflow-y: auto;
+      padding: clamp(1.1rem, 3svh, 1.7rem) 1.3rem 1rem;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(var(--pm-gold-rgb), 0.35) transparent;
+    }
+
+    &__body {
+      flex: none;
+      overflow: visible;
+      margin-left: 0;
+      padding: 0;
+    }
+
+    &__kicker {
+      padding-right: 0;
+      letter-spacing: 0.4em;
+    }
+
+    &__title {
+      font-size: clamp(1.6rem, 7.4vw, 2.2rem);
+    }
+
+    &__footer {
+      grid-template-columns: minmax(0, 1fr);
+      justify-items: start;
+    }
+
+    &__notes {
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .package-modal__call {
+      width: 100%;
+    }
+  }
+
+  // Niskie okna (np. małe laptopy): ciaśniejsze odstępy, żeby treść mieściła się bez przewijania
+  @media (max-height: 640px) and (min-width: 52.01rem) {
+    &__kicker {
+      margin-bottom: 0.5rem;
+    }
+
+    &__title {
+      margin-bottom: 0.5rem;
+      line-height: 1.08;
+    }
+
+    &__lead {
+      margin-bottom: 0.7rem;
+      line-height: 1.5;
+    }
+
+    &__step {
+      padding-bottom: 0.55rem;
+    }
+
+    &__step-text {
+      line-height: 1.45;
+    }
+
+    &__footer {
+      margin-top: 0.3rem;
+      padding-top: 0.55rem;
+      row-gap: 0.4rem;
+    }
+  }
+
+  // Bardzo niskie okna: zdjęcie ustępuje miejsca treści
+  @media (max-height: 560px) {
+    grid-template-rows: minmax(0, 1fr);
+
+    &__media {
+      display: none;
+    }
+
+    @media (min-width: 52.01rem) {
+      grid-template-columns: minmax(0, 1fr);
+      max-width: 36rem;
+    }
+  }
+}

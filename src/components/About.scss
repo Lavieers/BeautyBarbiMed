@@ -1,0 +1,38 @@
+@use '../styles/mixins' as *;
+
+.about {
+  @include section-shell;
+  /* +40px względem domyślnego offsetu sekcji (index.css: -70px) — więcej oddechu pod navbarem */
+  scroll-margin-top: calc(var(--navbar-height-compact) + var(--notice-height, 0px) - 88px) !important;
+  padding-block: clamp(4.75rem, 8vw, 7.25rem);
+  background: var(--color-cream);
+  &__inner { @include section-inner; display: grid; grid-template-columns: minmax(19rem, .9fr) minmax(0, 1.1fr); gap: clamp(3rem, 6vw, 6.75rem); align-items: center; }
+  &__visual { position: relative; min-height: clamp(26rem, 38vw, 34rem); padding: 1rem 3.6rem 2.5rem 0; }
+  &__frame { position: absolute; z-index: 1; inset: 1rem 3.6rem 2.5rem 0; overflow: hidden; background: #fff; border: .5rem solid #fff; box-shadow: 0 1.35rem 2.5rem rgba(44, 25, 26, .14), 0 0 0 1px rgba(var(--color-deep-rgb), .05); }
+  &__frame img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 42%; }
+  &__location-card { position: absolute; z-index: 2; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; width: clamp(9.5rem, 12.5vw, 11.25rem); min-height: 13rem; padding: 1.65rem 1rem; color: #fff; text-align: center; text-decoration: none; background: var(--color-berry); box-shadow: 0 1.1rem 2.2rem rgba(59, 11, 25, .22); transition: transform .25s ease, background .25s ease;
+    &:hover { transform: translateY(-.3rem); background: var(--color-berry-soft); }
+    strong { margin: .5rem 0 .7rem; font-family: var(--font-heading); font-size: 1.2rem; font-style: italic; font-weight: 500; }
+    span:not(.about__location-pin) { font-size: var(--text-eyebrow); font-weight: 600; letter-spacing: 0.08em; line-height: 1.6; text-transform: uppercase; }
+    i { width: 100%; height: 1px; margin: 1.2rem 0 .85rem; background: rgba(255,255,255,.16); }
+    b { font-size: var(--text-eyebrow); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+  }
+  &__location-pin { width: 1.25rem; height: 1.25rem; stroke: var(--color-gold-light); stroke-width: 1.45; }
+  &__body { display: flex; flex-direction: column; }
+  &__header { margin-bottom: 1.25rem; }
+  &__kicker { @include eyebrow(left); margin-bottom: 0; }
+  &__ornament { display: block; width: clamp(4rem, 8vw, 7rem); height: 1px; margin-top: .75rem; background: var(--color-gold); }
+  &__copy { max-width: 35rem; }
+  &__title { @include section-title; margin-bottom: 1.5rem; font-size: clamp(1.95rem, 1.25rem + 1.7vw, 2.85rem); line-height: 1.12; letter-spacing: -.025em; span { display: block; color: var(--color-gold); -webkit-text-fill-color: var(--color-gold); } }
+  &__quote { margin: 0 0 1.1rem; padding: .05rem 0 .05rem 1.25rem; border-left: 1px solid var(--color-gold); color: var(--color-deep-soft); font-family: var(--font-body); font-size: .96rem; font-style: italic; line-height: 1.65; }
+  &__lead { @include body-copy; margin: 0 0 .85rem; font-size: 1.02rem; line-height: 1.68; color: var(--color-text-dark); }
+  &__text { @include body-copy; margin: 0; }
+  &__team-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin: 1.35rem 0 0; padding-top: 1rem; border-top: 1px solid rgba(var(--color-gold-rgb), .5); }
+  &__team-label { @include eyebrow(left); grid-column: 1 / -1; margin: 0 0 .15rem; }
+  &__expert-card { padding: 0; }
+  &__expert-name { margin: 0 0 .2rem; font-family: var(--font-heading); font-size: 1.08rem; font-weight: 400; }
+  &__expert-role { @include eyebrow(left); margin: 0 0 .35rem; line-height: 1.4; }
+  @media (min-width: 1025px) { &__body { padding: 1rem 0; } }
+  @media (max-width: 1024px) { &__inner { grid-template-columns: 1fr; gap: 3rem; } &__visual { width: 100%; max-width: 34rem; min-height: clamp(25rem, 90vw, 32rem); margin: 0 auto; padding-right: 3.4rem; } &__frame { inset: 1rem 3.4rem 2.5rem 0; } &__team-grid { margin-top: 1.75rem; } }
+  @media (max-width: 640px) { &__visual { min-height: 25rem; padding: .75rem 2.5rem 2rem 0; } &__frame { inset: .75rem 2.5rem 2rem 0; border-width: .35rem; } &__location-card { width: 9.5rem; min-height: 11.5rem; padding: 1.2rem .85rem; } &__team-grid { grid-template-columns: 1fr; } }
+}

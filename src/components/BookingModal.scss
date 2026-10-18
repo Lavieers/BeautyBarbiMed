@@ -1,0 +1,276 @@
+@use '../styles/mixins' as *;
+
+.booking {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+
+  &__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(var(--color-deep-rgb), 0.55);
+    backdrop-filter: blur(6px);
+  }
+
+  &__panel {
+    position: relative;
+    width: 100%;
+    max-width: 27.5rem;
+    // Okno ma się mieścić bez przewijania – odstępy kurczą się razem z wysokością ekranu.
+    padding: clamp(1.25rem, 4svh, 2.5rem) clamp(1.5rem, 3.5vw, 2.25rem)
+      clamp(1.15rem, 3svh, 2rem);
+    text-align: center;
+    background: var(--color-cream);
+    border: 1px solid rgba(197, 160, 89, 0.5);
+    border-radius: 1px;
+    box-shadow: 0 30px 70px rgba(var(--color-deep-rgb), 0.35);
+    outline: none;
+
+    // Awaryjnie, tylko na bardzo niskich oknach: lepiej przewinąć niż uciąć treść.
+    @media (max-height: 690px) {
+      max-height: calc(100svh - 2.5rem);
+      overflow-y: auto;
+    }
+  }
+
+  &__close {
+    position: absolute;
+    top: 0.9rem;
+    right: 0.9rem;
+    width: 2.15rem;
+    height: 2.15rem;
+    padding: 0;
+    background: none;
+    border: 1px solid rgba(197, 160, 89, 0.4);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+
+    span {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0.7rem;
+      height: 1px;
+      background: var(--color-text-dark);
+
+      &:first-child {
+        transform: translate(-50%, -50%) rotate(45deg);
+      }
+
+      &:last-child {
+        transform: translate(-50%, -50%) rotate(-45deg);
+      }
+    }
+
+    &:hover {
+      background: rgba(197, 160, 89, 0.14);
+      border-color: var(--color-gold);
+    }
+  }
+
+  &__ornament {
+    @include gold-ornament(9rem);
+    display: block;
+    margin: 0 auto 1.15rem;
+  }
+
+  &__kicker {
+    @include section-kicker;
+    margin-bottom: 0.65rem;
+  }
+
+  &__title {
+    margin: 0 0 0.85rem;
+    font-family: var(--font-heading);
+    font-size: clamp(1.85rem, 5vw, 2.3rem);
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--color-text-dark);
+  }
+
+  &__text {
+    margin: 0 auto 1.6rem;
+    max-width: 22rem;
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    line-height: 1.85;
+    color: var(--color-text);
+  }
+
+  &__online {
+    margin-bottom: 1.35rem;
+  }
+
+  &__options {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    text-align: left;
+  }
+
+  &__option {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 0.95rem 0;
+    text-decoration: none;
+    border-top: 1px solid rgba(197, 160, 89, 0.32);
+    transition: border-color 0.2s ease;
+
+    &:hover {
+      border-color: var(--color-gold);
+
+      .booking__option-value {
+        color: var(--color-gold-ink);
+      }
+
+      .booking__arrow {
+        transform: translateX(4px);
+      }
+    }
+  }
+
+  li:last-child &__option {
+    border-bottom: 1px solid rgba(197, 160, 89, 0.32);
+  }
+
+  &__option-icon {
+    flex-shrink: 0;
+
+    svg {
+      display: block;
+      width: 1.35rem;
+      height: 1.35rem;
+      color: var(--color-gold);
+      stroke: var(--color-gold);
+      stroke-width: 1.05;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+  }
+
+  &__option-body {
+    display: block;
+    flex: 1 1 auto;
+  }
+
+  &__option-label {
+    display: block;
+    @include eyebrow(left);
+    margin-bottom: 0.2rem;
+    color: var(--tekst-miekki);
+  }
+
+  &__option-value {
+    display: block;
+    font-family: var(--font-heading);
+    font-size: 1.15rem;
+    line-height: 1.2;
+    color: var(--color-text-dark);
+    transition: color 0.2s ease;
+
+    // Numer telefonu: równe, „liniowe” cyfry zamiast ozdobnych cyfr kroju nagłówków
+    &--phone {
+      font-family: var(--font-body);
+      font-size: 1.2rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+  }
+
+  &__arrow {
+    position: relative;
+    flex-shrink: 0;
+    width: 1.1rem;
+    height: 1px;
+    background: rgba(var(--color-deep-rgb), 0.45);
+    transition: transform 0.2s ease;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: 0;
+      width: 0.45rem;
+      height: 0.45rem;
+      border-top: 1px solid rgba(var(--color-deep-rgb), 0.45);
+      border-right: 1px solid rgba(var(--color-deep-rgb), 0.45);
+      transform: translateY(-50%) rotate(45deg);
+    }
+  }
+
+  // Godziny otwarcia – tabelka: dni po lewej, godziny po prawej
+  &__hours {
+    margin-top: 1.5rem;
+    text-align: left;
+  }
+
+  &__hours-title {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 0 0 0.35rem;
+    @include eyebrow(left);
+  }
+
+  &__hours-icon svg {
+    display: block;
+    width: 1.05rem;
+    height: 1.05rem;
+    stroke: var(--color-gold);
+    stroke-width: 1.1;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  &__hours-list {
+    margin: 0;
+  }
+
+  &__hours-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid rgba(197, 160, 89, 0.22);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    line-height: 1.4;
+
+    dt {
+      margin: 0;
+      color: var(--color-text);
+    }
+
+    dd {
+      margin: 0;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      color: var(--color-text-dark);
+    }
+
+    &--closed dd {
+      font-weight: 400;
+      font-style: italic;
+      color: var(--color-text-muted);
+    }
+  }
+
+  &__note {
+    margin: 0.9rem 0 0;
+    text-align: center;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    line-height: 1.7;
+    color: var(--color-text-muted);
+  }
+}

@@ -1,0 +1,200 @@
+:root {
+  /* Kanoniczne tokeny (motywy nadpisują te same klucze) */
+  --krem: #fbf8f5;
+  --krem-rgb: 251, 248, 245;
+  --bordo: #57172a;
+  --bordo-rgb: 87, 23, 42;
+  --zloto: #c5a059;
+  --zloto-rgb: 197, 160, 89;
+  --tekst: #3a1a24;
+  --tekst-miekki: #52303a;
+  --radius: 2px;
+
+  --color-cream: var(--krem);
+  --color-cream-rgb: var(--krem-rgb);
+  --color-gold: var(--zloto);
+  --color-gold-rgb: var(--zloto-rgb);
+  --color-gold-light: #eddcae;
+  --color-gold-dark: #9e7e3d;
+  --color-gold-ink: #7a5f27;
+  --color-pink: #e8cfd3;
+  --color-pink-soft: #f8f1f2;
+  --color-text: var(--tekst-miekki);
+  --color-text-dark: var(--tekst);
+  --color-text-muted: var(--tekst-miekki);
+
+  /* Głębia zostaje w sekcjach nocnych; akcentem interfejsu jest złoto */
+  --color-deep: #3f302b;
+  --color-deep-rgb: 63, 48, 43;
+  --color-deep-strong: #231a17;
+  --color-deep-soft: #7a665d;
+  --color-deep-tint: #f7f1e8;
+
+  --color-berry: var(--bordo);
+  --color-berry-rgb: var(--bordo-rgb);
+  --color-berry-deep: #360c19;
+  --color-berry-soft: #842f47;
+
+  --gold-gradient: linear-gradient(135deg, #f0e1bc 0%, #c5a059 44%, #a8843c 100%);
+  --gold-gradient-hover: linear-gradient(135deg, #f6ebcf 0%, #d4b46a 46%, #c5a059 100%);
+  --deep-gradient: linear-gradient(150deg, #4f3d35 0%, #362923 58%, #201713 100%);
+  --berry-gradient: linear-gradient(155deg, #661c32 0%, #431020 55%, #2c0a15 100%);
+  --glass-surface: rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(var(--zloto-rgb), 0.28);
+  --glass-shadow: 0 16px 36px rgba(42, 33, 28, 0.07);
+
+  --font-heading: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-body: 'Source Sans 3', system-ui, -apple-system, sans-serif;
+
+  --line-editorial: 1.6;
+  --line-display: 1.08;
+  --border-subtle: rgba(var(--zloto-rgb), 0.28);
+  --surface-elevated: #ffffff;
+
+  --text-eyebrow: clamp(0.75rem, 0.73rem + 0.08vw, 0.8125rem);
+  --text-kicker: var(--text-eyebrow);
+  --text-label: var(--text-eyebrow);
+  --text-body: clamp(1rem, 0.96rem + 0.18vw, 1.0625rem);
+  --text-lead: clamp(1rem, 0.98rem + 0.22vw, 1.125rem);
+  --text-title: clamp(1.95rem, 1.25rem + 2.1vw, 3.1rem);
+  --text-display: clamp(2.45rem, 1.4rem + 2.9vw, 4.4rem);
+
+  --page-padding-x: clamp(1.15rem, 4.2vw, 5.5rem);
+  --content-max: 92rem;
+  --content-inset: max(
+    var(--page-padding-x),
+    calc((100% - var(--content-max)) / 2 + var(--page-padding-x))
+  );
+  --section-pad-y: clamp(2.75rem, 6.2vw, 6.25rem);
+  --mobile-bar-height: 0px;
+  --navbar-top-height: 2.15rem;
+  --navbar-main-height: 4.65rem;
+  --navbar-height: calc(var(--navbar-top-height) + var(--navbar-main-height));
+  --navbar-main-height-compact: 4.15rem;
+  --navbar-height-compact: var(--navbar-main-height-compact);
+}
+
+@media (min-width: 1600px) {
+  :root {
+    --page-padding-x: clamp(4rem, 7.5vw, 7rem);
+  }
+}
+
+@media (max-width: 1100px) {
+  :root {
+    --navbar-top-height: 0px;
+    --navbar-main-height: 4.25rem;
+    --navbar-height: 4.25rem;
+    --navbar-main-height-compact: 4rem;
+    --page-padding-x: clamp(1.15rem, 4vw, 2.75rem);
+  }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --mobile-bar-height: calc(4.25rem + env(safe-area-inset-bottom, 0px));
+    --page-padding-x: clamp(1.1rem, 5vw, 1.5rem);
+    --section-pad-y: clamp(2.5rem, 8vw, 3.75rem);
+  }
+}
+
+@media (max-height: 820px) and (min-width: 901px) {
+  :root {
+    --section-pad-y: clamp(2.25rem, 5.5vh, 3.75rem);
+    --navbar-top-height: 0px;
+    --navbar-height: var(--navbar-main-height-compact);
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  line-height: var(--line-editorial);
+  color: var(--tekst-miekki);
+  background: var(--krem);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  width: 100%;
+  min-height: 100svh;
+}
+
+/* Zjazd z paska ma lądować równo pod zwiniętym navbarem — nawigując przez hash,
+   navbar bardzo szybko przechodzi w tryb compact (scrollY > 28), więc używamy
+   --navbar-height-compact jako offset. --notice-height dodaje przestrzeń gdy
+   aktywny jest pasek komunikatów.
+   #home zostaje na 0, żeby logo wracało do samej góry, a nie pod pasek. */
+section[id] {
+  scroll-margin-top: calc(
+    var(--navbar-height-compact) + var(--notice-height, 0px) - 70px
+  );
+}
+
+section#home {
+  scroll-margin-top: 0;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  color: var(--tekst);
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font-family: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--zloto);
+  outline-offset: 3px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
