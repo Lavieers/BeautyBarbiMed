@@ -137,6 +137,7 @@ przy małym rozmiarze). Zasady:
   (tło strony głównej: ok. 2400 px).
 - Nie dodawaj dużych plików PNG/JPG – spowalniają stronę.
 - Zdjęcia wgrywane przez panel trafiają do Supabase (bucket `media`), nie do repozytorium.
+- Źródła i licencje zdjęć zapisuj w `src/assets/CREDITS.md` (plik tylko w kodzie, nie na stronie).
 
 ---
 
