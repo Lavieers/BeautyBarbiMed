@@ -1,0 +1,34 @@
+// okno zawsze w prawdziwej wielkości, tu tylko pomniejszone do szerokości kolumny
+.adm-scaled {
+  position: relative;
+  width: 100%;
+  margin-bottom: 0.6rem;
+  overflow: hidden;
+  border-radius: var(--radius);
+  box-shadow: 0 10px 28px rgba(42, 33, 28, 0.18);
+
+  // wysokość wyznacza rodzic (np. kolumna flex), okno jest wyśrodkowane w poziomie
+  &--fit {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: auto;
+    margin-bottom: 0;
+    overflow: visible;
+    background: none;
+    box-shadow: none;
+    border-radius: 0;
+
+    .adm-scaled__inner {
+      position: absolute;
+      top: 0;
+      // podgląd bywa polem edycji: klikanie włączają dopiero same pola (pointer-events: auto)
+    }
+  }
+
+  &__inner {
+    width: var(--package-modal-width, 54rem);
+    transform-origin: top left;
+    pointer-events: none;
+    user-select: none;
+  }
+}

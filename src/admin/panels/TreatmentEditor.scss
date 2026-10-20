@@ -1,0 +1,19 @@
+// Ikona zegara przy edytowalnym czasie zabiegu (jak w TreatmentCard na stronie).
+.tm-editor .pkg-editor__duration {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 0.75rem;
+}
+
+.tm-editor .package-modal__important {
+  .pkg-inline-field {
+    display: inline;
+  }
+
+  .pkg-inline-field__sizer,
+  .pkg-inline {
+    display: inline;
+    vertical-align: baseline;
+  }
+}

@@ -9,6 +9,9 @@
   --tekst: #3a1a24;
   --tekst-miekki: #52303a;
   --radius: 2px;
+  --cta-radius: 0.625rem;
+  --cta-radius-secondary: 0.3rem;
+  --cta-lift: 3px;
 
   --color-cream: var(--krem);
   --color-cream-rgb: var(--krem-rgb);
@@ -61,12 +64,13 @@
 
   --page-padding-x: clamp(1.15rem, 4.2vw, 5.5rem);
   --content-max: 92rem;
+  /* okno „Dowiedz się więcej”; na monitorze szerszym niż laptop 15,7″ rośnie razem ze stroną */
+  --package-modal-width: 54rem;
   --content-inset: max(
     var(--page-padding-x),
     calc((100% - var(--content-max)) / 2 + var(--page-padding-x))
   );
   --section-pad-y: clamp(2.75rem, 6.2vw, 6.25rem);
-  --mobile-bar-height: 0px;
   --navbar-top-height: 2.15rem;
   --navbar-main-height: 4.65rem;
   --navbar-height: calc(var(--navbar-top-height) + var(--navbar-main-height));
@@ -77,6 +81,7 @@
 @media (min-width: 1600px) {
   :root {
     --page-padding-x: clamp(4rem, 7.5vw, 7rem);
+    --package-modal-width: min(72rem, calc(100vw - 4rem));
   }
 }
 
@@ -92,7 +97,6 @@
 
 @media (max-width: 640px) {
   :root {
-    --mobile-bar-height: calc(4.25rem + env(safe-area-inset-bottom, 0px));
     --page-padding-x: clamp(1.1rem, 5vw, 1.5rem);
     --section-pad-y: clamp(2.5rem, 8vw, 3.75rem);
   }

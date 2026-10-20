@@ -2,38 +2,12 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { useSection } from '../content/context'
 import { usePortfolioImages } from '../data/galleryFallback'
-import { mediaUrl } from '../lib/supabaseConfig'
+import useMediaQuery from '../lib/useMediaQuery'
+import GalleryCarousel from './GalleryCarousel'
+import { TILE_HEIGHT, TILE_WIDTH, captionOf, imageSrc, tileLabel } from './galleryHelpers'
 import './Gallery.scss'
 
-const TILE_WIDTH = 800
-const TILE_HEIGHT = 1000
-
 const focusableSelector = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
-
-function imageSrc(image) {
-  if (image?.src) return image.src
-  return mediaUrl(image?.storage_path)
-}
-
-function captionOf(image) {
-  return {
-    treatment: (image?.category || '').trim(),
-    fact: (image?.caption || '').trim(),
-  }
-}
-
-function tileLabel(image) {
-  const { treatment, fact } = captionOf(image)
-  const parts = []
-
-  for (const part of [image?.alt, treatment, fact]) {
-    const text = (part || '').trim()
-    if (text && !parts.includes(text)) parts.push(text)
-  }
-
-  parts.push('Powiększ zdjęcie')
-  return parts.join('. ')
-}
 
 function layoutOf(count) {
   if (count <= 1) return 'single'
@@ -44,6 +18,7 @@ function layoutOf(count) {
 
 function Gallery() {
   const reduced = useReducedMotion()
+  const compact = useMediaQuery('(max-width: 900px)')
   const content = useSection('gallery')
   const images = usePortfolioImages()
   const [activeIndex, setActiveIndex] = useState(null)
@@ -181,6 +156,9 @@ function Gallery() {
       </div>
 
       <motion.div className="gallery__stage" {...reveal(0.18)}>
+        {compact ? (
+          <GalleryCarousel images={images} autoPlay={!reduced} onOpen={setActiveIndex} />
+        ) : (
         <ul
           className={`gallery__grid gallery__grid--${layout}`}
           aria-label="Portfolio zabiegów i gabinetu"
@@ -222,6 +200,7 @@ function Gallery() {
             )
           })}
         </ul>
+        )}
       </motion.div>
 
       <motion.div className="gallery__footer" {...reveal(0.24)}>

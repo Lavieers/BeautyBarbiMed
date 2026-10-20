@@ -1076,108 +1076,194 @@
 }
 
 
-@media (max-width: 820px) {
+// Telefon / tablet: panele „Pakiety” i „Dane firmy” nie są już zamknięte w oknie 100svh —
+// strona przewija się normalnie, więc nic na siebie nie nachodzi.
+@media (max-width: 900px) {
+  .adm__main--offer,
+  .adm__main--contact {
+    max-height: none;
+    overflow: visible;
+  }
 
+  .adm__body--offer,
+  .adm__body--contact {
+    flex: none;
+    overflow: visible;
+    padding-bottom: 5rem;
+  }
+}
+
+// Mobile: boczne menu zamienia się w rozwijany z góry „hamburger”.
+.adm__backdrop,
+.adm__burger,
+.adm__mobile-desc {
+  display: none;
+}
+
+@media (max-width: 820px) {
   .adm {
+    --adm-bar-h: 3.5rem;
 
     flex-direction: column;
 
+    &__mobile-bar {
+      position: sticky;
+      top: 0;
+      z-index: 95;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      height: var(--adm-bar-h);
+      padding: 0 1rem 0 0.75rem;
+      border-bottom: 0; // dolną linię ma opis pod paskiem
+    }
 
+    &__mobile-title {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    // Opis strony tuż pod paskiem – wygląda jak jego dolna część (ten sam kolor i obramowanie).
+    &__mobile-desc {
+      display: block;
+      padding: 0.1rem 1rem 0.75rem;
+      background: rgb(var(--color-cream-rgb));
+      border-bottom: 1px solid var(--border-subtle);
+
+      p {
+        margin: 0;
+        font-size: 0.8125rem;
+        line-height: 1.5;
+        color: var(--color-text);
+
+        + p {
+          margin-top: 0.3rem;
+        }
+
+        strong {
+          font-weight: 700;
+          color: var(--bordo);
+        }
+      }
+    }
+
+    // Duży nagłówek strony (tytuł, opis, „Podgląd strony”) jest zbędny – tytuł i opis są w pasku.
+    .adm-page-head {
+      display: none;
+    }
+
+    &__burger {
+      display: inline-flex;
+      flex-shrink: 0;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      width: 2.5rem;
+      height: 2.5rem;
+      padding: 0;
+      background: transparent;
+      border: 0;
+      border-radius: var(--radius);
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+
+      span {
+        display: block;
+        width: 1.1rem;
+        height: 2px;
+        background: var(--bordo);
+        border-radius: 2px;
+        transition: transform 0.28s ease, opacity 0.2s ease;
+      }
+    }
+
+    &--menu-open &__burger span {
+      &:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
+      }
+
+      &:nth-child(2) {
+        opacity: 0;
+      }
+
+      &:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
+      }
+    }
+
+    &__backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 85;
+      display: block;
+      padding: 0;
+      background: rgba(var(--color-deep-rgb), 0.45);
+      border: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    &--menu-open &__backdrop {
+      opacity: 1;
+      pointer-events: auto;
+    }
 
     &__sidebar {
-
+      position: fixed;
+      top: var(--adm-bar-h);
+      right: 0;
+      left: 0;
+      z-index: 90;
       width: 100%;
-
       height: auto;
-
-      max-height: none;
-
-      padding-bottom: 0.75rem;
-
+      max-height: calc(100svh - var(--adm-bar-h));
+      padding: 0.85rem 0.75rem;
       border-right: none;
-
-      border-bottom: none;
-
-      box-shadow: 0 4px 20px rgba(var(--bordo-rgb), 0.18);
-
-      background-size: 100% 100svh;
-
-      position: static;
-
+      border-bottom: 1px solid rgba(var(--zloto-rgb), 0.3);
+      box-shadow: none;
+      background-attachment: scroll;
+      background-size: 100% 100%;
+      overscroll-behavior: contain;
+      // Zamknięte: schowane nad paskiem (pasek przykrywa je z góry).
+      visibility: hidden;
+      transform: translateY(-100%);
+      transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 0.34s;
     }
 
-
+    &--menu-open &__sidebar {
+      visibility: visible;
+      transform: translateY(0);
+      box-shadow: 0 18px 36px rgba(var(--bordo-rgb), 0.3);
+      transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s;
+    }
 
     &__brand {
-
-      padding-bottom: 0.85rem;
-
-      margin-bottom: 0.35rem;
-
+      padding-bottom: 0.7rem;
+      margin-bottom: 0.45rem;
     }
-
-
-
-    .adm-nav {
-
-      flex-flow: row wrap;
-
-
-
-      &__link {
-
-        flex: 1 1 calc(50% - 0.2rem);
-
-        font-size: 0.875rem;
-
-        padding: 0.55rem 0.6rem;
-
-      }
-
-    }
-
-
 
     &__sidebar-foot {
-
-      flex-flow: row wrap;
-
       margin-top: 0.75rem;
-
-
-
-      .adm-btn--sidebar,
-
-      .adm-btn--sidebar-quiet {
-
-        flex: 1 1 auto;
-
-        width: auto;
-
-      }
-
     }
-
-
-
-    &__mobile-bar {
-
-      display: flex;
-
-    }
-
-
 
     &__body {
-
       padding-top: 1rem;
-
     }
-
   }
-
 }
 
+@media (max-width: 820px) and (prefers-reduced-motion: reduce) {
+  .adm__sidebar,
+  .adm__backdrop,
+  .adm__burger span {
+    transition: none !important;
+  }
+}
 
 
 .adm-panel-fab {
@@ -1425,3 +1511,23 @@
 }
 
 
+
+
+// Telefon: pola formularzy w zaokrąglonych „okienkach” z delikatnym, półprzezroczystym tłem.
+@media (max-width: 820px) {
+  .adm-input {
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(var(--zloto-rgb), 0.28);
+    border-radius: 14px;
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+
+    &::placeholder {
+      color: rgba(var(--color-deep-rgb), 0.4);
+    }
+
+    &:focus {
+      background: rgba(255, 255, 255, 0.82);
+    }
+  }
+}

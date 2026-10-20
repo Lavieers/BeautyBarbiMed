@@ -230,16 +230,6 @@
     &__intro {
       white-space: normal;
     }
-
-    &__grid--pair {
-      grid-template-columns: minmax(0, 1fr);
-      max-width: 22rem;
-
-      .gallery__item:last-child {
-        width: 72%;
-        justify-self: center;
-      }
-    }
   }
 
   @media (min-width: 901px) {
@@ -416,5 +406,153 @@
         transform: translate(-50%, -50%) rotate(45deg);
       }
     }
+  }
+}
+
+// Karuzela portfolio na telefonie (patrz GalleryCarousel.jsx) – ten sam układ co karuzela pakietów:
+// pełna szerokość ekranu, wyśrodkowane karty, z brzegu widać sąsiednie.
+.gal-carousel {
+  --gal-card-width: min(74cqw, 21rem);
+  --gal-side: calc((100cqw - var(--gal-card-width)) / 2);
+
+  margin-inline: calc(var(--page-padding-x) * -1);
+  container-type: inline-size;
+
+  &__track {
+    position: relative; // punkt odniesienia dla offsetLeft kart
+    display: flex;
+    gap: 0.8rem;
+    list-style: none;
+    margin: 0;
+    padding: 0.25rem var(--gal-side) 0.9rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--gal-side);
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  &__dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.45rem;
+    width: max-content;
+    max-width: 90%;
+    margin: 0.4rem auto 0;
+    padding: 0.45rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(var(--color-berry-rgb), 0.08);
+  }
+
+  &__dot {
+    flex: none;
+    width: 0.5rem;
+    height: 0.5rem;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    cursor: pointer;
+    background: rgba(var(--color-berry-rgb), 0.28);
+    transition: width 0.3s ease, background 0.3s ease;
+
+    &--active {
+      width: 1.3rem;
+      background: var(--color-berry);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-berry);
+      outline-offset: 2px;
+    }
+  }
+}
+
+.gal-card {
+  flex: 0 0 var(--gal-card-width);
+  min-width: 0;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+  opacity: 0.55;
+  transition: opacity 0.35s ease;
+
+  &--active {
+    opacity: 1;
+  }
+
+  &__inner {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+
+    &:focus-visible {
+      outline: 2px solid var(--color-berry);
+      outline-offset: 3px;
+    }
+  }
+
+  &__media {
+    display: block;
+    flex: none;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--color-berry) 20%, #fff);
+    box-shadow: 0 12px 28px rgba(var(--color-deep-rgb), 0.12);
+
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+  }
+
+  &__name {
+    margin: 0.85rem 0 0.2rem;
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--color-text-dark);
+    text-wrap: balance;
+  }
+
+  &__fact {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    line-height: 1.45;
+    color: var(--color-text);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+.gal-carousel--single .gal-card__inner {
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gal-card {
+    transition: none;
   }
 }

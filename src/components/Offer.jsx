@@ -3,40 +3,14 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import Button from './Button'
 import Icon from './Icon'
 import { useSection } from '../content/context'
-import { cleanPackageName } from '../data/packageStories'
+import PackageCarousel from './PackageCarousel'
 import './Offer.scss'
+import './PackageCarousel.scss'
 
 function tabLabelFor(category) {
   // stary skrót „MEZOTERAPII” mógł zostać zapisany w bazie – pokazujemy poprawną formę
   if (category.tabLabel) return category.tabLabel.replace(/^mezoterapii$/i, 'MEZOTERAPIA')
   return category.title.replace(/^PAKIET(Y)? /i, '')
-}
-
-function featuredIndexOf(packages) {
-  const list = packages ?? []
-  const marked = list.findIndex((pkg) => pkg.featured)
-  if (marked >= 0) return marked
-  if (list.length >= 3) return 1
-  if (list.length === 2) return 1
-  return 0
-}
-
-function PackagePricing({ price, was, save }) {
-  return (
-    <div
-      className="offer__pricing"
-      aria-label={`Cena pakietu ${price} złotych, zamiast ${was} złotych, oszczędzasz ${save} złotych`}
-    >
-      <p className="offer__price-main">
-        <span className="offer__price-value">{price}</span>
-        <span className="offer__price-currency">zł</span>
-      </p>
-      <p className="offer__price-was">
-        <span>zamiast</span> <s>{was} zł</s>
-      </p>
-      <p className="offer__price-save">oszczędzasz {save} zł</p>
-    </div>
-  )
 }
 
 function Offer({ onPackageInfo }) {
@@ -90,8 +64,6 @@ function Offer({ onPackageInfo }) {
 
   const active = categories[safeIndex]
   const packages = active?.packages ?? []
-  const packageCount = packages.length
-  const featuredIndex = featuredIndexOf(packages)
   const titleLead = content.titleLead ?? ''
   const titleAccent = (content.titleAccent ?? '').trim()
   const showAccent =
@@ -166,47 +138,13 @@ function Offer({ onPackageInfo }) {
                     exit={reduced ? undefined : { opacity: 0 }}
                     transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
                   >
-                    <ul
-                      className={`offer__packages offer__packages--count-${Math.min(packageCount, 3)}`}
-                    >
-                      {packages.map((pkg, index) => {
-                        const featured = index === featuredIndex
-                        return (
-                          <li
-                            key={pkg.id}
-                            className={`offer__package${featured ? ' offer__package--featured' : ''}`}
-                          >
-                            <div className="offer__package-inner">
-                              <h3 className="offer__package-name">{cleanPackageName(pkg.name)}</h3>
-                              <span className="offer__package-rule" aria-hidden="true">
-                                <i />
-                              </span>
-                              <div className="offer__package-body">
-                                {pkg.description ? (
-                                  <p className="offer__package-desc">{pkg.description}</p>
-                                ) : null}
-                                {pkg.items?.length ? (
-                                  <ul className="offer__package-items">
-                                    {pkg.items.map((item, itemIndex) => (
-                                      <li key={`${pkg.id}-${itemIndex}`}>{item}</li>
-                                    ))}
-                                  </ul>
-                                ) : null}
-                              </div>
-                              <PackagePricing price={pkg.price} was={pkg.was} save={pkg.save} />
-                              <Button
-                                variant={featured ? 'primary' : 'secondary'}
-                                block
-                                className="offer__package-cta"
-                                onClick={() => onPackageInfo?.(pkg, active)}
-                              >
-                                Dowiedz się więcej
-                              </Button>
-                            </div>
-                          </li>
-                        )
-                      })}
-                    </ul>
+                    <PackageCarousel
+                      key={active.id}
+                      packages={packages}
+                      category={active}
+                      autoPlay={!reduced}
+                      onPackageInfo={onPackageInfo}
+                    />
                   </motion.article>
                 )}
               </AnimatePresence>

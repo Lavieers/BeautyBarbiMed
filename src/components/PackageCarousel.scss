@@ -1,0 +1,239 @@
+// Karuzela pakietów na telefonie (patrz PackageCarousel.jsx).
+// Cały komponent wychodzi poza boczne marginesy sekcji (na pełną szerokość ekranu), a karty
+// są wyśrodkowane – widać skraje sąsiednich. Wymiary w `cqw` liczą się od tej pełnej szerokości,
+// więc nawet pojedyncza karta (bez przewijania) stoi dokładnie na środku.
+.pkg-carousel {
+  --pkg-card-width: min(60cqw, 21rem);
+  --pkg-side: calc((100cqw - var(--pkg-card-width)) / 2);
+
+  margin-inline: calc(var(--page-padding-x) * -1);
+  container-type: inline-size;
+
+  &__track {
+    position: relative; // punkt odniesienia dla offsetLeft kart
+    display: flex;
+    gap: 0.8rem;
+    list-style: none;
+    margin: 0;
+    padding: 0.25rem var(--pkg-side) 0.9rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--pkg-side);
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+}
+
+// Jedyny pakiet w kategorii (np. „Uroda na 4 tygodnie”): karta i tekst stoją na środku.
+.pkg-carousel--single {
+  .pkg-card__inner {
+    text-align: center;
+  }
+
+  .pkg-card__text {
+    text-wrap: balance;
+  }
+}
+
+// Karta: zdjęcie z lekko zaokrąglonymi rogami, pod nim tekst na przezroczystym tle (bez ramki).
+.pkg-card {
+  flex: 0 0 var(--pkg-card-width);
+  min-width: 0;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+  opacity: 0.55;
+  transition: opacity 0.35s ease;
+
+  &--active {
+    opacity: 1;
+  }
+
+  &__inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  &__media {
+    position: relative;
+    flex: none;
+    aspect-ratio: 6 / 5;
+    overflow: hidden;
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--color-berry) 20%, #fff);
+    box-shadow: 0 12px 28px rgba(var(--color-deep-rgb), 0.12);
+
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+  }
+
+  // białe plakietki na zdjęciu: „Szczegóły” z lewej, cena z prawej
+  &__chip {
+    position: absolute;
+    bottom: 0.55rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.38rem 0.6rem;
+    border: 0;
+    border-radius: 6px;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    line-height: 1.1;
+    color: var(--color-text-dark);
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+    &--more {
+      left: 0.55rem;
+      cursor: pointer;
+
+      &:focus-visible {
+        outline: 2px solid var(--color-berry);
+        outline-offset: 2px;
+      }
+    }
+
+    &--price {
+      right: 0.55rem;
+      font-weight: 600;
+      color: var(--color-berry);
+    }
+  }
+
+  &__dot {
+    flex: none;
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 50%;
+    background: var(--color-berry);
+  }
+
+  &__name {
+    margin: 0.7rem 0 0.25rem;
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    text-transform: none;
+    color: var(--color-text-dark);
+    text-wrap: balance;
+  }
+
+  &__text {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.45;
+    color: var(--color-text);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+.pkg-carousel__dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.45rem;
+  width: max-content;
+  margin: 0.4rem auto 0;
+  padding: 0.45rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(var(--color-berry-rgb), 0.08);
+}
+
+.pkg-carousel__dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  background: rgba(var(--color-berry-rgb), 0.28);
+  transition: width 0.3s ease, background 0.3s ease;
+
+  &--active {
+    width: 1.3rem;
+    background: var(--color-berry);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-berry);
+    outline-offset: 2px;
+  }
+}
+
+// Komputer i duże ekrany: pakiety nie ruszają się – stoją w jednym rzędzie, wszystkie karty mają ten
+// sam stały wymiar (zdjęcie, nazwa i opis o stałej wysokości), a żadna nie jest przygaszona.
+// Dzięki temu po zmianie kategorii strona nie skacze. Sklonowane karty (potrzebne tylko na telefonie)
+// są schowane, a kropki i przewijanie wyłączone.
+@media (min-width: 901px) {
+  .pkg-carousel {
+    // 16,8 rem, ale nigdy szerzej niż 1/3 dostępnego miejsca – trzy karty zawsze stoją w jednym rzędzie
+    // (bez tego na węższym pasie czwarta „nie mieści się” i trzecia spada do drugiego rzędu)
+    --pkg-card-width: min(16.8rem, calc((100cqw - 2 * 1.2rem - 1px) / 3));
+
+    margin-inline: 0;
+
+    &__track {
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1.2rem;
+      padding: 0.25rem 0 0.9rem;
+      overflow: visible;
+      scroll-snap-type: none;
+    }
+  }
+
+  .pkg-card {
+    scroll-snap-align: none;
+    opacity: 1;
+    transition: none;
+
+    &--clone {
+      display: none;
+    }
+
+    &__name {
+      min-height: 2.4em;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    &__text {
+      min-height: calc(3 * 1.45em);
+    }
+  }
+}
+
+// Szerszy monitor niż laptop 15,7″: trzy karty dzielą całą szerokość rzędu, nie zostają wąskim paskiem na środku.
+@media (min-width: 1600px) {
+  .pkg-carousel {
+    --pkg-card-width: calc((100cqw - 2 * 1.2rem - 1px) / 3);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pkg-card {
+    transition: none;
+  }
+}

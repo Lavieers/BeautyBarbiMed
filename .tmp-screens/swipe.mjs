@@ -1,0 +1,21 @@
+import puppeteer from 'puppeteer-core'
+const edge = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe'
+const browser = await puppeteer.launch({ executablePath: edge, headless: true })
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
+const page = await browser.newPage()
+await page.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true, deviceScaleFactor: 2 })
+await page.goto('http://localhost:5173/', { waitUntil: 'networkidle0' })
+await sleep(1000)
+await page.evaluate(() => document.querySelector('.pricing button').scrollIntoView({block:'center'}))
+await sleep(500)
+await page.evaluate(() => document.querySelector('.pricing button').click())
+await sleep(900)
+const state = () => page.evaluate(() => (document.querySelector('.package-modal__title')?.textContent ?? 'CLOSED') + ' | ' + document.querySelector('.package-modal__nav span')?.textContent)
+const swipe = async (x1, y1, x2, y2) => { await page.touchscreen.touchStart(x1, y1); await page.touchscreen.touchMove((x1+x2)/2, (y1+y2)/2); await page.touchscreen.touchMove(x2, y2); await page.touchscreen.touchEnd(); await sleep(800) }
+console.log('start', await state())
+await swipe(300, 600, 80, 610); console.log('left', await state())
+await swipe(300, 600, 80, 610); console.log('left', await state())
+await swipe(120, 600, 340, 610); console.log('right', await state())
+await swipe(200, 700, 190, 450); console.log('vertical (no change)', await state())
+await swipe(200, 600, 170, 600); console.log('short (no change)', await state())
+await browser.close()

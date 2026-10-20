@@ -190,10 +190,11 @@
     width: 2.75rem;
     height: 2.75rem;
     padding: 0;
-    background: rgba(var(--color-cream-rgb), 0.7);
-    border: 1px solid rgba(var(--color-gold-rgb), 0.55);
+    background: transparent;
+    border: 0;
     border-radius: var(--radius);
     cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
 
     span {
       display: block;

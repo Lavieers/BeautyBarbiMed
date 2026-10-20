@@ -1,12 +1,13 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
-import { Link } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 import { isSupabaseConfigured } from '../lib/supabase'
 
 import { signOut, useAdminSession } from './auth'
 
 import { adminNavItems } from './adminNav'
+import { pathForSection, sectionFromPathname } from './adminRoutes'
 import { useAdminHomeMeta } from './useAdminDashboard'
 
 import AdminIcon from './AdminIcon'
@@ -17,6 +18,7 @@ import AdminHome from './AdminHome'
 
 import AdminPageHeader from './AdminPageHeader'
 import { formatAdminDate } from './formatAdminDate'
+import { pageDescriptionParts } from './formatPageDescription'
 
 import './Admin.scss'
 import './AdminDashboard.scss'
@@ -27,9 +29,46 @@ function Admin() {
 
   const { loading, session, isAdmin } = useAdminSession()
 
-  const [activeId, setActiveId] = useState('home')
+  const location = useLocation()
+  const navigate = useNavigate()
+  const section = sectionFromPathname(location.pathname)
+  const activeId = section ?? 'home'
 
   const { pendingReviewCount } = useAdminHomeMeta()
+
+  // Na telefonie menu boczne rozwija się z góry jako „hamburger”.
+  const [menuOpen, setMenuOpen] = useState(false)
+
+  const goToSection = (id) => {
+    navigate(pathForSection(id))
+    setMenuOpen(false)
+  }
+
+  // Nieznany segment w URL (np. literówka) → wracamy na Przegląd.
+  useEffect(() => {
+    if (section !== null) return
+    if (!location.pathname.startsWith('/admin')) return
+    navigate('/admin', { replace: true })
+  }, [section, location.pathname, navigate])
+
+  useEffect(() => {
+    if (!menuOpen) return undefined
+    const onKey = (event) => {
+      if (event.key === 'Escape') setMenuOpen(false)
+    }
+    const onResize = () => {
+      if (window.innerWidth > 820) setMenuOpen(false)
+    }
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    window.addEventListener('keydown', onKey)
+    window.addEventListener('resize', onResize)
+    return () => {
+      document.body.style.overflow = prevOverflow
+      window.removeEventListener('keydown', onKey)
+      window.removeEventListener('resize', onResize)
+    }
+  }, [menuOpen])
 
 
 
@@ -109,9 +148,17 @@ function Admin() {
 
   return (
 
-    <div className="adm">
+    <div className={`adm${menuOpen ? ' adm--menu-open' : ''}`}>
 
-      <aside className="adm__sidebar">
+      <button
+        type="button"
+        className="adm__backdrop"
+        aria-label="Zamknij menu"
+        tabIndex={-1}
+        onClick={() => setMenuOpen(false)}
+      />
+
+      <aside className="adm__sidebar" id="adm-sidebar">
 
         <div className="adm__brand">
 
@@ -135,7 +182,7 @@ function Admin() {
 
               className={`adm-nav__link${item.id === activeId ? ' adm-nav__link--active' : ''}`}
 
-              onClick={() => setActiveId(item.id)}
+              onClick={() => goToSection(item.id)}
 
             >
 
@@ -179,6 +226,19 @@ function Admin() {
 
         <header className="adm__mobile-bar">
 
+          <button
+            type="button"
+            className="adm__burger"
+            aria-label={menuOpen ? 'Zamknij menu' : 'Otwórz menu'}
+            aria-expanded={menuOpen}
+            aria-controls="adm-sidebar"
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            <span />
+            <span />
+            <span />
+          </button>
+
           <p className="adm__mobile-title">{active.label}</p>
 
           <Link to="/" className="adm-btn adm-btn--quiet">
@@ -189,7 +249,25 @@ function Admin() {
 
         </header>
 
-
+        {active.pageDescription ? (
+          <div className="adm__mobile-desc">
+            {String(active.pageDescription)
+              .split('\n')
+              .map((line) => line.trim())
+              .filter(Boolean)
+              .map((line, lineIndex) => (
+                <p key={lineIndex}>
+                  {pageDescriptionParts(line).map((part, index) =>
+                    part.type === 'strong' ? (
+                      <strong key={index}>{part.text}</strong>
+                    ) : (
+                      <span key={index}>{part.text}</span>
+                    ),
+                  )}
+                </p>
+              ))}
+          </div>
+        ) : null}
 
         <AdminPageHeader
           kicker={activeId === 'home' ? formatAdminDate() : undefined}
@@ -228,7 +306,7 @@ function Admin() {
 
           ) : (
 
-            <AdminHome onSelect={(id) => setActiveId(id)} />
+            <AdminHome onSelect={goToSection} />
 
           )}
 

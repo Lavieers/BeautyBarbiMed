@@ -72,6 +72,13 @@ function ignoreNoopWrites() {
 
 // https://vite.dev/config/
 export default defineConfig({
+  server: {
+    host: true,
+    allowedHosts: true,
+    hmr: {
+      clientPort: 443,
+    },
+  },
   plugins: [react(), ignoreNoopWrites()],
   build: {
     rolldownOptions: {

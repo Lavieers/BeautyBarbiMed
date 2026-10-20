@@ -262,6 +262,12 @@
     grid-row: 2;
   }
 
+  // Podpowiedź musi być w osobnym wierszu pod polami – inaczej nachodziła na pierwsze pole.
+  .adm-gallery__modal-hint {
+    grid-column: 1;
+    grid-row: 3;
+  }
+
   .adm-modal__panel--gallery .adm-modal__body {
     overflow-y: auto;
   }

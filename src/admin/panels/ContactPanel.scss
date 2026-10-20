@@ -146,9 +146,8 @@
     justify-content: center;
     width: 2.15rem;
     height: 2.15rem;
-    background: rgba(var(--krem-rgb), 0.85);
-    border: 1px solid rgba(var(--zloto-rgb), 0.35);
-    border-radius: 50%;
+    background: transparent;
+    border: 0;
     color: var(--bordo);
   }
 
@@ -232,5 +231,62 @@
 
   .adm-contact__stage--map .adm-contact__map {
     min-height: 12rem;
+  }
+}
+
+// Telefon / tablet: wszystko układa się naturalnie jeden pod drugim
+// (bez stałych wysokości wierszy i wewnętrznego przewijania, które powodowały nachodzenie tekstu).
+@media (max-width: 900px) {
+  .adm-contact {
+    flex: none;
+    min-height: auto;
+
+    &__grid {
+      flex: none;
+      grid-template-rows: auto;
+      overflow: visible;
+    }
+
+    &__stage {
+      overflow: visible;
+    }
+
+    &__body {
+      grid-template-rows: none;
+      grid-auto-rows: auto;
+      overflow: visible;
+    }
+
+    &__block--hours,
+    &__block--social {
+      min-height: auto;
+    }
+
+    &__block--hours .adm-list {
+      flex: none;
+    }
+
+    &__block--social {
+      gap: 0.65rem;
+    }
+
+    &__row {
+      gap: 0.75rem;
+    }
+
+    &__stage--map .adm-contact__map-wrap {
+      flex: none;
+    }
+
+    // Mapa dwa razy wyższa niż wcześniej (12rem → 24rem).
+    &__stage--map .adm-contact__map {
+      flex: none;
+      height: 24rem;
+      min-height: 24rem;
+    }
+
+    &__save {
+      margin-top: 0.85rem;
+    }
   }
 }

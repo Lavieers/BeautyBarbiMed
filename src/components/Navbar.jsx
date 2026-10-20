@@ -125,7 +125,7 @@ function Navbar({ onBook }) {
           >
             {contact.phone || '+48 501 280 578'}
           </a>
-          <Button variant="primary" size="compact" onClick={onBook}>
+          <Button variant="cta-primary" size="compact" onClick={onBook}>
             Umów wizytę
           </Button>
 
@@ -165,7 +165,7 @@ function Navbar({ onBook }) {
 
         <div className="navbar__drawer-actions">
           <Button
-            variant="primary"
+            variant="cta-primary"
             block
             onClick={() => {
               closeMenu()

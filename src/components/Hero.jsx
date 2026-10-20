@@ -17,6 +17,13 @@ const HIGHLIGHT_DEFAULTS = [
   { id: 'location', primary: 'Lublin', secondary: 'ul. Romera 30' },
 ]
 
+// Na telefonach pokazujemy tylko wybrane atuty (+ jeden dodatkowy, widoczny wyłącznie na mobile).
+const MOBILE_HIGHLIGHT_IDS = ['nurse']
+const MOBILE_EXTRA_HIGHLIGHT = {
+  primary: 'Indywidualne podejście',
+  secondary: 'kameralny gabinet',
+}
+
 const LOCATION_HIGHLIGHT = HIGHLIGHT_DEFAULTS.find((row) => row.id === 'location')
 
 function normalizeHighlight(item) {
@@ -100,13 +107,22 @@ function Hero({ onBook }) {
           aria-label="Atuty gabinetu"
         >
           {highlights.map((item) => (
-            <li key={item.id} className="hero__highlight-item">
+            <li
+              key={item.id}
+              className={`hero__highlight-item${
+                MOBILE_HIGHLIGHT_IDS.includes(item.id) ? ' hero__highlight-item--mobile' : ''
+              }`}
+            >
               <span className="hero__highlight-primary">{item.primary}</span>
               {item.secondary ? (
                 <span className="hero__highlight-secondary">{item.secondary}</span>
               ) : null}
             </li>
           ))}
+          <li className="hero__highlight-item hero__highlight-item--mobile hero__highlight-item--mobile-only">
+            <span className="hero__highlight-primary">{MOBILE_EXTRA_HIGHLIGHT.primary}</span>
+            <span className="hero__highlight-secondary">{MOBILE_EXTRA_HIGHLIGHT.secondary}</span>
+          </li>
         </motion.ul>
 
         <motion.div
@@ -114,11 +130,11 @@ function Hero({ onBook }) {
           {...fadeUp}
           transition={{ duration: 0.95, delay: 0.28, ease: [0.22, 1, 0.36, 1] }}
         >
-          <Button variant="booking" onClick={onBook}>
+          <Button variant="cta-primary" onClick={onBook}>
             {primaryLabel}
           </Button>
 
-          <Button variant="secondary" href="#oferta">
+          <Button variant="cta-secondary" href="#oferta">
             {secondaryLabel}
           </Button>
         </motion.div>

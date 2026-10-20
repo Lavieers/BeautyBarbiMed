@@ -1,0 +1,217 @@
+﻿// Okna dodawania i edycji pakietu. Rozmiar okna jest stały – nagłówek i przyciski zostają na miejscu,
+// przewija się tylko treść, a rezerwowane miejsce na pasek przewijania nie pozwala jej „skakać”.
+
+.adm-modal__panel.adm-pkg-modal {
+  &--add {
+    width: min(34rem, 100%);
+    max-height: calc(100svh - 2.5rem);
+  }
+
+  &--edit {
+    width: min(60rem, 100%);
+    height: min(54rem, calc(100svh - 2.5rem));
+  }
+
+  @media (min-width: 1600px) {
+    &--edit {
+      width: min(84rem, calc(100vw - 2.5rem));
+    }
+  }
+
+  .adm-modal__head {
+    flex: none;
+  }
+
+  .adm-pkg-modal__body {
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+  }
+
+  // przyciski zawsze widoczne pod przewijaną treścią
+  .adm-pkg-modal__foot {
+    flex: none;
+    align-items: center;
+    margin: 0;
+    padding: 0.85rem 1.15rem;
+    background: #fff;
+  }
+}
+
+// Pola w oknach pakietu: zaokrąglone, o połowę niższe, z bardziej przezroczystym tłem.
+.adm-pkg-modal {
+  .adm-field {
+    gap: 0.2rem;
+  }
+
+  .adm-field__label {
+    font-size: 0.75rem;
+  }
+
+  .adm-input {
+    padding: 0.3rem 0.65rem;
+    font-size: 0.8125rem;
+    line-height: 1.3;
+    background: rgba(var(--krem-rgb), 0.7);
+    border: 1px solid rgba(var(--zloto-rgb), 0.28);
+    border-radius: 14px;
+
+    &:focus {
+      background: rgba(255, 255, 255, 0.85);
+    }
+
+    &--area {
+      min-height: 0;
+      border-radius: 14px;
+    }
+  }
+
+  .adm-btn {
+    padding-block: 0.3rem;
+    font-size: 0.8125rem;
+  }
+}
+
+.adm-pkg-modal__hint {
+  flex: 1 1 14rem;
+  order: 2;
+  min-width: 0;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: var(--color-deep-soft);
+}
+
+.adm-pkg-modal__add {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 1rem 1.15rem 1.15rem;
+}
+
+.adm-pkg-modal__price {
+  max-width: 12rem;
+}
+
+.adm-pkg-modal__prices {
+  align-items: flex-end;
+}
+
+.adm-pkg-modal__error {
+  flex: 1 1 100%;
+  order: 3;
+}
+
+// ── Zdjęcie pakietu ───────────────────────────────────────────────────────────
+
+.adm-pkg-photo {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+
+  &__thumb {
+    flex: none;
+    width: 5.5rem;
+    aspect-ratio: 6 / 5;
+    object-fit: cover;
+    background: var(--color-pink-soft);
+    border-radius: 12px;
+  }
+
+  &__side {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    min-width: 0;
+  }
+}
+
+// ── Okno edycji: opis karty + okno „Dowiedz się więcej” do pisania ────────────
+
+.pkg-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.85rem 1.15rem 1.15rem;
+
+  // opis widoczny wyłącznie na karcie pakietu na stronie głównej
+  &__strip {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0;
+  }
+
+  &__strip-label {
+    flex: none;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-deep-soft);
+  }
+
+  &__strip .adm-input {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  &__stage {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  // na telefonie okno jest w prawdziwej wielkości, a całość przewija się razem
+  &__card--flow {
+    margin-inline: auto;
+  }
+}
+
+@media (max-width: 40rem) {
+  .pkg-editor__strip {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.25rem;
+  }
+}
+
+// bez cienia za oknem – w panelu wyglądał jak ucięte, szare tło
+.pkg-editor .package-modal.pkg-editor__card {
+  box-shadow: none;
+
+  // etykiety cen wychodzą poza wiersz – bez zmiany wysokości (podgląd się nie przeskalowuje)
+  .package-modal__footer,
+  .package-modal__price,
+  .package-modal__price-main,
+  .package-modal__price-info {
+    overflow: visible;
+  }
+
+  .package-modal__footer {
+    align-items: start;
+  }
+
+  .package-modal__contact {
+    align-self: center;
+  }
+}
+
+@media (min-width: 60rem) {
+  // okno ma stałą wysokość – podgląd dopasowuje się do niej, więc nic się nie przewija
+  .adm-pkg-modal--edit .adm-pkg-modal__body {
+    overflow: hidden;
+  }
+
+  .pkg-editor {
+    height: 100%;
+
+    // okno ma dokładnie taką wysokość jak na stronie (ta sama reguła co w PackageModal.scss),
+    // a dopiero całość jest pomniejszana do miejsca w panelu
+    &__card {
+      margin: 0;
+    }
+  }
+}

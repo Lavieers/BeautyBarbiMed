@@ -148,6 +148,7 @@ section.skin-guide {
     min-height: 0;
     height: 100%;
     min-width: 0;
+    scroll-margin-top: calc(var(--navbar-height-compact) + var(--notice-height, 0px) + 0.75rem);
   }
 
   &__display .skin-guide__card {

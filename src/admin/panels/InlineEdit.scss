@@ -1,0 +1,331 @@
+// Edycja bezpośrednio w oknie pakietu. Okno podglądu ma wyłączone klikanie (pointer-events: none),
+// więc tu włączamy je tylko dla pól i przycisków, które służą do edycji.
+
+// Ramka pola jest tylko obwódką – miejsce zajmuje sam tekst, tak jak na stronie.
+.pkg-inline-field {
+  position: relative;
+  display: block;
+  min-width: 0;
+  border-radius: 4px;
+  outline: 1px dashed rgba(var(--pm-gold-rgb), 0.4);
+  outline-offset: 2px;
+  transition: outline-color 0.15s ease;
+
+  &:hover {
+    outline-color: rgba(var(--pm-gold-rgb), 0.7);
+  }
+
+  &:focus-within {
+    outline: 1px solid rgba(var(--pm-gold-rgb), 0.95);
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  &__sizer {
+    display: block;
+
+    &--empty {
+      color: rgba(255, 255, 255, 0.3);
+      text-transform: none;
+      letter-spacing: 0;
+    }
+  }
+}
+
+.pkg-inline {
+  // Pole leży na tekście i nie wchodzi do układu (inaczej okno w panelu zapełniałoby się
+  // szybciej niż to na stronie – textarea jest od tekstu szersza i wyższa).
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  text-align: inherit;
+  line-height: inherit;
+  white-space: normal;
+  color: transparent;
+  caret-color: rgba(255, 255, 255, 0.95);
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+  outline: none;
+  resize: none;
+  overflow: hidden;
+  pointer-events: auto;
+  user-select: text;
+
+  &--number {
+    position: relative;
+    inset: auto;
+    display: inline-block;
+    width: auto;
+    height: 1em;
+    margin: 0;
+    padding: 0 0.15em;
+    text-align: center;
+    line-height: 1;
+    vertical-align: baseline;
+    color: inherit;
+    caret-color: auto;
+    white-space: nowrap;
+    background: rgba(255, 255, 255, 0.05);
+    outline: 1px dashed rgba(var(--pm-gold-rgb), 0.4);
+    outline-offset: 1px;
+    appearance: textfield;
+    -moz-appearance: textfield;
+
+    &:hover {
+      outline-color: rgba(var(--pm-gold-rgb), 0.7);
+    }
+
+    &:focus {
+      background: rgba(255, 255, 255, 0.1);
+      outline: 1px solid rgba(var(--pm-gold-rgb), 0.95);
+    }
+
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      margin: 0;
+      -webkit-appearance: none;
+    }
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.35);
+    }
+  }
+}
+
+// Podpowiedź tylko przy polach ceny: nie rozpycha wiersza, widać ją po najechaniu lub skupieniu.
+.pkg-num {
+  position: relative;
+  display: inline-block;
+  vertical-align: baseline;
+  pointer-events: auto;
+
+  &__tip {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 0.4rem);
+    z-index: 6;
+    width: max-content;
+    max-width: 14rem;
+    padding: 0.28rem 0.6rem;
+    font-family: 'Montserrat', var(--font-body), sans-serif;
+    font-size: 0.68rem;
+    font-weight: 600;
+    font-style: normal;
+    line-height: 1.2;
+    letter-spacing: 0.01em;
+    text-align: center;
+    text-decoration: none;
+    text-transform: none;
+    white-space: nowrap;
+    color: #2a0f1a;
+    background: rgba(var(--pm-gold-rgb), 0.96);
+    border-radius: 999px;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28);
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-50%) translateY(0.15rem);
+    transition: opacity 0.15s ease, transform 0.15s ease;
+  }
+
+  &:hover &__tip,
+  &:focus-within &__tip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  &--below &__tip {
+    bottom: auto;
+    top: calc(100% + 0.35rem);
+  }
+}
+
+// cena w pakiecie obok „PLN” – etykieta absolutna (bez zmiany wysokości stopki)
+.package-modal__price-main {
+  position: relative;
+  z-index: 2;
+  overflow: visible;
+  white-space: nowrap;
+
+  .pkg-num__tip {
+    margin-left: 0;
+    font-family: 'Montserrat', var(--font-body), sans-serif;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: #2a0f1a;
+    background: rgba(var(--pm-gold-rgb), 0.96);
+  }
+
+  .pkg-num--main-price.pkg-num--below .pkg-num__tip {
+    top: calc(100% + 0.45rem);
+    z-index: 30;
+  }
+
+  .pkg-inline--number {
+    // ta sama wielkość co kwota na stronie: dziedziczy krój i rozmiar nagłówka, bez obcinania cyfr
+    height: auto;
+    padding: 0 0.12em;
+    font-size: 1em;
+    font-weight: inherit;
+    line-height: 1;
+    text-align: center;
+    vertical-align: baseline;
+  }
+}
+
+// cena bez pakietu (przekreślona) i oszczędność – w tym samym rzędzie i rozmiarze co na stronie
+.package-modal__price-info {
+  position: relative;
+  z-index: 1;
+  overflow: visible;
+
+  .pkg-num__tip {
+    z-index: 20;
+  }
+
+  .pkg-inline--strike {
+    text-decoration: line-through;
+    text-decoration-thickness: 1px;
+  }
+}
+
+// ostrzeżenie: tekst nie mieści się w oknie, więc na stronie pojawi się pasek przewijania
+.pkg-overflow-warn {
+  position: absolute;
+  top: calc(clamp(1.5rem, 2.8vw, 2.2rem) + 2.7rem);
+  left: 50%;
+  z-index: 4;
+  width: max-content;
+  max-width: calc(100% - 3rem);
+  padding: 0.4rem 0.8rem;
+  font-size: 0.7rem;
+  line-height: 1.35;
+  text-align: center;
+  color: #fff;
+  background: rgba(163, 40, 63, 0.92);
+  border-radius: 10px;
+  transform: translateX(-50%);
+}
+
+// Przyciski zabiegu leżą na tekście, nie obok niego – inaczej nazwa byłaby węższa niż na stronie
+// i zawijałaby się wcześniej.
+.pkg-step-head {
+  position: relative;
+}
+
+.pkg-step-tools {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 2;
+  display: flex;
+  gap: 0.2rem;
+  pointer-events: auto;
+
+  button {
+    display: grid;
+    place-items: center;
+    width: 1.1rem;
+    height: 1.1rem;
+    padding: 0;
+    font-size: 0.7rem;
+    line-height: 1;
+    color: rgba(255, 255, 255, 0.75);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(var(--pm-gold-rgb), 0.3);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+
+    &:hover:not(:disabled) {
+      color: #2a0f1a;
+      background: rgba(var(--pm-gold-rgb), 0.9);
+    }
+
+    &:disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+  }
+}
+
+// widoczny tylko, gdy lista zabiegów jest pusta (kolejne dodaje „+” przy zabiegu)
+.pkg-inline-add {
+  margin: 0.2rem 0 0;
+  padding: 0.3rem 0.8rem;
+  font: inherit;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: rgba(var(--pm-gold-rgb), 0.95);
+  background: transparent;
+  border: 1px dashed rgba(var(--pm-gold-rgb), 0.5);
+  border-radius: 999px;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: rgba(var(--pm-gold-rgb), 0.14);
+  }
+}
+
+// przyciski zdjęcia: szklane plakietki u góry zdjęcia
+.pkg-photo-tools {
+  position: absolute;
+  top: clamp(1.5rem, 2.8vw, 2.2rem);
+  left: 50%;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  width: max-content;
+  max-width: calc(100% - 3rem);
+  transform: translateX(-50%);
+  pointer-events: auto;
+
+  &__row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.35rem;
+  }
+
+  button {
+    padding: 0.4rem 0.9rem;
+    font: inherit;
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.92);
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 999px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+
+    &:hover:not(:disabled) {
+      color: #2a0f1a;
+      background: rgba(var(--pm-gold-rgb), 0.92);
+    }
+  }
+
+  &__error {
+    padding: 0.25rem 0.6rem;
+    font-size: 0.68rem;
+    color: #fff;
+    background: rgba(163, 40, 63, 0.9);
+    border-radius: 8px;
+  }
+}

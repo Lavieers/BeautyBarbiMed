@@ -1,4 +1,10 @@
 .adm-offer {
+  --adm-offer-pad: clamp(0.75rem, 2vw, 1.25rem);
+  // podgląd kart: domyślnie jak laptop; od 1600px — szerszy monitor
+  --adm-offer-preview-max: 54rem;
+  --adm-offer-preview-gutter: clamp(1.25rem, 2.5vw, 2rem);
+  --adm-offer-tabs-gap: clamp(1rem, 3vh, 2rem);
+
   position: relative;
   display: flex;
   flex: 1;
@@ -91,7 +97,13 @@
     display: flex;
     align-items: flex-start;
     justify-content: center;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 0.8125rem;
+    letter-spacing: 0.05em;
+    text-transform: none;
     text-align: center;
+    color: var(--color-deep-soft);
   }
 
   &__stage-inner {
@@ -99,9 +111,10 @@
     flex: 1;
     flex-direction: column;
     min-height: 0;
-    max-width: 68rem;
-    margin-inline: auto;
-    padding-inline: clamp(0.75rem, 2vw, 1.25rem);
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
+    padding-inline: var(--adm-offer-preview-gutter);
   }
 
   &__empty {
@@ -159,6 +172,7 @@
 
   &__save {
     flex-shrink: 0;
+    justify-content: center;
     align-items: center;
     min-height: 3.25rem;
     margin-top: 0.65rem;
@@ -199,7 +213,173 @@
 }
 
 @media (max-width: 900px) {
-  .adm-offer__save {
-    padding-right: 0;
+  // Telefon / tablet: karty układają się naturalnie, bez wewnętrznego przewijania.
+  .adm-offer {
+    flex: none;
+    min-height: auto;
+
+    &__stage {
+      flex: none;
+      min-width: 0;
+      margin-top: 0.5rem;
+    }
+
+    &__stage-inner {
+      flex: none;
+      // margin-inline:auto wyłącza rozciąganie – bez width zakładki (nowrap) rozpychały całą kartę.
+      width: 100%;
+      min-width: 0;
+    }
+
+    &__viewport,
+    &__viewport-main {
+      flex: none;
+      min-width: 0;
+      overflow: visible;
+    }
+
+    &__cards {
+      min-width: 0;
+    }
+
+    &__save {
+      padding-right: 0;
+    }
+  }
+
+  .adm-offer__stage .offer__package,
+  .adm-offer__stage .offer__package-inner,
+  .adm-offer__card-hit {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  // Zakładki jak na stronie głównej: zawijają się i są wyśrodkowane (bez przewijania w bok) –
+  // kategorię zmienia się przeciągnięciem palca w lewo/prawo po zakładkach.
+  .adm-offer__stage .offer__tabs {
+    flex-wrap: wrap;
+    justify-content: center;
+    overflow: visible;
+    touch-action: pan-y;
+  }
+
+  // Karuzela pakietów wypełnia szerokość kafelka (na stronie głównej wychodzi na całą szerokość ekranu).
+  .adm-offer__stage-inner {
+    padding-inline: var(--adm-offer-pad);
+  }
+
+  .adm-offer__stage .pkg-carousel {
+    margin-inline: calc(var(--adm-offer-pad) * -1);
+  }
+
+  .adm-offer__viewport-main {
+    display: block;
+  }
+}
+
+
+// Komputer: wyśrodkowany rząd kart z marginesem bocznym (bez limitu 16,8 rem ze strony głównej).
+@media (min-width: 901px) {
+  .adm-offer__stage {
+    padding-top: 0;
+  }
+
+  .adm-offer__stage .offer__tabs {
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: var(--adm-offer-tabs-gap);
+    padding-top: var(--adm-offer-tabs-gap);
+    padding-bottom: 0;
+    overflow-x: visible;
+  }
+
+  .adm-offer__viewport-main {
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  .adm-offer__viewport-main > .pkg-carousel {
+    flex: 0 1 auto;
+    width: min(100%, var(--adm-offer-preview-max));
+    min-width: 0;
+    max-width: var(--adm-offer-preview-max);
+    margin-inline: auto;
+    // jak na stronie głównej — nie szersze niż ~16,8 rem na kartę (15,7″ laptop)
+    --pkg-card-width: min(16.8rem, calc((100cqw - 2 * 1.2rem - 1px) / 3));
+  }
+}
+
+// Laptop i mniejszy desktop: bez wewnętrznego paska obcinającego karty, ciaśniejszy tekst
+@media (min-width: 901px) and (max-width: 1599.98px) {
+  .adm-offer__viewport-main {
+    flex: 0 1 auto;
+    overflow-x: hidden;
+    overflow-y: visible;
+    padding-bottom: 0.35rem;
+  }
+
+  .adm-offer__viewport {
+    flex: 0 1 auto;
+  }
+
+  .adm-offer__footnote {
+    min-height: 2rem;
+    padding-top: 0.35rem;
+  }
+
+  .adm-offer .pkg-card {
+    &__name {
+      font-size: 1rem;
+      min-height: 2.35em;
+    }
+
+    &__text {
+      font-size: 0.8125rem;
+      min-height: auto;
+    }
+
+    &__chip {
+      font-size: 0.75rem;
+      padding: 0.32rem 0.55rem;
+    }
+  }
+}
+
+@media (min-width: 1600px) {
+  .adm-offer {
+    --adm-offer-preview-max: 78rem;
+    --adm-offer-preview-gutter: clamp(2rem, 5vw, 4.5rem);
+  }
+
+  .adm-offer__viewport-main {
+    flex: 1 1 auto;
+    overflow-y: auto;
+  }
+
+  .adm-offer__viewport {
+    flex: 1 1 auto;
+  }
+
+  .adm-offer__viewport-main > .pkg-carousel {
+    --pkg-card-width: calc((100cqw - 2 * 1.5rem - 1px) / 3);
+
+    .pkg-carousel__track {
+      gap: 1.5rem;
+    }
+  }
+
+  .adm-offer .pkg-card {
+    .pkg-card__chip {
+      font-size: 0.875rem;
+      padding: 0.42rem 0.7rem;
+    }
+
+    .pkg-card__name {
+      font-size: 1.25rem;
+    }
+
+    .pkg-card__text {
+      font-size: 0.9375rem;
+    }
   }
 }

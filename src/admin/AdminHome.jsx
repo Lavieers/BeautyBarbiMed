@@ -1,7 +1,7 @@
 import AdminIcon from './AdminIcon'
 import { useAdminDashboard } from './useAdminDashboard'
 
-function DashTile({ id, icon, title, action, onOpen, scroll, compact, children }) {
+function DashTile({ id, icon, title, action, onOpen, compact, children }) {
   return (
     <article
       className={`adm-dash__tile adm-dash__tile--${id}${compact ? ' adm-dash__tile--compact' : ''}`}
@@ -14,7 +14,7 @@ function DashTile({ id, icon, title, action, onOpen, scroll, compact, children }
           <h2 className="adm-dash__title">{title}</h2>
           <span className="adm-dash__action">{action}</span>
         </header>
-        <div className={`adm-dash__body${scroll ? ' adm-dash__body--scroll' : ''}`}>{children}</div>
+        <div className="adm-dash__body">{children}</div>
       </button>
     </article>
   )
@@ -43,7 +43,7 @@ function AdminHome({ onSelect }) {
             id="portfolio"
             icon="portfolio"
             title="Portfolio"
-            action="Zobacz wszystkie ›"
+            action="Zarządzaj ›"
             onOpen={() => onSelect('portfolio')}
           >
             {data.galleryPreview.length === 0 ? (
@@ -64,7 +64,7 @@ function AdminHome({ onSelect }) {
             id="opinie"
             icon="reviews"
             title="Opinie"
-            action="Zobacz wszystkie ›"
+            action="Zarządzaj ›"
             onOpen={() => onSelect('opinie')}
           >
             {data.reviewSnippets.length === 0 ? (
@@ -87,7 +87,7 @@ function AdminHome({ onSelect }) {
             id="firma"
             icon="company"
             title="Dane firmy"
-            action="Edytuj ›"
+            action="Zarządzaj ›"
             onOpen={() => onSelect('firma')}
           >
             {contactRows.length === 0 ? (
@@ -148,8 +148,7 @@ function AdminHome({ onSelect }) {
         id="cennik"
         icon="pricing"
         title="Cennik zabiegów"
-        action="Zobacz cały cennik ›"
-        scroll
+        action="Zarządzaj ›"
         onOpen={() => onSelect('cennik')}
       >
         {data.priceRows.length === 0 ? (
@@ -172,8 +171,7 @@ function AdminHome({ onSelect }) {
         id="pakiety"
         icon="packages"
         title="Pakiety"
-        action="Zobacz wszystkie ›"
-        scroll
+        action="Zarządzaj ›"
         onOpen={() => onSelect('pakiety')}
       >
         {data.packages.length === 0 ? (

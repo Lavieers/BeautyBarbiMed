@@ -263,7 +263,7 @@
     width: 2.1rem;
     height: 2.1rem;
     background: rgba(255, 255, 255, 0.82);
-    border: 1px solid rgba(var(--zloto-rgb), 0.32);
+    border: 0;
     border-radius: calc(var(--dash-radius) - 2px);
   }
 
@@ -297,14 +297,6 @@
   &__body {
     flex: 1;
     min-height: 0;
-
-    &--scroll {
-      max-height: min(28rem, 55vh);
-      overflow: auto;
-      padding-right: 0.2rem;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(var(--zloto-rgb), 0.45) transparent;
-    }
   }
 
   &__empty {
@@ -345,6 +337,11 @@
 
       @media (max-width: 720px) {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+
+        // Na telefonie w przeglądzie wystarczą dwa zdjęcia.
+        li:nth-child(n + 3) {
+          display: none;
+        }
       }
     }
   }

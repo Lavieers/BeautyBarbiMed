@@ -133,87 +133,6 @@
     color: #a3283f;
   }
 
-  // ── Okno edycji pozycji: formularz + podgląd okna „Dowiedz się więcej” ───────
-  &__editor {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 1.25rem;
-  }
-
-  // formularz jest zwarty – liczy się podgląd, więc pola mogą być małe
-  &__form {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-    min-width: 0;
-
-    .adm-field__label {
-      font-size: 0.75rem;
-    }
-
-    .adm-field__hint {
-      font-size: 0.7rem;
-      line-height: 1.35;
-    }
-
-    .adm-input {
-      padding: 0.35rem 0.55rem;
-      font-size: 0.8125rem;
-      line-height: 1.35;
-    }
-
-    .adm-input--area {
-      min-height: 2.9rem;
-      resize: vertical;
-    }
-
-    .adm-btn {
-      padding: 0.4rem 0.75rem;
-      font-size: 0.75rem;
-    }
-  }
-
-  // pole ceny z nieedytowalnym „zł” po prawej
-  &__price-input {
-    position: relative;
-    display: block;
-
-    .adm-input {
-      padding-right: 1.9rem;
-    }
-  }
-
-  &__price-unit {
-    position: absolute;
-    top: 50%;
-    right: 0.6rem;
-    transform: translateY(-50%);
-    font-size: 0.8125rem;
-    color: var(--color-deep-soft);
-    pointer-events: none;
-  }
-
-  &__pair {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
-    gap: 0.6rem;
-  }
-
-  // nagłówek części formularza dotyczącej okna zabiegu
-  &__section {
-    margin: 0.5rem 0 0.1rem;
-    padding-top: 0.6rem;
-    border-top: 1px solid rgba(var(--zloto-rgb), 0.34);
-  }
-
-  &__section-title {
-    margin: 0;
-    font-family: var(--font-heading);
-    font-size: 0.95rem;
-    font-weight: 500;
-    color: var(--bordo);
-  }
-
   // chwilowe podświetlenie świeżo dodanej pozycji
   &__row--flash td {
     animation: adm-pricing-flash 2.6s ease-out;
@@ -224,64 +143,11 @@
     margin-left: 0.4rem;
   }
 
-  // podgląd widać tylko na szerszych ekranach – na wąskich nie zmieściłby się obok formularza
-  &__preview {
-    display: none;
-    min-width: 0;
-  }
-
-  &__preview-title {
-    margin: 0 0 0.5rem;
-    font-size: 0.6875rem;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    color: var(--color-deep-soft);
-  }
-
-  // okno zawsze w prawdziwej wielkości, tu tylko pomniejszone do szerokości kolumny
-  &__scale {
-    position: relative;
-    width: 100%;
-    margin-bottom: 0.6rem;
-    overflow: hidden;
-    border-radius: var(--radius);
-    box-shadow: 0 10px 28px rgba(42, 33, 28, 0.18);
-  }
-
-  &__scale-inner {
-    width: 54rem;
-    transform-origin: top left;
-    pointer-events: none;
-    user-select: none;
-  }
-
-  &__preview-card {
-    margin: 0;
-  }
-
-  // stopka okna edycji: przyciski zawsze widoczne pod przewijaną treścią
-  &__modal-foot {
-    flex-shrink: 0;
-    margin: 0;
-    padding: 0.85rem 1.15rem;
-  }
 }
 
 @media (min-width: 60rem) {
-  .adm-modal__panel.adm-modal__panel--pricing {
-    width: min(72rem, 100%);
-  }
-
-  .adm-pricing__editor {
-    grid-template-columns: minmax(0, 24rem) minmax(0, 1fr);
-    align-items: start;
-  }
-
-  .adm-pricing__preview {
-    display: block;
-    position: sticky;
-    top: 0;
+  .adm-pkg-modal--edit .adm-pricing__modal-error {
+    margin-left: 0.4rem;
   }
 }
 

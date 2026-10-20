@@ -13,7 +13,6 @@ import Faq from './components/Faq'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
 import NoticeBanner from './components/NoticeBanner'
-import MobileBar from './components/MobileBar'
 import { useSection } from './content/context'
 import './App.scss'
 
@@ -106,7 +105,6 @@ function App() {
         <Contact onBook={openBooking} />
       </main>
       <Footer />
-      <MobileBar onBook={openBooking} />
       <Suspense fallback={null}>
         {bookingUsed && <BookingModal open={bookingOpen} onClose={closeBooking} />}
         {packageInfo.pkg && (

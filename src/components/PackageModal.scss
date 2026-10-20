@@ -23,7 +23,7 @@ $marker-gap: 1.5rem;
   grid-template-columns: minmax(0, 45fr) minmax(0, 55fr);
   grid-template-rows: minmax(0, 1fr);
   width: 100%;
-  max-width: 54rem;
+  max-width: var(--package-modal-width, 54rem);
   // na wysokich ekranach karta rośnie razem z tekstem
   height: min(clamp(44rem, 78svh, 58rem), calc(100svh - 2.5rem));
   overflow: hidden;
@@ -38,6 +38,16 @@ $marker-gap: 1.5rem;
   color: rgba(255, 255, 255, 0.9);
   font-family: var(--pm-font-body);
   outline: none;
+
+  // pionowo przewijamy treść, poziomo – przesunięciem palca zmieniamy pakiet/zabieg.
+  // Przewijane elementy same ograniczają touch-action, więc ustawiamy go też na nich –
+  // inaczej gest w bok mógłby cofać stronę w przeglądarce.
+  touch-action: pan-y;
+  .package-modal__content,
+  .package-modal__body {
+    touch-action: pan-y;
+    overscroll-behavior-x: contain;
+  }
 
   // przycisk zamknięcia: szkło na ciemnej karcie
   .booking__close {
@@ -166,6 +176,9 @@ $marker-gap: 1.5rem;
   &__body {
     flex: 1 1 auto;
     min-height: 0;
+    // Tylko pion. `clip` w poziomie, żeby 1 px różnicy (np. obwódka pola w panelu)
+    // nie dokładał poziomego paska, który zabiera wysokość i udaje nadmiar tekstu.
+    overflow-x: clip;
     overflow-y: auto;
     // lewy zapas, żeby poświata punktów nie była ucinana przez przewijany obszar
     margin-left: -1.2rem;
@@ -323,7 +336,8 @@ $marker-gap: 1.5rem;
     line-height: 1;
     color: rgba(255, 255, 255, 0.95);
 
-    span {
+    // tylko skrót waluty — nie etykiety pól ceny w panelu admina (.pkg-num__tip)
+    > span:not(.pkg-num) {
       margin-left: 0.15em;
       font-size: 0.42em;
       letter-spacing: 0.08em;
@@ -534,7 +548,7 @@ $marker-gap: 1.5rem;
     // opis ma się mieścić w oknie bez przewijania
     @media (max-width: 52rem) {
       .package-modal__media {
-        height: clamp(4.5rem, 10svh, 7rem);
+        height: clamp(13.5rem, 30svh, 21rem); // 3× wyższe zdjęcie niż wcześniej
       }
 
       .package-modal__content {
@@ -634,24 +648,44 @@ $marker-gap: 1.5rem;
     }
   }
 
-  // Okno zabiegu dopasowuje wysokość do treści, więc pasek z ceną i przyciskiem leży tuż pod nią
-  // (nie przy samym dole pustej karty). Górny limit jak w oknie pakietu – dłuższe teksty by się
-  // przewijały, ale przy obecnych opisach to się nie zdarza.
+  // Okno zabiegu na desktopie dopasowuje wysokość do treści (cena tuż pod opisem).
+  // Na telefonie ma stałą wysokość jak okno pakietu – treść przewija się w środku.
   &.package-modal--treatment {
+    touch-action: pan-y; // pionowo przewijamy treść, poziomo – przesunięciem zmieniamy zabieg
     height: auto;
     min-height: min(32rem, calc(100svh - 2.5rem));
     max-height: min(clamp(44rem, 78svh, 58rem), calc(100svh - 2.5rem));
 
     .package-modal__content {
       padding-bottom: clamp(1.4rem, 3.6svh, 2.2rem);
+      // przewijana treść sama ogranicza touch-action, więc ustawiamy go też tu – inaczej
+      // przesunięcie w bok mogłoby cofać stronę w przeglądarce zamiast zmieniać zabieg
+      touch-action: pan-y;
+      overscroll-behavior-x: contain;
     }
 
     @media (max-width: 52rem) {
-      min-height: 0;
+      // Wyższa specyficzność niż `height: auto` powyżej – jedna wysokość dla każdego zabiegu.
+      height: min(52rem, calc(100svh - 2.5rem));
+      min-height: min(52rem, calc(100svh - 2.5rem));
       max-height: min(52rem, calc(100svh - 2.5rem));
 
       .package-modal__content {
         padding-bottom: 1.3rem;
+        min-height: 0;
+        overflow: hidden;
+      }
+
+      .package-modal__body {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-x: clip;
+        overflow-y: auto;
+      }
+
+      .package-modal__important,
+      .package-modal__footer {
+        flex: none;
       }
     }
   }
@@ -702,6 +736,15 @@ $marker-gap: 1.5rem;
 
     .package-modal__call {
       width: 100%;
+    }
+  }
+
+  // Zabieg na telefonie: stałe zdjęcie (reguła ogólna wyżej je obniża) i stopka przy dole karty.
+  &.package-modal--treatment {
+    @media (max-width: 52rem) {
+      .package-modal__media {
+        height: clamp(13.5rem, 30svh, 21rem);
+      }
     }
   }
 

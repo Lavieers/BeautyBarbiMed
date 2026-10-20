@@ -64,6 +64,18 @@ function SkinGuide({ onBook, onTreatmentInfo }) {
   const options = content.options || []
   const [selectedId, setSelectedId] = useState(options[0]?.id || 'zmarszczki')
   const tabRefs = useRef([])
+  const displayRef = useRef(null)
+
+  // Na telefonie karta zabiegu leży pod listą zakładek – po kliknięciu przewijamy do niej,
+  // żeby było widać, co się zmieniło.
+  const selectByClick = (id) => {
+    setSelectedId(id)
+    if (!window.matchMedia('(max-width: 900px)').matches) return
+    displayRef.current?.scrollIntoView({
+      behavior: reduced ? 'auto' : 'smooth',
+      block: 'start',
+    })
+  }
 
   const current = options.find((opt) => opt.id === selectedId) || options[0]
   const treatmentIds =
@@ -129,7 +141,7 @@ function SkinGuide({ onBook, onTreatmentInfo }) {
                 aria-controls="skin-guide-panel"
                 tabIndex={isSelected ? 0 : -1}
                 className={`skin-guide__tab${isSelected ? ' skin-guide__tab--active' : ''}`}
-                onClick={() => setSelectedId(opt.id)}
+                onClick={() => selectByClick(opt.id)}
                 onKeyDown={(event) => moveTab(event, index, options, tabRefs, setSelectedId)}
               >
                 <span className="skin-guide__tab-marker" aria-hidden="true" />
@@ -140,6 +152,7 @@ function SkinGuide({ onBook, onTreatmentInfo }) {
           </div>
 
           <div
+            ref={displayRef}
             className="skin-guide__display"
             id="skin-guide-panel"
             role="tabpanel"

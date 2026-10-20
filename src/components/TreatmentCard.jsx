@@ -19,10 +19,17 @@ function Price({ value }) {
 // Wnętrze okna zabiegu: przycisk zamknięcia, zdjęcie i treść. Używa go okno na stronie
 // (TreatmentModal) oraz podgląd w panelu admina – dzięki temu oba wyglądają tak samo.
 // `still` wyłącza animacje wejścia (podgląd w panelu ma tylko się odświeżać).
-function TreatmentCard({ name, price, guide, nav, onBook, onClose, still = false }) {
+// `slots` pozwala panelowi admina podmienić miejsca na pola do pisania.
+function TreatmentCard({ name, price, guide, nav, onBook, onClose, still = false, slots = {} }) {
   const lines = treatmentTitleLines(name)
   const fade = still ? false : { opacity: 0 }
   const slide = still ? false : { opacity: 0, y: 6 }
+
+  const defaultSections = [
+    { title: 'Dla kogo', text: guide.forWhom },
+    { title: 'Efekty', text: guide.effects },
+    { title: 'Przeciwwskazania', text: guide.avoid },
+  ].filter((block) => block.text)
 
   return (
     <>
@@ -41,6 +48,7 @@ function TreatmentCard({ name, price, guide, nav, onBook, onClose, still = false
           animate={{ opacity: 1 }}
           transition={{ duration: 0.35 }}
         />
+        {slots.photoTools ?? null}
         {nav ? (
           <div className="package-modal__nav" role="group" aria-label="Przechodzenie między zabiegami">
             <button type="button" onClick={() => nav.go(-1)} aria-label="Poprzedni zabieg">
@@ -65,49 +73,54 @@ function TreatmentCard({ name, price, guide, nav, onBook, onClose, still = false
         <div className="package-modal__body">
           <p className="package-modal__kicker">Opis zabiegu</p>
           <h2 id="treatment-modal-title" className="package-modal__title">
-            {lines.map((line) => (
-              <span key={line} className="package-modal__title-line">
-                {line}
-              </span>
-            ))}
+            {slots.title ??
+              lines.map((line) => (
+                <span key={line} className="package-modal__title-line">
+                  {line}
+                </span>
+              ))}
           </h2>
 
-          {guide.duration ? (
-            <p className="package-modal__duration">
-              <Icon name="clock" />
-              {guide.duration}
-            </p>
-          ) : null}
+          {slots.duration ??
+            (guide.duration ? (
+              <p className="package-modal__duration">
+                <Icon name="clock" />
+                {guide.duration}
+              </p>
+            ) : null)}
 
-          {guide.what ? <p className="package-modal__what">{guide.what}</p> : null}
+          {slots.what ?? (guide.what ? <p className="package-modal__what">{guide.what}</p> : null)}
 
-          <div className="package-modal__sections">
-            {[
-              { title: 'Dla kogo', text: guide.forWhom },
-              { title: 'Efekty', text: guide.effects },
-              { title: 'Przeciwwskazania', text: guide.avoid },
-            ]
-              .filter((block) => block.text)
-              .map(({ title, text }) => (
+          {slots.sections ?? (
+            <div className="package-modal__sections">
+              {defaultSections.map(({ title, text }) => (
                 <section key={title} className="package-modal__block">
                   <h3 className="package-modal__block-title">{title}</h3>
                   <p className="package-modal__block-text">{text}</p>
                 </section>
               ))}
-          </div>
+            </div>
+          )}
         </div>
 
-        {guide.note ? (
-          <p className="package-modal__important">
-            <strong>Ważne</strong>
-            {guide.note}
-          </p>
-        ) : null}
+        {slots.note ??
+          (guide.note ? (
+            <p className="package-modal__important">
+              <strong>Ważne</strong>
+              {guide.note}
+            </p>
+          ) : null)}
 
         <footer className="package-modal__footer">
           <div className="package-modal__price">
             <p className="package-modal__price-main">
-              <Price value={price} />
+              {slots.price ? (
+                <>
+                  {slots.price} <span>PLN</span>
+                </>
+              ) : (
+                <Price value={price} />
+              )}
             </p>
           </div>
 

@@ -37,6 +37,7 @@ autorstwa magnific” z odnośnikiem do strony zdjęcia w serwisie.
 | `mezo-igla.webp` | Okno pakietu „Mezoterapia igłowa” |
 | `mezo-mikro.webp` | Okno pakietu „Mezoterapia mikroigłowa” |
 | `pedi-spa.webp` | Okno pakietu pedicure SPA |
+| `panny-mlodej.webp` | Okno pakietu „Panny młodej” |
 
 ## Unsplash
 
