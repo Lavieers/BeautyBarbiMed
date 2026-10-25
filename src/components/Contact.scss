@@ -6,9 +6,11 @@
   padding-bottom: clamp(1.65rem, 3.2vw, 2.35rem);
   background: var(--color-cream);
   --contact-pad-top: clamp(1.65rem, 3.2vw, 2.35rem);
-  // Miejsce, w którym po kliknięciu „Kontakt” ląduje góra sekcji.
+  /* Po hash: tytuł ~2,75 rem pod navbarem (minus górny padding sekcji) */
+  --contact-title-gap: 1rem;
   --contact-top: calc(
-    var(--navbar-height-compact) + var(--notice-height, 0px) + 0.75rem - var(--contact-pad-top)
+    var(--navbar-height-compact) + var(--notice-height, 0px) + var(--contact-title-gap) -
+      var(--contact-pad-top)
   );
 
   // Sekcja wypełnia dokładnie ekran – od miejsca zescrollowania do dołu okna.
@@ -54,7 +56,10 @@
     gap: clamp(0.85rem, 1.8vw, 1.35rem);
     align-items: stretch;
     flex: 1 1 auto; // wypełnia resztę wysokości sekcji (mapa rośnie razem z ekranem)
-    scroll-margin-top: calc(var(--navbar-height-compact) + var(--notice-height, 0px) + 0.5rem);
+    scroll-margin-top: calc(
+      var(--navbar-height-compact) + var(--notice-height, 0px) + 0.5rem -
+        var(--section-scroll-lift, 0px)
+    );
   }
 
   &__map-col {
@@ -263,6 +268,77 @@
     &__map {
       flex: none;
       height: clamp(12rem, 50vw, 18rem);
+    }
+  }
+
+  // Laptop: cała sekcja kontakt ~10% ciaśniejsza (szerokość, odstępy, typografia).
+  @media (min-width: 901px) and (max-height: 1100px),
+    (min-width: 901px) and (max-width: 1599.98px) {
+    --contact-pad-top: calc(clamp(1.65rem, 3.2vw, 2.35rem) * 0.9);
+    padding-top: var(--contact-pad-top);
+    padding-bottom: calc(clamp(1.65rem, 3.2vw, 2.35rem) * 0.9);
+
+    &__header {
+      max-width: min(46.8rem, 100%);
+      margin-bottom: calc(clamp(1.25rem, 2.4vw, 1.75rem) * 0.9);
+    }
+
+    &__ornament {
+      width: min(100%, 14.4rem);
+    }
+
+    &__title {
+      font-size: clamp(1.35rem, 0.32rem + 2.85vw, 2.205rem);
+    }
+
+    &__layout {
+      max-width: min(82.8rem, 100%);
+      gap: calc(clamp(0.85rem, 1.8vw, 1.35rem) * 0.9);
+    }
+
+    &__facts {
+      padding: calc(clamp(0.9rem, 1.6vw, 1.25rem) * 0.9)
+        calc(clamp(1rem, 1.8vw, 1.35rem) * 0.9);
+    }
+
+    &__fact {
+      gap: calc(0.85rem * 0.9);
+      padding: calc(0.85rem * 0.9) 0;
+    }
+
+    &__fact-icon {
+      width: calc(1.6rem * 0.9);
+      height: calc(1.6rem * 0.9);
+
+      svg {
+        width: calc(1.45rem * 0.9);
+        height: calc(1.45rem * 0.9);
+      }
+    }
+
+    &__fact-label {
+      font-size: calc(0.6875rem * 0.9);
+    }
+
+    &__fact-value {
+      font-size: 0.9rem;
+    }
+
+    &__fact-note {
+      font-size: calc(0.9375rem * 0.9);
+    }
+
+    &__fact-link {
+      font-size: calc(0.8125rem * 0.9);
+    }
+
+    &__social-link {
+      font-size: calc(0.8125rem * 0.9);
+    }
+
+    &__social-icon {
+      width: calc(1.15rem * 0.9);
+      height: calc(1.15rem * 0.9);
     }
   }
 }

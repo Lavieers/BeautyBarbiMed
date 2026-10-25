@@ -1,5 +1,5 @@
 import { Suspense, lazy, useCallback, useEffect, useState } from 'react'
-import useSectionScroll from './lib/useSectionScroll'
+import useSmoothAnchorScroll from './lib/useSmoothAnchorScroll'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import About from './components/About'
@@ -73,8 +73,7 @@ function App() {
     return () => window.clearTimeout(id)
   }, [])
 
-  // Kółko myszy przenosi od sekcji do sekcji (komputery, tylko strona publiczna).
-  useSectionScroll()
+  useSmoothAnchorScroll()
 
   return (
     <div className="app">

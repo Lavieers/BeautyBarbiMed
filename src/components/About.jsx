@@ -1,9 +1,10 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
 import salonImage from '../assets/salon.webp'
 import { useContactInfo, useSection } from '../content/context'
 import { sectionDefaults } from '../data/defaults'
 import Icon from './Icon'
+import { getAboutScrollMarginTop } from '../lib/aboutSectionScroll'
 import './About.scss'
 
 const aboutCopy = {
@@ -30,6 +31,26 @@ function About() {
   const reveal = (delay = 0) => reduced ? {} : { initial: { opacity: 0, y: 24 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: '-80px' }, transition: { duration: .85, delay, ease: [.22, 1, .36, 1] } }
   const imageReveal = reduced ? {} : { initial: { opacity: 0, scale: 1.06 }, whileInView: { opacity: 1, scale: 1 }, viewport: { once: true, margin: '-80px' }, transition: { duration: 1.1, ease: [.22, 1, .36, 1] } }
 
+  useEffect(() => {
+    const section = document.getElementById('o-nas')
+    if (!section) return undefined
+
+    const syncScrollMargin = () => {
+      section.style.scrollMarginTop = `${getAboutScrollMarginTop(section)}px`
+    }
+
+    syncScrollMargin()
+    const ro = new ResizeObserver(syncScrollMargin)
+    ro.observe(section)
+    const header = document.querySelector('header')
+    if (header) ro.observe(header)
+    window.addEventListener('resize', syncScrollMargin)
+    return () => {
+      ro.disconnect()
+      window.removeEventListener('resize', syncScrollMargin)
+    }
+  }, [])
+
   return <section className="about" id="o-nas" aria-labelledby="about-title"><div className="about__inner">
     <motion.div className="about__visual" {...reveal()}>
       <div className="about__frame"><motion.img src={salonImage} loading="lazy" decoding="async" alt={content.imageAlt || 'Gabinet Beauty Barbi Med w Lublinie'} {...imageReveal} /></div>
@@ -38,7 +59,6 @@ function About() {
       </motion.a>
     </motion.div>
     <div className="about__body">
-      <div className="about__header"><p className="about__kicker">{content.kicker}</p><span className="about__ornament" aria-hidden="true" /></div>
       <div className="about__copy">
         <motion.h2 id="about-title" className="about__title" {...reveal(.05)}>{content.titleLead} <span>{content.titleAccent}</span></motion.h2>
         <motion.blockquote className="about__quote" {...reveal(.1)}>„Przenieśliśmy naszą pasję do nowego wnętrza przy ul. Romera 30, by stworzyć standard, na który zasługujesz.”</motion.blockquote>

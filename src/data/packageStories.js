@@ -31,15 +31,15 @@ export const packageStories = {
     steps: [
       {
         title: 'Mezoterapia mikroigłowa',
-        text: 'Frakcyjna stymulacja kolagenu i odnowa naskórka.',
+        text: 'Frakcyjna stymulacja kolagenu i kontrolowana odnowa naskórka dla widocznie gładszej cery.',
       },
       {
         title: 'Stymulacja i ujędrnianie',
-        text: 'Intensywna terapia ujędrniająca tkankę podskórną.',
+        text: 'Intensywna terapia ujędrniająca tkankę podskórną i poprawiająca napięcie skóry twarzy.',
       },
       {
         title: 'Maska regeneracyjna',
-        text: 'Głębokie wyciszenie i utrwalenie efektów zabiegu.',
+        text: 'Głębokie wyciszenie po zabiegach i utrwalenie efektów w komfortowej pielęgnacji końcowej.',
       },
     ],
   },
@@ -68,15 +68,15 @@ export const packageStories = {
     steps: [
       {
         title: 'Frakcyjne nakłuwanie',
-        text: 'Mikrouszkodzenia pobudzają skórę do produkcji kolagenu i elastyny.',
+        text: 'Mikrouszkodzenia pobudzają skórę do produkcji kolagenu i elastyny już od pierwszej wizyty.',
       },
       {
         title: 'Głębokie odżywienie',
-        text: 'Koktajl substancji aktywnych regeneruje strukturę skóry.',
+        text: 'Koktajl substancji aktywnych regeneruje strukturę skóry i wspiera jej naturalną odbudowę.',
       },
       {
         title: 'Seria zabiegowa',
-        text: 'Trzy wizyty gwarantują trwałą poprawę gęstości.',
+        text: 'Trzy wizyty w serii gwarantują trwałą poprawę gęstości i widoczne wygładzenie cery.',
       },
     ],
   },
@@ -86,15 +86,15 @@ export const packageStories = {
     steps: [
       {
         title: 'Elektroporacja',
-        text: 'Impulsy elektryczne wprowadzają składniki nawilżające w głąb skóry.',
+        text: 'Impulsy elektryczne wprowadzają składniki nawilżające w głąb skóry bez nakłuwania.',
       },
       {
         title: 'Aktywne rozświetlenie',
-        text: 'Skoncentrowane ampułki likwidują oznaki zmęczenia i przesuszenia.',
+        text: 'Skoncentrowane ampułki likwidują oznaki zmęczenia i przesuszenia, przywracając świeży wygląd.',
       },
       {
         title: 'Kumulacja efektu',
-        text: 'Każdy zabieg wzmacnia barierę skóry, dając gładkość i blask.',
+        text: 'Każdy zabieg wzmacnia barierę skóry, dając trwałą gładkość, miękkość i naturalny blask.',
       },
     ],
   },
@@ -104,15 +104,15 @@ export const packageStories = {
     steps: [
       {
         title: 'Iniekcja śródskórna',
-        text: 'Preparat trafia tam, gdzie skóra potrzebuje wsparcia.',
+        text: 'Preparat trafia dokładnie tam, gdzie skóra potrzebuje wsparcia i odżywienia w głębszych warstwach.',
       },
       {
         title: 'Ujędrnienie i regeneracja',
-        text: 'Lepsza elastyczność i spłycenie drobnych linii.',
+        text: 'Lepsza elastyczność, gęstość skóry i wyraźne spłycenie drobnych linii mimicznych.',
       },
       {
         title: 'Długofalowy rezultat',
-        text: 'Efekt budowany przez trzy zabiegi utrzymuje się miesiącami.',
+        text: 'Efekt budowany przez trzy zabiegi utrzymuje się miesiącami i stopniowo się wzmacnia.',
       },
     ],
   },
@@ -285,11 +285,11 @@ export const packageStories = {
 export function cleanPackageName(name) {
   return String(name ?? '').replace(/\s&\s/g, ' i ')
 }
-// Nagłówek okna: „MEZOTERAPIA IGŁOWA – 3 ZABIEGI” dzielimy na trzy linijki, bez myślnika.
+// Nagłówek okna: „MEZOTERAPIA IGŁOWA – 3 ZABIEGI” → dwie linijki (typ + liczba zabiegów), bez myślnika.
 // Pozostałe nazwy zostają w jednej linii (zawijają się same).
 export function packageTitleLines(name) {
   const clean = cleanPackageName(name)
   const match = clean.match(/^(mezoterapia)\s+(.+?)\s+[–-]\s+(.+)$/i)
-  if (match) return [match[1], match[2], match[3]]
+  if (match) return [`${match[1]} ${match[2]}`, match[3]]
   return [clean.replace(/\s+[–-]\s+/g, ' ')]
 }

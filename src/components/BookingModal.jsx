@@ -58,7 +58,7 @@ function BookingModal({ open, onClose }) {
 
             {contactData.booksy && (
               <Button
-                variant="booking"
+                variant="cta-accent"
                 block
                 href={contactData.booksy}
                 external

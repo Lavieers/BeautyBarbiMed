@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { getAboutSectionScrollY } from './aboutSectionScroll'
 
 /*
  * Przewijanie „sekcja po sekcji” kółkiem myszy / gładzikiem (tylko komputery).
@@ -14,8 +15,8 @@ const DESKTOP_MIN_WIDTH = 901
 const MIN_GESTURE_DELTA = 24 // tyle „ruchu” trzeba, żeby zmienić sekcję (ignoruje drobne drgnięcia)
 const GESTURE_GAP_MS = 140 // przerwa w zdarzeniach koła = koniec gestu (także bezwładności gładzika)
 const COOLDOWN_MS = 200 // karencja po zakończeniu przejścia
-// Sekcje (id), które po przewinięciu mają stać dokładnie na środku ekranu (pod paskiem górnym).
-const CENTERED_SECTIONS = new Set(['proces', 'opinie', 'faq'])
+// Niższe sekcje z tej listy — tylko gdy mieszczą się w oknie (#o-nas: aboutSectionScroll.js).
+const FIT_CENTERED_SECTIONS = new Set(['proces', 'opinie', 'faq'])
 // Wysokie sekcje (id) przewijane krokami zamiast swobodnie: wartość = liczba ruchów kółkiem
 // po wejściu na początek sekcji (ostatni ruch kończy się na dole sekcji, potem następna sekcja).
 const STEPPED_SECTIONS = new Map([
@@ -37,6 +38,12 @@ function maxScroll() {
   return Math.max(0, document.documentElement.scrollHeight - window.innerHeight)
 }
 
+function sectionScrollLift() {
+  const raw = getComputedStyle(document.documentElement).getPropertyValue('--section-scroll-lift')
+  const lift = parseFloat(raw)
+  return Number.isFinite(lift) ? lift : 0
+}
+
 // Lista punktów zatrzymania + „wolnych stref” (wnętrza wysokich sekcji).
 function collectStops() {
   const max = maxScroll()
@@ -46,6 +53,7 @@ function collectStops() {
   const regions = []
   const header = document.querySelector('header')
   const headerHeight = header ? Math.max(0, header.getBoundingClientRect().bottom) : 0
+  const lift = sectionScrollLift()
 
   const items = document.querySelectorAll('main > section, main > .between-quote')
   items.forEach((el) => {
@@ -55,7 +63,7 @@ function collectStops() {
 
     if (el.classList.contains('between-quote')) {
       // krótki cytat zatrzymujemy na środku ekranu
-      stops.push(top + rect.height / 2 - vh / 2)
+      stops.push(top + rect.height / 2 - vh / 2 - lift)
       return
     }
 
@@ -63,10 +71,12 @@ function collectStops() {
     let start = top - margin
     const end = bottom - vh
 
-    // Niższe sekcje z tej listy ustawiamy pośrodku wolnego miejsca pod paskiem górnym.
     const available = vh - headerHeight
-    if (CENTERED_SECTIONS.has(el.id) && rect.height < available) {
-      start = top + rect.height / 2 - (vh + headerHeight) / 2
+    const centerStart = top + rect.height / 2 - (vh + headerHeight) / 2
+    if (el.id === 'o-nas') {
+      start = getAboutSectionScrollY(el, y)
+    } else if (FIT_CENTERED_SECTIONS.has(el.id) && rect.height < available) {
+      start = centerStart - lift
     }
 
     stops.push(start)

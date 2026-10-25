@@ -12,6 +12,15 @@
   --cta-radius: 0.625rem;
   --cta-radius-secondary: 0.3rem;
   --cta-lift: 3px;
+  --cta-gold: #c9a25c;
+  --cta-gold-hover: #dcba7a;
+  --cta-gold-active: #b8924c;
+  --cta-gold-ink: #2a0f1c;
+  /* Złoty przycisk w stylu CodePen (sgenius168/RwVpbrb) */
+  --cta-gold-gradient: linear-gradient(180deg, #f6e27a 20%, #cb9b51 80%);
+  --cta-gold-gradient-hover: linear-gradient(180deg, #f9eaa0 15%, #d4ab5e 85%);
+  --cta-gold-gradient-active: linear-gradient(180deg, #e6d068 18%, #b88942 82%);
+  --cta-gold-glow: 0 4px 12px rgba(255, 205, 87, 0.45);
 
   --color-cream: var(--krem);
   --color-cream-rgb: var(--krem-rgb);
@@ -66,6 +75,8 @@
   --content-max: 92rem;
   /* okno „Dowiedz się więcej”; na monitorze szerszym niż laptop 15,7″ rośnie razem ze stroną */
   --package-modal-width: 54rem;
+  /* jedna wysokość dla wszystkich pakietów (najdłuższe: mezo 3 linie tytułu, lifting-ujedrnienie) */
+  --package-modal-height: min(clamp(42.5rem, 77svh, 56rem), calc(100svh - 2.5rem));
   --content-inset: max(
     var(--page-padding-x),
     calc((100% - var(--content-max)) / 2 + var(--page-padding-x))
@@ -76,6 +87,8 @@
   --navbar-height: calc(var(--navbar-top-height) + var(--navbar-main-height));
   --navbar-main-height-compact: 4.15rem;
   --navbar-height-compact: var(--navbar-main-height-compact);
+  /* Dodatkowe podniesienie punktu zatrzymania przy scrollu (hash + kółko) na niskich ekranach */
+  --section-scroll-lift: 0px;
 }
 
 @media (min-width: 1600px) {
@@ -107,6 +120,7 @@
     --section-pad-y: clamp(2.25rem, 5.5vh, 3.75rem);
     --navbar-top-height: 0px;
     --navbar-height: var(--navbar-main-height-compact);
+    --section-scroll-lift: 32px;
   }
 }
 
@@ -144,7 +158,8 @@ body {
    #home zostaje na 0, żeby logo wracało do samej góry, a nie pod pasek. */
 section[id] {
   scroll-margin-top: calc(
-    var(--navbar-height-compact) + var(--notice-height, 0px) - 70px
+    var(--navbar-height-compact) + var(--notice-height, 0px) - 70px -
+      var(--section-scroll-lift)
   );
 }
 

@@ -38,8 +38,8 @@
 
   &__logo {
     display: block;
-    width: 2.9rem;
-    height: 2.9rem;
+    width: calc(2.9rem * 1.2);
+    height: calc(2.9rem * 1.2);
     border-radius: 50%;
     object-fit: cover;
   }

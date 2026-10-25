@@ -4,6 +4,55 @@ import { contactDefaults, sectionDefaults } from '../data/defaults'
 import { ContentContext, isNoticeVisible } from './context'
 import { DEFAULT_THEME, themeTokens } from './themes'
 
+const LEGACY_OFFER_INTRO =
+  /^starannie dobrane terapie/i
+
+function applySectionContentPatches(sectionMap) {
+  let next = sectionMap
+
+  const offer = next.offer
+  if (offer) {
+    const intro = typeof offer.intro === 'string' ? offer.intro.trim() : ''
+    const isLegacyIntro =
+      !intro ||
+      LEGACY_OFFER_INTRO.test(intro) ||
+      /odst[eę]pach\s+2\s*[–-]\s*4\s*tygodni/i.test(intro) ||
+      /^zabiegi w pakiecie/i.test(intro) ||
+      /^postaw na kompleksową/i.test(intro)
+
+    if (isLegacyIntro) {
+      next = { ...next, offer: { ...offer, intro: sectionDefaults.offer.intro } }
+    }
+  }
+
+  const hero = next.hero
+  if (hero) {
+    const eyebrow = typeof hero.eyebrow === 'string' ? hero.eyebrow.trim() : ''
+    const description = typeof hero.description === 'string' ? hero.description.trim() : ''
+    const isLegacyHero =
+      /kosmetologia medyczna/i.test(eyebrow) ||
+      /pewną ręką/i.test(description) ||
+      /mistrzowska stylizacja rzęs/i.test(description) ||
+      (hero.trustHighlights?.length ?? 0) > 0
+
+    if (isLegacyHero) {
+      next = {
+        ...next,
+        hero: {
+          ...hero,
+          eyebrow: sectionDefaults.hero.eyebrow,
+          titleLead: sectionDefaults.hero.titleLead,
+          titleAccent: sectionDefaults.hero.titleAccent,
+          description: sectionDefaults.hero.description,
+          trustHighlights: [],
+        },
+      }
+    }
+  }
+
+  return next
+}
+
 async function fetchContent() {
   // Klient Supabase (~200 kB) ładujemy dopiero tutaj, już po pierwszym wyświetleniu strony.
   const { supabase } = await import('../lib/supabase')
@@ -38,9 +87,11 @@ async function fetchContent() {
     }
   }
 
+  const patchedSections = applySectionContentPatches(sectionMap)
+
   return {
     contact: { ...contactDefaults, ...(settings.data?.contact ?? {}) },
-    sections: sectionMap,
+    sections: patchedSections,
     theme: settings.data?.theme || DEFAULT_THEME,
     themeOverrides: settings.data?.theme_overrides ?? {},
     // RLS odsiewa komunikaty spoza okna czasowego, ale przy zalogowanym

@@ -5,6 +5,7 @@ import { useContactInfo } from '../content/context'
 import { packageTitleLines } from '../data/packageStories'
 import { packagePhoto } from '../data/packageImages'
 import { resolveLead, resolveSteps } from '../lib/packageDetails'
+import { bindPolishWidows, polishCopy } from '../lib/polishText'
 import './BookingModal.scss'
 import './PackageModal.scss'
 
@@ -20,7 +21,9 @@ function Steps({ pkgId, steps }) {
           <span className="package-modal__marker" aria-hidden="true" />
           <div className="package-modal__step-body">
             <h3 className="package-modal__step-title">{title}</h3>
-            {text ? <p className="package-modal__step-text">{text}</p> : null}
+            {text ? (
+              <p className="package-modal__step-text">{bindPolishWidows(String(text).trim())}</p>
+            ) : null}
           </div>
         </li>
       ))}
@@ -96,45 +99,49 @@ function PackageCard({ pkg, category, nav, onClose, still = false, slots = {} })
               ))}
           </h2>
           {slots.lead ? (
-            <p className="package-modal__lead">{slots.lead}</p>
+            <p className="package-modal__lead">{polishCopy(slots.lead)}</p>
           ) : lead ? (
-            <p className="package-modal__lead">{lead}</p>
+            <p className="package-modal__lead">{bindPolishWidows(String(lead).trim())}</p>
           ) : null}
 
           {slots.steps ?? (steps.length ? <Steps pkgId={pkg.id} steps={steps} /> : null)}
         </div>
 
-        <footer className="package-modal__footer">
-          <div className="package-modal__price">
-            <p className="package-modal__price-main">
-              {slots.price ?? pkg.price} <span>PLN</span>
-            </p>
-            {slots.priceInfo ? (
-              <p className="package-modal__price-info">{slots.priceInfo}</p>
-            ) : hasValue(pkg.was) || hasValue(pkg.save) ? (
-              <p className="package-modal__price-info">
-                {hasValue(pkg.was) ? <s>{pkg.was} PLN</s> : null}
-                {hasValue(pkg.save) ? (
-                  <span className="package-modal__save">-{pkg.save} PLN</span>
-                ) : null}
-              </p>
-            ) : null}
-          </div>
+        {note ? (
+          <p className="package-modal__footnote">{note.replace(/\.\s*$/, '')}</p>
+        ) : null}
 
-          <div className="package-modal__contact">
-            <Button
-              variant="booking"
-              block
-              href={contactData.phoneHref}
-              className="package-modal__call"
-            >
-              <Icon name="phone" />
-              {contactData.phone}
-            </Button>
+        <footer className="package-modal__footer">
+          <div className="package-modal__footer-main">
+            <div className="package-modal__price">
+              <p className="package-modal__price-main">
+                {slots.price ?? pkg.price} <span>PLN</span>
+              </p>
+              {slots.priceInfo ? (
+                <p className="package-modal__price-info">{slots.priceInfo}</p>
+              ) : hasValue(pkg.was) || hasValue(pkg.save) ? (
+                <p className="package-modal__price-info">
+                  {hasValue(pkg.was) ? <s>{pkg.was} PLN</s> : null}
+                  {hasValue(pkg.save) ? (
+                    <span className="package-modal__save">-{pkg.save} PLN</span>
+                  ) : null}
+                </p>
+              ) : null}
+            </div>
+
+            <div className="package-modal__contact">
+              <Button
+                variant="cta-accent"
+                href={contactData.phoneHref}
+                className="package-modal__call"
+              >
+                <Icon name="phone" />
+                {contactData.phone}
+              </Button>
+            </div>
           </div>
 
           <div className="package-modal__notes">
-            {note ? <p>{note.replace(/\.\s*$/, '')}</p> : null}
             <p>Zadzwoń, a ustalimy termin</p>
           </div>
         </footer>

@@ -32,7 +32,9 @@ function Button({
   arrow,
   ...rest
 }) {
-  const showArrow = arrow ?? variant === 'link'
+  const isAccent = variant === 'cta-accent' || variant === 'booking'
+  const showLinkArrow = variant === 'link' && (arrow ?? true)
+
   const classes = [
     'btn',
     `btn--${variant}`,
@@ -43,12 +45,14 @@ function Button({
     .filter(Boolean)
     .join(' ')
 
-  const content = (
+  const label = (
     <>
       {children}
-      {showArrow ? <LinkArrow /> : null}
+      {showLinkArrow ? <LinkArrow /> : null}
     </>
   )
+
+  const content = isAccent ? <span className="btn__inner">{label}</span> : label
 
   if (href) {
     return (

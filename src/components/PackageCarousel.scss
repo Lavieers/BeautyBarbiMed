@@ -232,6 +232,37 @@
     --pkg-card-width: calc((100cqw - 2 * 1.2rem - 1px) / 3);
   }
 }
+
+// Laptop 15,7″ i mniejszy: nieco węższe karty (po regule 1600px — ważne przy 1920×1080).
+@media (min-width: 901px) and (max-height: 1100px),
+  (min-width: 901px) and (max-width: 1599.98px) {
+  .pkg-carousel {
+    --pkg-card-width: min(15.25rem, calc((100cqw - 2 * 1.05rem - 1px) / 3));
+
+    &__track {
+      gap: 1.05rem;
+    }
+  }
+
+  .pkg-card {
+    &__media {
+      border-radius: 12px;
+    }
+
+    &__chip {
+      padding: 0.34rem 0.52rem;
+      font-size: 0.76rem;
+    }
+
+    &__name {
+      font-size: 1.03rem;
+    }
+
+    &__text {
+      font-size: 0.8rem;
+    }
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   .pkg-card {
     transition: none;

@@ -150,7 +150,7 @@ function Contact({ onBook }) {
             )}
           </ul>
 
-          <Button variant="primary" block onClick={onBook}>
+          <Button variant="cta-primary" block onClick={onBook}>
             {content.primaryCta || 'Umów wizytę'}
           </Button>
 

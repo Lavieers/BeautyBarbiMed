@@ -7,10 +7,10 @@
   padding-bottom: calc(clamp(1.25rem, 2.2vw, 2rem) + 20px);
   background: var(--color-deep-tint);
 
-  /* Po przejściu z menu ozdobna kreska nad nagłówkiem ma lądować 0,75 rem pod paskiem nawigacji */
   &[id] {
     scroll-margin-top: calc(
-      var(--navbar-height-compact) + var(--notice-height, 0px) + 0.75rem - var(--gallery-pad-top)
+      var(--navbar-height-compact) + var(--notice-height, 0px) + 0.3rem + 2px -
+        var(--gallery-pad-top)
     );
   }
 
@@ -243,6 +243,37 @@
       grid-row: 1 / span 2;
     }
   }
+
+  // Węższe niż duży monitor: siatka ~10% mniejsza (88 rem → 79,2 rem).
+  @media (max-width: 1599.98px) {
+    &__stage {
+      max-width: min(79.2rem, 100%);
+    }
+
+    &__grid--pair {
+      max-width: 45rem;
+    }
+
+    &__grid--single {
+      grid-template-columns: minmax(0, 28.8rem);
+    }
+  }
+
+  // Laptop (15,7″ itd.): kolejne ~10% — łącznie ~19% względem dużego monitora.
+  @media (min-width: 901px) and (max-height: 1100px),
+    (min-width: 901px) and (max-width: 1599.98px) {
+    &__stage {
+      max-width: min(71.28rem, 100%);
+    }
+
+    &__grid--pair {
+      max-width: 40.5rem;
+    }
+
+    &__grid--single {
+      grid-template-columns: minmax(0, 25.92rem);
+    }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -414,6 +445,10 @@
 .gal-carousel {
   --gal-card-width: min(74cqw, 21rem);
   --gal-side: calc((100cqw - var(--gal-card-width)) / 2);
+
+  @media (max-width: 1599.98px) {
+    --gal-card-width: min(66.6cqw, 18.9rem);
+  }
 
   margin-inline: calc(var(--page-padding-x) * -1);
   container-type: inline-size;

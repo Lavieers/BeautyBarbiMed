@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import gabinetInterior from '../assets/gabinet-wnetrze.webp'
 import guideBiopen from '../assets/guide-biopen.webp'
@@ -36,6 +36,90 @@ function optionImage(opt) {
   return OPTION_IMAGES[opt.id] || gabinetInterior
 }
 
+function cardCopy(text) {
+  if (text == null || text === '') return text
+  return String(text)
+    .replace(/„([^”]+)”/g, '$1')
+    .replace(/[„”""]/g, '')
+    .trim()
+}
+
+function renderRecLead(text) {
+  const clean = cardCopy(text)
+  const desktopBr = <br className="skin-guide__why-br" aria-hidden="true" />
+  const rules = [
+    /^(.+\.)\s+(Idealny,.+)$/i,
+    /^(.+\bzachwycić)\s+(pod makijażem\s+[—–-]\s*bez przestoju\.)$/iu,
+    /^(.+\bw skórę)\s+(właściwą\s+[—–-]\s*szybka droga do promiennej, nawilżonej cery\.)$/iu,
+    /^(.+\btwarzy)\s+(i\s+przywraca.+)$/i,
+    /^(.+\btęczówki)\s+(i\s+oszczędza.+)$/i,
+    /^(.+?)\s+([—–-]\s*.+)$/u,
+  ]
+
+  for (const rule of rules) {
+    const match = rule.exec(clean)
+    if (match) {
+      return (
+        <>
+          {match[1]}
+          {desktopBr}
+          {match[2]}
+        </>
+      )
+    }
+  }
+
+  return clean
+}
+
+function renderWhyLine(line) {
+  const clean = cardCopy(line)
+  const juzBreak = /^(.+?\stekstury)\s+(już\s.+)$/i.exec(clean)
+  if (juzBreak) {
+    return (
+      <>
+        {juzBreak[1]}
+        <br className="skin-guide__why-br" aria-hidden="true" />
+        {juzBreak[2]}
+      </>
+    )
+  }
+  return clean
+}
+
+function whyItems(opt) {
+  if (Array.isArray(opt?.whyPoints) && opt.whyPoints.length) {
+    return opt.whyPoints.map((line) => cardCopy(line)).filter(Boolean)
+  }
+  const raw = cardCopy(opt?.why || '')
+  if (!raw) {
+    return [
+      'Indywidualnie dobrany plan zabiegowy i opieka po wizycie — bez presji, w Twoim tempie.',
+    ]
+  }
+  const split = raw
+    .split(/\s*[•·|]\s*|\n+/)
+    .map((s) => cardCopy(s))
+    .filter(Boolean)
+  if (split.length > 1) return split
+  return [raw]
+}
+
+function WhyCheckIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.55" />
+      <path
+        d="m8.25 12.1 2.15 2.15 5.35-5.5"
+        stroke="currentColor"
+        strokeWidth="1.55"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
 function moveTab(event, index, options, tabRefs, select) {
   const last = options.length - 1
   if (last < 0) return
@@ -64,7 +148,36 @@ function SkinGuide({ onBook, onTreatmentInfo }) {
   const options = content.options || []
   const [selectedId, setSelectedId] = useState(options[0]?.id || 'zmarszczki')
   const tabRefs = useRef([])
+  const tabsRef = useRef(null)
   const displayRef = useRef(null)
+  const [tabsHeightPx, setTabsHeightPx] = useState(null)
+
+  useEffect(() => {
+    const tabsEl = tabsRef.current
+    if (!tabsEl) return undefined
+
+    const desktopQuery = window.matchMedia('(min-width: 901px)')
+
+    const syncTabsHeight = () => {
+      if (!desktopQuery.matches) {
+        setTabsHeightPx(null)
+        return
+      }
+      setTabsHeightPx(Math.round(tabsEl.getBoundingClientRect().height))
+    }
+
+    syncTabsHeight()
+    const observer = new ResizeObserver(syncTabsHeight)
+    observer.observe(tabsEl)
+    desktopQuery.addEventListener('change', syncTabsHeight)
+    window.addEventListener('resize', syncTabsHeight)
+
+    return () => {
+      observer.disconnect()
+      desktopQuery.removeEventListener('change', syncTabsHeight)
+      window.removeEventListener('resize', syncTabsHeight)
+    }
+  }, [options])
 
   // Na telefonie karta zabiegu leży pod listą zakładek – po kliknięciu przewijamy do niej,
   // żeby było widać, co się zmieniło.
@@ -80,6 +193,40 @@ function SkinGuide({ onBook, onTreatmentInfo }) {
   const current = options.find((opt) => opt.id === selectedId) || options[0]
   const treatmentIds =
     onTreatmentInfo && guideTreatmentIds[current?.id]?.length ? guideTreatmentIds[current.id] : null
+
+  const renderDetails = (variant) => {
+    const chip = variant === 'chip'
+    const className = chip ? 'skin-guide__media-chip' : 'skin-guide__book skin-guide__foot-details'
+    const label = chip ? (
+      <>
+        <span className="skin-guide__media-dot" aria-hidden="true" />
+        Szczegóły
+      </>
+    ) : (
+      <>
+        Szczegóły
+        <Icon name="chevronRight" className="skin-guide__foot-details-arrow" aria-hidden="true" />
+      </>
+    )
+
+    if (treatmentIds) {
+      return (
+        <button
+          type="button"
+          className={className}
+          onClick={() => onTreatmentInfo(treatmentIds[0], treatmentIds)}
+        >
+          {label}
+        </button>
+      )
+    }
+
+    return (
+      <a className={className} href="#cennik">
+        {label}
+      </a>
+    )
+  }
 
   const reveal = (delay = 0) =>
     reduced
@@ -119,8 +266,16 @@ function SkinGuide({ onBook, onTreatmentInfo }) {
       </div>
 
       <div className="skin-guide__stage">
-        <div className="skin-guide__container">
+        <div
+          className="skin-guide__container"
+          style={
+            tabsHeightPx != null
+              ? { '--skin-guide-tabs-px': `${tabsHeightPx}px` }
+              : undefined
+          }
+        >
           <div
+            ref={tabsRef}
             className="skin-guide__tabs"
             role="tablist"
             aria-orientation="vertical"
@@ -168,75 +323,77 @@ function SkinGuide({ onBook, onTreatmentInfo }) {
                 exit={{ opacity: 0, y: reduced ? 0 : -10 }}
                 transition={{ duration: reduced ? 0 : 0.32, ease: [0.22, 1, 0.36, 1] }}
               >
-                <div className="skin-guide__card-media">
-                  <div className="skin-guide__photo-frame">
-                    <span className="skin-guide__photo-pin" aria-hidden="true" />
-                    <div className="skin-guide__photo-mat">
-                      <img
-                        src={optionImage(current)}
-                        alt=""
-                        loading="lazy"
-                        decoding="async"
-                        style={
-                          !current.image && OPTION_IMAGE_POSITION[current.id]
-                            ? { objectPosition: OPTION_IMAGE_POSITION[current.id] }
-                            : undefined
-                        }
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="skin-guide__card-body">
-                  <span className="skin-guide__expert-badge">
-                    {content.expertBadge || 'Rekomendacja eksperta'}
-                  </span>
-
-                  <h3 className="skin-guide__rec-title">{current.recommended}</h3>
-                  <p className="skin-guide__rec-lead">{current.desc}</p>
-
-                  <div className="skin-guide__why">
-                    <p className="skin-guide__why-head">
-                      <span className="skin-guide__why-icon" aria-hidden="true">
-                        <Icon name="check" />
-                      </span>
-                      <span>Dlaczego warto?</span>
+                <div className="skin-guide__card-inner">
+                  <div className="skin-guide__card-media">
+                    <img
+                      src={optionImage(current)}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      style={
+                        !current.image && OPTION_IMAGE_POSITION[current.id]
+                          ? { objectPosition: OPTION_IMAGE_POSITION[current.id] }
+                          : undefined
+                      }
+                    />
+                    <p className="skin-guide__media-badge">
+                      {content.expertBadge || 'Rekomendacja eksperta'}
                     </p>
-                    <p className="skin-guide__why-text">
-                      {current.why ||
-                        'Indywidualnie dobrany plan zabiegowy i opieka po wizycie — bez presji, w Twoim tempie.'}
-                    </p>
+                    <div className="skin-guide__media-details">{renderDetails('chip')}</div>
                   </div>
 
-                  <div className="skin-guide__meta">
-                    <div className="skin-guide__meta-item">
-                      <span className="skin-guide__meta-label">Czas trwania</span>
-                      <span className="skin-guide__meta-value">{current.duration}</span>
-                    </div>
-                    <div className="skin-guide__meta-item">
-                      <span className="skin-guide__meta-label">Cena</span>
-                      <span className="skin-guide__meta-value">{current.price}</span>
-                    </div>
-                  </div>
+                  <div className="skin-guide__card-body">
+                    <header className="skin-guide__card-head">
+                      {current.tag ? <p className="skin-guide__rec-tag">{current.tag}</p> : null}
+                      <h3 className="skin-guide__rec-title">{current.recommended}</h3>
+                    </header>
 
-                  <div className="skin-guide__card-footer">
-                    <Button variant="booking" onClick={onBook}>
-                      Umów wizytę
-                    </Button>
+                    <p className="skin-guide__rec-lead">{renderRecLead(current.desc)}</p>
 
-                    {/* Karta z opisanymi zabiegami otwiera okno; nowa karta z panelu – dalej cennik */}
-                    {treatmentIds ? (
-                      <Button
-                        variant="secondary"
-                        onClick={() => onTreatmentInfo(treatmentIds[0], treatmentIds)}
-                      >
-                        Dowiedz się więcej
-                      </Button>
-                    ) : (
-                      <Button variant="secondary" href="#cennik">
-                        Dowiedz się więcej
-                      </Button>
-                    )}
+                    <div className="skin-guide__why">
+                      <p className="skin-guide__why-head">Dlaczego warto?</p>
+                      <ul className="skin-guide__why-list">
+                        {whyItems(current)
+                          .slice(0, 6)
+                          .map((line, index) => (
+                            <li key={`${current.id}-why-${index}`} className="skin-guide__why-item">
+                              <span className="skin-guide__why-icon">
+                                <WhyCheckIcon />
+                              </span>
+                              <span className="skin-guide__why-text">{renderWhyLine(line)}</span>
+                            </li>
+                          ))}
+                      </ul>
+                    </div>
+
+                    <footer className="skin-guide__card-foot">
+                      <div className="skin-guide__foot-meta">
+                        <div className="skin-guide__meta-item">
+                          <span className="skin-guide__meta-label">Czas</span>
+                          <span className="skin-guide__meta-value">{current.duration}</span>
+                        </div>
+                        <div className="skin-guide__meta-item skin-guide__meta-item--price-block">
+                          <span className="skin-guide__meta-label">Cena</span>
+                          <span className="skin-guide__meta-value">{current.price}</span>
+                        </div>
+                      </div>
+                      <div className="skin-guide__foot-cta">
+                        <div className="skin-guide__foot-sub">
+                          <span className="skin-guide__foot-price" aria-label={`Cena ${current.price}`}>
+                            {current.price}
+                          </span>
+                          {renderDetails('link')}
+                        </div>
+                        <Button
+                          variant="cta-primary"
+                          size="compact"
+                          className="skin-guide__foot-book"
+                          onClick={onBook}
+                        >
+                          Umów wizytę
+                        </Button>
+                      </div>
+                    </footer>
                   </div>
                 </div>
               </motion.article>

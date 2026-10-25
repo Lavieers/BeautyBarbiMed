@@ -10,6 +10,10 @@ $marker-gap: 1.5rem;
 .package-modal {
   --pm-gold: var(--color-gold);
   --pm-gold-rgb: var(--color-gold-rgb);
+  --pm-champagne: #f7efe4;
+  --pm-champagne-bright: #fff8f0;
+  --pm-copy: var(--pm-champagne);
+  --pm-copy-muted: color-mix(in srgb, var(--pm-champagne) 92%, #fff8f0);
   --pm-gold-gradient: linear-gradient(
     135deg,
     var(--color-gold) 0%,
@@ -24,9 +28,40 @@ $marker-gap: 1.5rem;
   grid-template-rows: minmax(0, 1fr);
   width: 100%;
   max-width: var(--package-modal-width, 54rem);
-  // na wysokich ekranach karta rośnie razem z tekstem
+  // domyślnie (zabieg); pakiety: stała wysokość — patrz :not(--treatment)
   height: min(clamp(44rem, 78svh, 58rem), calc(100svh - 2.5rem));
   overflow: hidden;
+
+  // Pakiety: ta sama wysokość na każdej karcie (kalibracja pod najdłuższą treść)
+  &:not(.package-modal--treatment) {
+    height: var(--package-modal-height);
+    min-height: var(--package-modal-height);
+    max-height: var(--package-modal-height);
+
+    .package-modal__content {
+      min-height: 0;
+    }
+
+    .package-modal__body {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+    }
+
+    .package-modal__footnote {
+      flex: none;
+      margin-top: auto;
+    }
+
+    .package-modal__footer {
+      flex: none;
+    }
+
+    // kategorie bez footnote (np. pedicure): stopka przy dole karty
+    .package-modal__content:not(:has(.package-modal__footnote)) .package-modal__footer {
+      margin-top: auto;
+    }
+  }
   border: 1px solid rgba(var(--pm-gold-rgb), 0.28);
   border-radius: 0;
   background: radial-gradient(
@@ -35,7 +70,7 @@ $marker-gap: 1.5rem;
     color-mix(in srgb, var(--color-berry) 35%, #000) 100%
   );
   box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--pm-copy);
   font-family: var(--pm-font-body);
   outline: none;
 
@@ -232,7 +267,7 @@ $marker-gap: 1.5rem;
     font-size: clamp(0.84rem, 0.62rem + 0.4svh, 0.94rem);
     font-weight: 400;
     line-height: 1.65;
-    color: rgba(255, 255, 255, 0.5);
+    color: var(--pm-copy-muted);
   }
 
   // ── Kolejne kroki: subtelna oś z punktami ──────────────────────────────────
@@ -312,7 +347,7 @@ $marker-gap: 1.5rem;
     font-size: clamp(0.72rem, 0.55rem + 0.4svh, 0.8rem);
     font-weight: 300;
     line-height: 1.55;
-    color: rgba(255, 255, 255, 0.5);
+    color: var(--pm-copy-muted);
   }
 
   // ── Cena, telefon i informacje ─────────────────────────────────────────────
@@ -369,27 +404,9 @@ $marker-gap: 1.5rem;
     color: rgba(var(--pm-gold-rgb), 0.95);
   }
 
-  // przycisk: złoty metaliczny gradient, pełne zaokrąglenie, głęboki cień
   .package-modal__call {
     gap: 0.6rem;
-    min-height: 3rem;
-    padding: 0.8rem 1.6rem;
-    border: 0;
-    border-radius: 999px;
-    background: var(--pm-gold-gradient);
-    box-shadow: 0 25px 50px -12px rgba(var(--pm-gold-rgb), 0.3);
-    font-family: var(--pm-font-body);
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
     white-space: nowrap;
-    color: color-mix(in srgb, var(--color-berry) 55%, #000);
-    transition: filter 0.2s ease, transform 0.2s ease;
-
-    &:hover {
-      filter: brightness(1.1);
-      transform: translateY(-1px);
-    }
 
     svg {
       width: 1rem;
@@ -402,25 +419,69 @@ $marker-gap: 1.5rem;
     }
   }
 
-  // stopka informacyjna: delikatne złoto, niżej niż cena
-  &__notes {
-    grid-column: 1 / -1;
+  // Footnote kategorii — wyśrodkowany tuż nad kreską stopki
+  &__footnote {
+    flex: none;
+    margin: clamp(0.55rem, 1.8svh, 1.1rem) 0 0;
+    padding: 0 clamp(0.5rem, 2vw, 1rem) 0.4rem;
+    font-size: 0.58rem;
+    font-weight: 500;
+    line-height: 1.45;
+    letter-spacing: 0.22em;
+    text-align: center;
+    text-transform: uppercase;
+    text-wrap: balance;
+    color: rgba(var(--pm-gold-rgb), 0.5);
+  }
+
+  &__footnote + &__footer {
+    margin-top: 0;
+  }
+
+  // Pakiet: krótka stopka; delikatnie mniej miejsca pod „Zadzwoń…” niż domyślny padding kolumny
+  &:not(.package-modal--treatment) .package-modal__content:has(.package-modal__notes) {
+    padding-bottom: calc(clamp(1rem, 3.4svh, 2rem) - 5px);
+
+    .package-modal__footnote {
+      padding-bottom: 0.2rem;
+    }
+
+    .package-modal__footer {
+      padding-top: clamp(0.35rem, 1.2svh, 0.75rem);
+    }
+  }
+
+  &__footer:has(.package-modal__notes) {
     display: flex;
-    justify-content: space-between;
-    gap: 1.5rem;
+    flex-direction: column;
+    align-items: stretch;
+    flex: none;
+    row-gap: clamp(0.48rem, 1.45svh, 0.72rem);
+  }
+
+  &__footer-main {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 1.2rem;
+    flex: none;
+    width: 100%;
+  }
+
+  &__notes {
+    width: 100%;
+    margin-top: 10px;
+    text-align: center;
 
     p {
       margin: 0;
       font-size: 0.58rem;
       font-weight: 500;
       line-height: 1.8;
-      letter-spacing: 0.22em;
+      letter-spacing: 0.32em;
+      text-align: center;
       text-transform: uppercase;
       color: rgba(var(--pm-gold-rgb), 0.5);
-    }
-
-    p:last-child {
-      text-align: left;
     }
   }
 
@@ -472,7 +533,7 @@ $marker-gap: 1.5rem;
       font-size: clamp(0.82rem, 0.62rem + 0.42svh, 0.92rem);
       font-style: italic;
       line-height: 1.6;
-      color: rgba(255, 255, 255, 0.78);
+      color: var(--pm-copy);
     }
 
     // bloki „Dla kogo”, „Efekty”, „Przeciwwskazania”: jeden pod drugim
@@ -499,7 +560,7 @@ $marker-gap: 1.5rem;
       padding-left: 1.1rem;
       font-size: clamp(0.76rem, 0.58rem + 0.42svh, 0.84rem);
       line-height: 1.6;
-      color: rgba(255, 255, 255, 0.72);
+      color: var(--pm-copy);
 
       &::before {
         content: '';
@@ -520,7 +581,7 @@ $marker-gap: 1.5rem;
       text-align: center;
       font-size: 0.74rem;
       line-height: 1.5;
-      color: rgba(255, 255, 255, 0.72);
+      color: var(--pm-copy-muted);
 
       strong {
         margin-right: 0.4rem;
@@ -533,7 +594,21 @@ $marker-gap: 1.5rem;
     }
 
     .package-modal__footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.2rem;
       margin-top: clamp(0.5rem, 1.6svh, 1rem);
+      padding-top: calc(clamp(0.7rem, 2.4svh, 1.5rem) + 8px);
+    }
+
+    .package-modal__price {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .package-modal__contact {
+      flex: none;
     }
 
     // cena: równe cyfry (lining), nie „stare” z elementami zjeżdżającymi pod linię
@@ -591,16 +666,12 @@ $marker-gap: 1.5rem;
       }
 
       .package-modal__footer {
-        grid-template-columns: minmax(0, 1fr) auto;
-        justify-items: stretch;
         margin-top: 0.4rem;
-        padding-top: 0.7rem;
+        padding-top: calc(0.7rem + 8px);
       }
 
       .package-modal__contact .package-modal__call {
         width: auto;
-        min-height: 2.7rem;
-        padding: 0.7rem 1.3rem;
       }
     }
 
@@ -697,6 +768,52 @@ $marker-gap: 1.5rem;
     max-width: 30rem;
     height: min(52rem, calc(100svh - 2.5rem));
 
+    &:not(.package-modal--treatment) {
+      width: 100%;
+      max-width: none;
+      height: var(--package-modal-height);
+      min-height: var(--package-modal-height);
+      max-height: var(--package-modal-height);
+
+      // jak w cenniku: przewija się środek, stopka zostaje na dole karty
+      .package-modal__content {
+        min-height: 0;
+        overflow: hidden;
+      }
+
+      .package-modal__body {
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 auto;
+        min-width: 0;
+        min-height: 0;
+        overflow-x: clip;
+        overflow-y: auto;
+        scrollbar-gutter: stable;
+        // poświata punktów wychodzi w lewo – bez tego overflow ją ucina
+        margin-left: 0;
+        padding: 0.2rem calc(0.05rem + 10px) 0.2rem 0.75rem;
+        container-type: inline-size;
+        container-name: pkg-modal-body;
+      }
+
+      .package-modal__flow {
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: space-evenly;
+        gap: max(0px, calc(clamp(0.35rem, 2.2svh, 1.15rem) - 3px));
+        width: 100%;
+        min-height: 0;
+      }
+
+      .package-modal__footnote,
+      .package-modal__footer {
+        flex: none;
+      }
+    }
+
     &__media {
       height: clamp(6rem, 17svh, 10rem);
     }
@@ -708,7 +825,7 @@ $marker-gap: 1.5rem;
       scrollbar-color: rgba(var(--pm-gold-rgb), 0.35) transparent;
     }
 
-    &__body {
+    &.package-modal--treatment .package-modal__body {
       flex: none;
       overflow: visible;
       margin-left: 0;
@@ -724,18 +841,158 @@ $marker-gap: 1.5rem;
       font-size: clamp(1.6rem, 7.4vw, 2.2rem);
     }
 
-    &__footer {
-      grid-template-columns: minmax(0, 1fr);
-      justify-items: start;
-    }
+    // Pakiety: treść na pełną szerokość karty; cqi + clamp delikatnie kurczą tekst na wąskim / gęstym układzie
+    &:not(.package-modal--treatment) {
+      .package-modal__content {
+        flex: 1 1 auto;
+        min-height: 0;
+        padding: 0.85rem clamp(0.85rem, 3.5vw, 1.15rem) 0.75rem;
+      }
 
-    &__notes {
-      flex-direction: column;
-      gap: 0;
-    }
+      .package-modal__kicker {
+        margin-bottom: 0.45rem;
+        font-size: clamp(0.52rem, 0.38rem + 1.6cqi, 0.58rem);
+        letter-spacing: clamp(0.22em, 0.14em + 0.35cqi, 0.32em);
+      }
 
-    .package-modal__call {
-      width: 100%;
+      .package-modal__title {
+        width: 100%;
+        max-width: none;
+        margin-bottom: 0.45rem;
+        font-size: clamp(0.92rem, 0.48rem + 4.6cqi, 1.42rem);
+        line-height: 1.12;
+        letter-spacing: clamp(0.02em, 0.01em + 0.08cqi, 0.05em);
+        text-wrap: balance;
+      }
+
+      .package-modal__title-line {
+        width: 100%;
+      }
+
+      .package-modal__lead {
+        flex: none;
+        width: 100%;
+        max-width: none;
+        margin-bottom: clamp(0.35rem, 1.4svh, 0.65rem);
+        font-size: clamp(0.66rem, 0.3rem + 2.75cqi, 0.78rem);
+        line-height: 1.48;
+        text-align: left;
+        text-wrap: wrap;
+        hyphens: none;
+        overflow-wrap: normal;
+      }
+
+      .package-modal__kicker,
+      .package-modal__title {
+        flex: none;
+      }
+
+      .package-modal__step {
+        flex: 0 1 auto;
+        align-self: stretch;
+        width: 100%;
+        min-width: 0;
+        column-gap: 0.65rem;
+        padding-bottom: 0;
+      }
+
+      .package-modal__step-body {
+        min-width: 0;
+        max-width: 100%;
+      }
+
+      .package-modal__media {
+        height: calc(clamp(6rem, 17svh, 10rem) + 50px);
+      }
+
+      .package-modal__step-title {
+        width: 100%;
+        margin-bottom: 0.12rem;
+        font-size: clamp(0.7rem, 0.36rem + 2.8cqi, 0.78rem);
+        line-height: 1.3;
+        text-wrap: pretty;
+      }
+
+      .package-modal__step-text {
+        width: 100%;
+        // ~2 linijki na typowej szerokości telefonu; krótsze zdania mają min. wysokość 2 wierszy
+        max-width: min(100%, 36ch);
+        min-height: calc(2 * 1.42em);
+        font-size: clamp(0.64rem, 0.28rem + 2.65cqi, 0.74rem);
+        line-height: 1.42;
+        text-align: left;
+        text-wrap: wrap;
+        hyphens: none;
+        overflow-wrap: normal;
+      }
+
+      .package-modal__footnote {
+        margin-top: 0.3rem;
+        padding-bottom: 0.15rem;
+        font-size: 0.52rem;
+        letter-spacing: 0.16em;
+      }
+
+      .package-modal__footer {
+        margin-top: 0.3rem;
+        padding-top: 0.5rem;
+      }
+
+      .package-modal__price-main {
+        font-size: clamp(1.55rem, 6.2vw, 1.85rem);
+      }
+
+      .package-modal__price-info {
+        margin-top: 0.35rem;
+        font-size: 0.62rem;
+      }
+
+      .package-modal__notes {
+        margin-top: 6px;
+
+        p {
+          font-size: 0.52rem;
+          line-height: 1.5;
+          letter-spacing: 0.22em;
+        }
+      }
+
+      .package-modal__footer-main {
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        column-gap: 0.75rem;
+      }
+
+      .package-modal__contact {
+        justify-self: end;
+      }
+
+      .package-modal__call {
+        width: auto;
+      }
+
+      // ponownie po regułach ogólnych – wypełnienie wysokości i widoczne kropki
+      .package-modal__body {
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 auto;
+        min-width: 0;
+        min-height: 0;
+        margin-left: 0;
+        padding: 0.2rem calc(0.05rem + 10px) 0.2rem 0.75rem;
+        scrollbar-gutter: stable;
+      }
+
+      .package-modal__flow {
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: space-evenly;
+        gap: max(0px, calc(clamp(0.35rem, 2.2svh, 1.15rem) - 3px));
+        width: 100%;
+        min-height: 0;
+      }
     }
   }
 
@@ -744,6 +1001,51 @@ $marker-gap: 1.5rem;
     @media (max-width: 52rem) {
       .package-modal__media {
         height: clamp(13.5rem, 30svh, 21rem);
+      }
+    }
+  }
+
+  // Niski telefon: pakiet dostaje więcej miejsca na opis (zdjęcie nieco niższe)
+  @media (max-width: 52rem) and (max-height: 740px) {
+    &:not(.package-modal--treatment) .package-modal__media {
+      height: calc(clamp(5rem, 14svh, 7.5rem) + 20px);
+    }
+  }
+
+  // Wąska kolumna treści: dodatkowe, delikatne zmniejszenie czcionek (container z __body)
+  @container pkg-modal-body (max-width: 16.5rem) {
+    .package-modal:not(.package-modal--treatment) {
+      .package-modal__title {
+        font-size: clamp(0.88rem, 0.42rem + 4.2cqi, 1.28rem);
+      }
+
+      .package-modal__lead,
+      .package-modal__step-text {
+        font-size: clamp(0.64rem, 0.28rem + 3cqi, 0.74rem);
+        line-height: 1.4;
+      }
+
+      .package-modal__step-title {
+        font-size: clamp(0.68rem, 0.32rem + 2.6cqi, 0.74rem);
+      }
+    }
+  }
+
+  // Krótki ekran: ciaśniejszy tekst, żeby mniej przewijać
+  @media (max-width: 52rem) and (max-height: 780px) {
+    &:not(.package-modal--treatment) {
+      .package-modal__title {
+        font-size: clamp(0.88rem, 0.44rem + 4cqi, 1.32rem);
+      }
+
+      .package-modal__lead,
+      .package-modal__step-text {
+        font-size: clamp(0.64rem, 0.3rem + 3cqi, 0.76rem);
+        line-height: 1.42;
+      }
+
+      .package-modal__step {
+        padding-bottom: max(0px, calc(0.36rem - 3px));
       }
     }
   }

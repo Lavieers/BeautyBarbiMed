@@ -6,14 +6,13 @@
   // Bez kickera nad kreską sekcja może mieć nieco mniej miejsca na górze
   padding-top: calc(clamp(2rem, 4vw, 3.5rem) - 200px);
 
-  // Fix scroll-to: ensure section header lands just below the compact navbar
-  // (nadpisuje globalne section[id] z index.css – stąd wyższa specyficzność w bloku niżej)
-  scroll-margin-top: calc(var(--navbar-height-compact) + var(--notice-height, 0px) + 0.5rem);
-
   &[id] {
-    // Wcześniej: navbar - 70px (≈ -4px). +65px = strona przewija się o 65px mniej,
-    // dzięki czemu nagłówek „Cennik zabiegów” jest w całości widoczny pod navbarem
-    scroll-margin-top: calc(var(--navbar-height-compact) + var(--notice-height, 0px) + 25px);
+    /* Tytuł ~2,75 rem pod navbarem (minus górny padding sekcji z section-shell) */
+    --pricing-title-gap: 2.75rem;
+    scroll-margin-top: calc(
+      var(--navbar-height-compact) + var(--notice-height, 0px) + var(--pricing-title-gap) -
+        var(--section-pad-y) + 10px
+    );
   }
 
   // ── Header ──────────────────────────────────────────────────────────────────

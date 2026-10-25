@@ -125,7 +125,7 @@ function TreatmentCard({ name, price, guide, nav, onBook, onClose, still = false
           </div>
 
           <div className="package-modal__contact">
-            <Button variant="booking" block className="package-modal__call" onClick={onBook}>
+            <Button variant="cta-accent" className="package-modal__call" onClick={onBook}>
               <Icon name="calendar" />
               Umów wizytę
             </Button>
