@@ -113,7 +113,18 @@ async function fetchContent() {
     // Zaplanowane komunikaty zostają w pamięci, żeby pasek włączył się sam
     // o godzinie startu. Zakończone odpadają. RLS anonima i tak oddaje tylko
     // wiersze, które polityka uzna za publiczne.
-    notices: (notices.data ?? []).filter((notice) => isNoticePending(notice)),
+    notices: (notices.data ?? [])
+      .filter((notice) => isNoticePending(notice))
+      .map((notice) =>
+        notice.message ===
+        '„Szukasz chwili dla siebie w tym tygodniu? Sprawdź ostatnie wolne terminy w naszym kalendarzu online!'
+          ? {
+              ...notice,
+              message:
+                'Szukasz chwili dla siebie? Sprawdź ostatnie wolne terminy w naszym kalendarzu online!',
+            }
+          : notice,
+      ),
     gallery: gallery.data ?? [],
     reviews: reviews.data ?? [],
   }

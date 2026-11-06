@@ -11,7 +11,7 @@ const kinds = [
     value: 'info',
     label: 'Informacja',
     suggestion:
-      '„Szukasz chwili dla siebie w tym tygodniu? Sprawdź ostatnie wolne terminy w naszym kalendarzu online!',
+      'Szukasz chwili dla siebie? Sprawdź ostatnie wolne terminy w naszym kalendarzu online!',
   },
   {
     value: 'warning',
