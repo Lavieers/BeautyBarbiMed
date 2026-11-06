@@ -1,3 +1,4 @@
+import HeroPanel from './panels/HeroPanel'
 import ContactPanel from './panels/ContactPanel'
 
 import NoticesPanel from './panels/NoticesPanel'
@@ -24,11 +25,25 @@ export const adminNavItems = [
 
     icon: 'overview',
 
+    Panel: null,
+
+  },
+
+  {
+
+    id: 'hero',
+
+    label: 'Zespół',
+
+    hint: 'Osoby w zespole i teksty strony',
+
+    icon: 'team',
+
     pageDescription:
 
-      'Podsumowanie tego, co jest ustawione na stronie. Kliknij kafel, żeby przejść do edycji.',
+      'Osoby w zespole oraz teksty na stronie głównej i w sekcji O nas.',
 
-    Panel: null,
+    Panel: HeroPanel,
 
   },
 
@@ -44,7 +59,7 @@ export const adminNavItems = [
 
     pageDescription:
 
-      'Tak będą wyglądać pakiety na stronie. Po skończeniu, naciśnij **Zapisz na stronie**.',
+      'Pakiety tak jak na stronie.',
 
     Panel: OfferPanel,
 
@@ -62,27 +77,9 @@ export const adminNavItems = [
 
     pageDescription:
 
-      'Lista zabiegów jak na stronie. Kliknij wiersz, aby edytować lub plus, aby dodać zabieg, na końcu naciśnij **Zapisz na stronie**.',
+      'Zabiegi i stawki, tak jak na stronie.',
 
     Panel: PricingPanel,
-
-  },
-
-  {
-
-    id: 'firma',
-
-    label: 'Dane firmy',
-
-    hint: 'Adres, telefon, godziny',
-
-    icon: 'company',
-
-    pageDescription:
-
-      'Dane wyświetlane w zakładce Kontakt na stronie wraz z mapą. Po zmianach kliknij **Zapisz na stronie**.',
-
-    Panel: ContactPanel,
 
   },
 
@@ -98,7 +95,7 @@ export const adminNavItems = [
 
     pageDescription:
 
-      'Zdjęcia w portfolio — tak jak w galerii na stronie.\n**Plus w rogu** dodaje zdjęcia. Kliknij kafelek, wpisz podpis i **Zapisz**. Kolejność: strzałki ↑↓ (1 = na początku).',
+      'Zdjęcia tak jak w galerii na stronie.',
 
     Panel: GalleryPanel,
 
@@ -116,7 +113,7 @@ export const adminNavItems = [
 
     pageDescription:
 
-      'Opinie klientek — tak jak w sekcji na stronie (gwiazdki i krótki tekst).\n**Plus w rogu** dodaje opinię. Kliknij wiersz, uzupełnij i **Zapisz**. Kolejność: strzałki ↑↓. Publikuj tylko za zgodą autora.',
+      'Opinie klientek, tak jak na stronie.',
 
     Panel: ReviewsPanel,
 
@@ -134,9 +131,27 @@ export const adminNavItems = [
 
     pageDescription:
 
-      'Krótkie ogłoszenia w **pasku u góry strony** (urlop, zmiana godzin, zamknięcie).\nKliknij wiersz, wpisz treść i ustaw daty — puste „od” i „do” = od razu i bez końca. Nowy komunikat: **plus w rogu**.',
+      'Ogłoszenia w pasku u góry strony.',
 
     Panel: NoticesPanel,
+
+  },
+
+  {
+
+    id: 'firma',
+
+    label: 'Dane firmy',
+
+    hint: 'Adres, telefon, godziny',
+
+    icon: 'company',
+
+    pageDescription:
+
+      'Adres, telefon i godziny w zakładce Kontakt.',
+
+    Panel: ContactPanel,
 
   },
 

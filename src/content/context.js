@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo } from 'react'
+import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { isSupabaseConfigured } from '../lib/supabaseConfig'
 import { contactDefaults, sectionDefaults } from '../data/defaults'
 import { DEFAULT_THEME } from './themes'
@@ -50,7 +50,30 @@ export function useContactInfo() {
 
 export function useNotices() {
   const { notices } = useContent()
-  return useMemo(() => withPlainDashes(notices), [notices])
+  const [now, setNow] = useState(() => Date.now())
+
+  // Pasek pojawia się i znika o zadanej godzinie, bez odświeżania strony.
+  useEffect(() => {
+    const current = Date.now()
+    let next = null
+
+    for (const notice of notices ?? []) {
+      for (const iso of [notice.starts_at, notice.ends_at]) {
+        const time = iso ? new Date(iso).getTime() : NaN
+        if (time > current && (next == null || time < next)) next = time
+      }
+    }
+
+    if (next == null) return undefined
+
+    const id = window.setTimeout(() => setNow(Date.now()), next - current + 200)
+    return () => window.clearTimeout(id)
+  }, [notices, now])
+
+  return useMemo(
+    () => withPlainDashes(notices).filter((notice) => isNoticeVisible(notice, now)),
+    [notices, now],
+  )
 }
 
 export function useGallery() {
@@ -72,6 +95,13 @@ export function useReviews() {
 export function isNoticeVisible(notice, now = Date.now()) {
   if (!notice?.is_active) return false
   if (notice.starts_at && new Date(notice.starts_at).getTime() > now) return false
+  if (notice.ends_at && new Date(notice.ends_at).getTime() < now) return false
+  return true
+}
+
+// Aktywny komunikat, który jeszcze się nie skończył — także ten z przyszłą datą startu.
+export function isNoticePending(notice, now = Date.now()) {
+  if (!notice?.is_active) return false
   if (notice.ends_at && new Date(notice.ends_at).getTime() < now) return false
   return true
 }

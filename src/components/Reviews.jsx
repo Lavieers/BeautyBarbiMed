@@ -26,7 +26,8 @@ function Reviews() {
   const content = useSection('reviews')
   const contact = useContactInfo()
   const dbReviews = useReviews()
-  const reviews = dbReviews.length > 0 ? dbReviews : (content.fallbackReviews || [])
+  const published = dbReviews.filter((review) => review.is_published !== false)
+  const reviews = dbReviews.length > 0 ? published : (content.fallbackReviews || [])
   const carouselRef = useRef(null)   // __grid-wrap — scroll container
   const gridRef = useRef(null)       // __grid — do odczytu gap
 

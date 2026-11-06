@@ -177,12 +177,12 @@ drop policy if exists "sections admin write" on public.sections;
 create policy "sections admin write" on public.sections
   for all using (public.is_admin()) with check (public.is_admin());
 
--- Komunikat widoczny publicznie tylko gdy włączony i w oknie czasowym.
+-- Publiczny odczyt obejmuje też komunikaty z przyszłą datą startu, żeby
+-- strona mogła pokazać pasek sama o zadanej godzinie. Koniec okna odcina wiersz.
 drop policy if exists "notices public read" on public.notices;
 create policy "notices public read" on public.notices
   for select using (
     is_active
-    and (starts_at is null or starts_at <= now())
     and (ends_at is null or ends_at >= now())
   );
 

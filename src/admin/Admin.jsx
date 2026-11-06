@@ -102,11 +102,13 @@ function Admin() {
 
   if (loading) return <div className="adm-login">Wczytuję…</div>
 
-  if (!session) return <Login />
+  const previewUnlocked = false
+
+  if (!session && !previewUnlocked) return <Login />
 
 
 
-  if (!isAdmin) {
+  if (!isAdmin && !previewUnlocked) {
 
     return (
 
@@ -161,8 +163,6 @@ function Admin() {
       <aside className="adm__sidebar" id="adm-sidebar">
 
         <div className="adm__brand">
-
-          <p className="adm__brand-kicker">Panel administracyjny</p>
 
           <p className="adm__brand-name">Beauty Barbi Med</p>
 
@@ -221,7 +221,7 @@ function Admin() {
 
 
       <div
-        className={`adm__main${activeId === 'pakiety' ? ' adm__main--offer' : ''}${activeId === 'firma' ? ' adm__main--contact' : ''}`}
+        className={`adm__main${activeId === 'pakiety' ? ' adm__main--offer' : ''}${activeId === 'hero' ? ' adm__main--copy' : ''}${activeId === 'opinie' ? ' adm__main--reviews' : ''}`}
       >
 
         <header className="adm__mobile-bar">
@@ -274,6 +274,7 @@ function Admin() {
           title={active.label}
           description={active.pageDescription}
           descriptionFull={
+            activeId === 'hero' ||
             activeId === 'pakiety' ||
             activeId === 'cennik' ||
             activeId === 'firma' ||
@@ -297,7 +298,7 @@ function Admin() {
         />
 
         <main
-          className={`adm__body${ActivePanel ? '' : ' adm__body--home'}${activeId === 'pakiety' ? ' adm__body--offer' : ''}${activeId === 'firma' ? ' adm__body--contact' : ''}`}
+          className={`adm__body${ActivePanel ? '' : ' adm__body--home'}${activeId === 'pakiety' ? ' adm__body--offer' : ''}${activeId === 'hero' ? ' adm__body--copy' : ''}${activeId === 'opinie' ? ' adm__body--reviews' : ''}`}
         >
 
           {ActivePanel ? (

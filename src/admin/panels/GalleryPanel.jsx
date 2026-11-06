@@ -12,6 +12,25 @@ function sortedRows(rows) {
   )
 }
 
+function sameId(a, b) {
+  return String(a) === String(b)
+}
+
+function moveId(ids, id, targetId, place) {
+  const from = ids.findIndex((item) => sameId(item, id))
+  const target = ids.findIndex((item) => sameId(item, targetId))
+  if (from < 0 || target < 0 || from === target) return ids
+
+  let to = place === 'before' ? target : target + 1
+  if (from < to) to -= 1
+  if (from === to) return ids
+
+  const next = ids.slice()
+  const [item] = next.splice(from, 1)
+  next.splice(to, 0, item)
+  return next
+}
+
 function GalleryModal({ title, children, onClose }) {
   useEffect(() => {
     const prevOverflow = document.body.style.overflow
@@ -50,59 +69,60 @@ function GalleryModal({ title, children, onClose }) {
   )
 }
 
+function MoveIcon({ direction }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path
+        d={direction === 'up' ? 'm6 14 6-6 6 6' : 'm6 10 6 6 6-6'}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
 function GalleryForm({ value, onChange }) {
   const patch = (next) => onChange({ ...value, ...next })
+  const published = Boolean(value.is_published)
 
   return (
-    <div className="adm-gallery__modal-layout">
-      <div className="adm-gallery__modal-preview">
+    <div className="adm-gallery__form">
+      <div className="adm-gallery__preview">
         <img src={mediaUrl(value.storage_path)} alt="" />
       </div>
 
-      <div className="adm-gallery__modal-fields">
-        <label className="adm-field">
-          <span className="adm-field__label">Nazwa zabiegu (na kafelku)</span>
+      <div className="adm-gallery__aside">
+        <div className="adm-gallery__switch" role="group" aria-label="Widoczność zdjęcia">
+          <button
+            type="button"
+            className={published ? 'is-on' : ''}
+            aria-pressed={published}
+            onClick={() => patch({ is_published: true })}
+          >
+            Widoczne
+          </button>
+          <button
+            type="button"
+            className={published ? '' : 'is-on'}
+            aria-pressed={!published}
+            onClick={() => patch({ is_published: false })}
+          >
+            Ukryte
+          </button>
+        </div>
+
+        <label className="adm-gallery__name">
+          <span>Nazwa zabiegu</span>
           <input
-            className="adm-input"
             value={value.category ?? ''}
             onChange={(event) => patch({ category: event.target.value })}
             placeholder="np. Mezoterapia mikroigłowa"
           />
         </label>
-
-        <label className="adm-field">
-          <span className="adm-field__label">Krótki fakt pod zdjęciem</span>
-          <input
-            className="adm-input"
-            value={value.caption ?? ''}
-            onChange={(event) => patch({ caption: event.target.value })}
-            placeholder="np. Efekt po 3 tygodniach"
-          />
-        </label>
-
-        <label className="adm-field">
-          <span className="adm-field__label">Opis dla czytników ekranu</span>
-          <input
-            className="adm-input"
-            value={value.alt ?? ''}
-            onChange={(event) => patch({ alt: event.target.value })}
-            placeholder="np. Stanowisko do zabiegu"
-          />
-        </label>
-
-        <label className="adm-field adm-field--check adm-gallery__modal-check">
-          <input
-            type="checkbox"
-            checked={Boolean(value.is_published)}
-            onChange={(event) => patch({ is_published: event.target.checked })}
-          />
-          <span>Widoczne na stronie</span>
-        </label>
       </div>
-
-      <p className="adm-field__hint adm-gallery__modal-hint">
-        Kolejność: strzałki ↑↓ na kafelku w galerii (niższy numer = wyżej na stronie).
-      </p>
     </div>
   )
 }
@@ -114,11 +134,34 @@ function GalleryPanel() {
     'sort_order.asc,created_at.desc',
   )
   const inputRef = useRef(null)
+  const gridRef = useRef(null)
+  const dragRef = useRef(null)
+  const suppressClick = useRef(false)
   const [busy, setBusy] = useState(false)
   const [status, setStatus] = useState(null)
   const [modal, setModal] = useState(null)
+  const [pendingIds, setPendingIds] = useState(null)
+  const [draggingId, setDraggingId] = useState(null)
+  const [drop, setDrop] = useState(null)
+  const [ghost, setGhost] = useState(null)
 
   const ordered = useMemo(() => sortedRows(rows), [rows])
+
+  const display = useMemo(() => {
+    if (!pendingIds) return ordered
+    const next = pendingIds
+      .map((id) => ordered.find((row) => sameId(row.id, id)))
+      .filter(Boolean)
+    return next.length === ordered.length ? next : ordered
+  }, [ordered, pendingIds])
+
+  useEffect(() => {
+    if (!pendingIds) return
+    const server = ordered.map((row) => row.id)
+    if (server.length === pendingIds.length && server.every((id, index) => sameId(id, pendingIds[index]))) {
+      setPendingIds(null)
+    }
+  }, [ordered, pendingIds])
 
   const afterChange = async (text) => {
     await reload()
@@ -134,7 +177,7 @@ function GalleryPanel() {
     setStatus({ kind: 'busy', text: `Wgrywam ${files.length} plik(i)…` })
 
     try {
-      let nextOrder = ordered.reduce((max, row) => Math.max(max, row.sort_order ?? 0), 0)
+      let nextOrder = display.reduce((max, row) => Math.max(max, row.sort_order ?? 0), 0)
 
       for (const file of files) {
         const storagePath = await uploadMedia(file, 'galeria')
@@ -150,7 +193,7 @@ function GalleryPanel() {
         if (error) throw error
       }
 
-      await afterChange('Zdjęcia dodane — kliknij kafelek i uzupełnij podpis.')
+      await afterChange('Zdjęcia dodane — kliknij kafelek i uzupełnij nazwę.')
     } catch (cause) {
       setStatus({ kind: 'error', text: cause.message ?? 'Nie udało się wgrać zdjęć.' })
     } finally {
@@ -159,29 +202,129 @@ function GalleryPanel() {
     }
   }
 
-  const move = async (id, direction) => {
-    const list = sortedRows(rows)
-    const index = list.findIndex((row) => row.id === id)
+  const persistOrder = async (ids) => {
+    const orderError = 'Nie udało się zapisać kolejności.'
+    setBusy(true)
+    setPendingIds(ids)
+    setStatus(null)
+
+    try {
+      const updates = ids.map((id, position) =>
+        supabase.from('gallery_images').update({ sort_order: position + 1 }).eq('id', id),
+      )
+      const results = await Promise.all(updates)
+      const failed = results.find((result) => result.error)
+      if (failed?.error) {
+        setPendingIds(null)
+        setStatus({ kind: 'error', text: orderError })
+        return
+      }
+
+      await reload()
+      await refresh()
+    } catch {
+      setPendingIds(null)
+      setStatus({ kind: 'error', text: orderError })
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const move = (id, direction) => {
+    const ids = display.map((row) => row.id)
+    const index = ids.findIndex((item) => sameId(item, id))
     const target = index + direction
-    if (index < 0 || target < 0 || target >= list.length) return
+    if (index < 0 || target < 0 || target >= ids.length) return
 
-    const next = [...list]
-    ;[next[index], next[target]] = [next[target], next[index]]
+    const next = ids.slice()
+    const [item] = next.splice(index, 1)
+    next.splice(target, 0, item)
+    return persistOrder(next)
+  }
 
-    setStatus({ kind: 'busy', text: 'Zmieniam kolejność…' })
+  const slotFromPoint = (x, y, sourceId) => {
+    const tiles = gridRef.current?.querySelectorAll('.adm-gallery__tile') ?? []
+    let best = null
+    let bestDist = Infinity
 
-    const updates = next.map((row, position) =>
-      supabase.from('gallery_images').update({ sort_order: position + 1 }).eq('id', row.id),
-    )
-
-    const results = await Promise.all(updates)
-    const failed = results.find((result) => result.error)
-    if (failed?.error) {
-      setStatus({ kind: 'error', text: failed.error.message })
-      return
+    for (const tile of tiles) {
+      if (sameId(tile.dataset.id, sourceId)) continue
+      const rect = tile.getBoundingClientRect()
+      const nearestX = Math.min(Math.max(x, rect.left), rect.right)
+      const nearestY = Math.min(Math.max(y, rect.top), rect.bottom)
+      const dist = (x - nearestX) ** 2 + (y - nearestY) ** 2
+      if (dist < bestDist) {
+        bestDist = dist
+        best = { id: tile.dataset.id, rect }
+      }
     }
 
-    await afterChange('Kolejność zapisana.')
+    if (!best || bestDist > 48 * 48) return null
+    return {
+      id: best.id,
+      place: x < best.rect.left + best.rect.width / 2 ? 'before' : 'after',
+    }
+  }
+
+  const beginDrag = (event, row) => {
+    if (event.button !== 0 || busy) return
+    if (event.target.closest('.adm-gallery__arrow')) return
+
+    suppressClick.current = false
+    dragRef.current = {
+      id: row.id,
+      src: mediaUrl(row.storage_path),
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      dragging: false,
+      drop: null,
+    }
+  }
+
+  const trackDrag = (event) => {
+    const drag = dragRef.current
+    if (!drag || drag.pointerId !== event.pointerId) return
+
+    const dx = event.clientX - drag.startX
+    const dy = event.clientY - drag.startY
+    if (!drag.dragging) {
+      if (dx * dx + dy * dy < 36) return
+      drag.dragging = true
+      suppressClick.current = true
+      event.currentTarget.setPointerCapture(event.pointerId)
+      setDraggingId(drag.id)
+    }
+
+    const slot = slotFromPoint(event.clientX, event.clientY, drag.id)
+    drag.drop = slot
+    setDrop(slot)
+    setGhost({ src: drag.src, x: event.clientX, y: event.clientY })
+  }
+
+  const finishDrag = (event, commit) => {
+    const drag = dragRef.current
+    if (!drag || drag.pointerId !== event.pointerId) return
+    dragRef.current = null
+
+    if (event.currentTarget.hasPointerCapture?.(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId)
+    }
+
+    const slot = drag.drop
+    const moved = drag.dragging
+    setGhost(null)
+    setDrop(null)
+    setDraggingId(null)
+
+    if (!moved) return
+    suppressClick.current = true
+    if (!commit || !slot) return
+
+    const ids = display.map((row) => row.id)
+    const next = moveId(ids, drag.id, slot.id, slot.place)
+    if (next === ids) return
+    void persistOrder(next)
   }
 
   const saveModal = async () => {
@@ -191,8 +334,6 @@ function GalleryPanel() {
     const { error } = await supabase
       .from('gallery_images')
       .update({
-        alt: value.alt,
-        caption: value.caption,
         category: value.category,
         is_published: value.is_published,
       })
@@ -232,42 +373,70 @@ function GalleryPanel() {
             Galeria jest pusta — wgraj pierwsze zdjęcie plusem w rogu (najlepiej pionowe, min. 900 × 1125 px).
           </p>
         ) : (
-          <ul className="adm-gallery__grid">
-            {ordered.map((row, index) => {
-              const label = (row.category || row.caption || '').trim()
+          <ul
+            ref={gridRef}
+            className={`adm-gallery__grid${draggingId ? ' is-sorting' : ''}`}
+          >
+            {display.map((row, index) => {
+              const label = (row.category || '').trim()
+              const dropping = drop && sameId(drop.id, row.id)
               return (
-                <li key={row.id} className="adm-gallery__tile">
-                  <span className="adm-gallery__order">{index + 1}</span>
-                  {!row.is_published && (
-                    <span className="adm-gallery__badge">Ukryte</span>
-                  )}
+                <li
+                  key={row.id}
+                  data-id={row.id}
+                  className={[
+                    'adm-gallery__tile',
+                    sameId(draggingId, row.id) ? 'is-dragging' : '',
+                    dropping ? `is-drop-${drop.place}` : '',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
+                  onPointerDown={(event) => beginDrag(event, row)}
+                  onPointerMove={trackDrag}
+                  onPointerUp={(event) => finishDrag(event, true)}
+                  onPointerCancel={(event) => finishDrag(event, false)}
+                >
                   <button
                     type="button"
                     className="adm-gallery__hit"
-                    onClick={() => setModal({ value: { ...row } })}
+                    aria-label={label ? `Edytuj: ${label}` : 'Edytuj zdjęcie'}
+                    onClick={() => {
+                      if (suppressClick.current) {
+                        suppressClick.current = false
+                        return
+                      }
+                      setModal({ value: { ...row } })
+                    }}
                   >
-                    <img src={mediaUrl(row.storage_path)} alt="" loading="lazy" decoding="async" />
+                    <img
+                      src={mediaUrl(row.storage_path)}
+                      alt=""
+                      draggable="false"
+                      loading="lazy"
+                      decoding="async"
+                    />
                     {label ? <span className="adm-gallery__label">{label}</span> : null}
-                    <span className="adm-gallery__edit">Edytuj</span>
+                    {!row.is_published && <span className="adm-gallery__badge">Ukryte</span>}
                   </button>
                   <div className="adm-gallery__reorder">
                     <button
                       type="button"
                       className="adm-gallery__arrow"
-                      aria-label="Przesuń wcześniej na liście"
+                      aria-label="Przesuń wcześniej"
                       disabled={index === 0 || busy}
                       onClick={() => move(row.id, -1)}
                     >
-                      ↑
+                      <MoveIcon direction="up" />
                     </button>
+                    <span className="adm-gallery__order">{index + 1}</span>
                     <button
                       type="button"
                       className="adm-gallery__arrow"
-                      aria-label="Przesuń później na liście"
+                      aria-label="Przesuń później"
                       disabled={index === ordered.length - 1 || busy}
                       onClick={() => move(row.id, 1)}
                     >
-                      ↓
+                      <MoveIcon direction="down" />
                     </button>
                   </div>
                 </li>
@@ -276,6 +445,12 @@ function GalleryPanel() {
           </ul>
         )}
       </section>
+
+      {ghost ? (
+        <div className="adm-gallery__ghost" style={{ left: ghost.x, top: ghost.y }}>
+          <img src={ghost.src} alt="" draggable="false" />
+        </div>
+      ) : null}
 
       <input
         ref={inputRef}
@@ -299,18 +474,14 @@ function GalleryPanel() {
       {modal ? (
         <GalleryModal title="Zdjęcie w portfolio" onClose={() => setModal(null)}>
           <GalleryForm value={modal.value} onChange={(value) => setModal({ value })} />
-          <div className="adm-modal__foot">
-            <button type="button" className="adm-btn adm-btn--primary" onClick={saveModal}>
+          <div className="adm-gallery__foot">
+            <button type="button" className="adm-gallery__save" onClick={saveModal}>
               Zapisz
             </button>
-            <button type="button" className="adm-btn adm-btn--ghost" onClick={() => setModal(null)}>
+            <button type="button" className="adm-gallery__cancel" onClick={() => setModal(null)}>
               Anuluj
             </button>
-            <button
-              type="button"
-              className="adm-btn adm-btn--quiet adm-gallery__delete"
-              onClick={() => remove(modal.value)}
-            >
+            <button type="button" className="adm-gallery__delete" onClick={() => remove(modal.value)}>
               Usuń zdjęcie
             </button>
           </div>

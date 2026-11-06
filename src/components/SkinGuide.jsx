@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import gabinetInterior from '../assets/gabinet-wnetrze.webp'
-import guideBiopen from '../assets/guide-biopen.webp'
-import guideSuchosc from '../assets/guide-suchosc.webp'
+import mezoMikro from '../assets/mezomig.webp'
+import mezoIgla from '../assets/mezoigg.webp'
 import guideRf from '../assets/guide-rf.webp'
 import guideMaska from '../assets/guide-maska.webp'
-import guideRzesy from '../assets/guide-rzesy.webp'
+import rzesyMokry from '../assets/rzesy-mokry-efekt.webp'
 import guideDiament from '../assets/guide-diament.webp'
 import guideMezo from '../assets/guide-mezo.webp'
-import { useSection } from '../content/context'
+import { useContactInfo, useSection } from '../content/context'
 import { mediaUrl } from '../lib/supabaseConfig'
 import { guideTreatmentIds } from '../data/treatmentGuide'
 import Button from './Button'
@@ -16,18 +16,21 @@ import Icon from './Icon'
 import './SkinGuide.scss'
 
 const OPTION_IMAGES = {
-  zmarszczki: guideBiopen,
-  suchosc: guideSuchosc,
+  zmarszczki: mezoMikro,
+  suchosc: mezoIgla,
   owal: guideRf,
   bankiet: guideMaska,
-  spojrzenie: guideRzesy,
+  spojrzenie: rzesyMokry,
   pory: guideDiament,
   przebarwienia: guideMezo,
 }
 
-// Zdjęcie RF jest poziome – twarz jest po prawej, więc kadr przesuwamy w jej stronę.
+// Kadr: na wąskiej kolumnie i na pasku w telefonie ma być widać zabieg, nie tło.
 const OPTION_IMAGE_POSITION = {
+  zmarszczki: '38% 70%',
+  suchosc: '46% 30%',
   owal: '72% center',
+  spojrzenie: '50% 42%',
   przebarwienia: '100% 40%', // twarz po prawej stronie kadru
 }
 
@@ -142,9 +145,10 @@ function moveTab(event, index, options, tabRefs, select) {
   tabRefs.current[next]?.focus()
 }
 
-function SkinGuide({ onBook, onTreatmentInfo }) {
+function SkinGuide({ onTreatmentInfo }) {
   const reduced = useReducedMotion()
   const content = useSection('skinGuide')
+  const contact = useContactInfo()
   const options = content.options || []
   const [selectedId, setSelectedId] = useState(options[0]?.id || 'zmarszczki')
   const tabRefs = useRef([])
@@ -388,7 +392,8 @@ function SkinGuide({ onBook, onTreatmentInfo }) {
                           variant="cta-primary"
                           size="compact"
                           className="skin-guide__foot-book"
-                          onClick={onBook}
+                          href={contact.booksy}
+                          external
                         >
                           Umów wizytę
                         </Button>

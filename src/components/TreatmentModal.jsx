@@ -5,11 +5,10 @@ import useModalBehavior from '../lib/useModalBehavior'
 import useSwipe from '../lib/useSwipe'
 import { useSection } from '../content/context'
 import { guideFor, rowKey } from '../data/treatmentGuide'
-import './BookingModal.scss'
 import './PackageModal.scss'
 
 
-function TreatmentModal({ open, ids, currentId, onSelect, onBook, onClose }) {
+function TreatmentModal({ open, ids, currentId, onSelect, onClose }) {
   const reduced = useReducedMotion()
   const pricing = useSection('pricing')
   const panelRef = useModalBehavior(open, onClose)
@@ -85,7 +84,6 @@ function TreatmentModal({ open, ids, currentId, onSelect, onBook, onClose }) {
               price={entry.row.price}
               guide={entry.guide}
               nav={canNavigate ? { position, total: list.length, go } : null}
-              onBook={onBook}
               onClose={onClose}
             />
           </motion.div>

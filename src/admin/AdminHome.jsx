@@ -1,23 +1,23 @@
 import AdminIcon from './AdminIcon'
 import { useAdminDashboard } from './useAdminDashboard'
 
-function DashTile({ id, icon, title, action, onOpen, compact, children }) {
+function DashTile({ id, icon, title, onOpen, children }) {
   return (
-    <article
-      className={`adm-dash__tile adm-dash__tile--${id}${compact ? ' adm-dash__tile--compact' : ''}`}
-    >
+    <article className={`adm-dash__tile adm-dash__tile--${id}`}>
       <button type="button" className="adm-dash__hit" onClick={onOpen}>
         <header className="adm-dash__head">
-          <span className="adm-dash__icon-wrap" aria-hidden="true">
-            <AdminIcon name={icon} className="adm-dash__icon" />
-          </span>
+          <AdminIcon name={icon} className="adm-dash__icon" />
           <h2 className="adm-dash__title">{title}</h2>
-          <span className="adm-dash__action">{action}</span>
         </header>
         <div className="adm-dash__body">{children}</div>
       </button>
     </article>
   )
+}
+
+function letterOf(name) {
+  const clean = String(name ?? '').trim()
+  return clean ? clean.charAt(0).toLocaleUpperCase('pl') : '?'
 }
 
 function AdminHome({ onSelect }) {
@@ -28,7 +28,10 @@ function AdminHome({ onSelect }) {
     data.contact.instagram && { label: 'Instagram', value: data.contact.instagram },
     data.contact.facebook && { label: 'Facebook', value: data.contact.facebook, link: true },
     data.contact.booksy && { label: 'Booksy', value: data.contact.booksy, link: true },
-    data.contact.address && { label: 'Adres', value: data.contact.address },
+    data.contact.address && {
+      label: 'Adres',
+      value: data.contact.address.split(/,\s*/).filter(Boolean),
+    },
     data.contact.hours.length > 0 && {
       label: 'Godziny',
       value: data.contact.hours,
@@ -37,17 +40,48 @@ function AdminHome({ onSelect }) {
 
   return (
     <div className="adm-dash">
+      <DashTile id="zespol" icon="team" title="Zespół" onOpen={() => onSelect('hero')}>
+        {data.team.length === 0 ? (
+          <p className="adm-dash__empty">Zespół jest pusty.</p>
+        ) : (
+          <table className="adm-dash__team-table">
+            <thead>
+              <tr>
+                <th scope="col">Osoba</th>
+                <th scope="col">Rola</th>
+                <th scope="col">Telefon</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.team.map((person) => (
+                <tr key={person.id}>
+                  <th scope="row">
+                    <span className="adm-dash__member">
+                      <span className="adm-dash__member-avatar" aria-hidden="true">
+                        {letterOf(person.name)}
+                      </span>
+                      <span className="adm-dash__member-name">{person.name || 'Bez imienia'}</span>
+                    </span>
+                  </th>
+                  <td className={person.role ? undefined : 'adm-dash__team-empty'}>{person.role || '—'}</td>
+                  <td className={person.phone ? undefined : 'adm-dash__team-empty'}>{person.phone || '—'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </DashTile>
+
       <div className="adm-dash__band">
         <div className="adm-dash__band-left">
           <DashTile
             id="portfolio"
             icon="portfolio"
             title="Portfolio"
-            action="Zarządzaj ›"
             onOpen={() => onSelect('portfolio')}
           >
             {data.galleryPreview.length === 0 ? (
-              <p className="adm-dash__empty">Galeria czeka na pierwsze zdjęcia efektów.</p>
+              <p className="adm-dash__empty">Brak zdjęć.</p>
             ) : (
               <ul className="adm-dash__gallery adm-dash__gallery--hero">
                 {data.galleryPreview.map((image) => (
@@ -64,11 +98,10 @@ function AdminHome({ onSelect }) {
             id="opinie"
             icon="reviews"
             title="Opinie"
-            action="Zarządzaj ›"
             onOpen={() => onSelect('opinie')}
           >
             {data.reviewSnippets.length === 0 ? (
-              <p className="adm-dash__empty">Brak opublikowanych opinii.</p>
+              <p className="adm-dash__empty">Brak opinii.</p>
             ) : (
               <ul className="adm-dash__quotes adm-dash__quotes--grid">
                 {data.reviewSnippets.map((review) => (
@@ -87,11 +120,10 @@ function AdminHome({ onSelect }) {
             id="firma"
             icon="company"
             title="Dane firmy"
-            action="Zarządzaj ›"
             onOpen={() => onSelect('firma')}
           >
             {contactRows.length === 0 ? (
-              <p className="adm-dash__empty">Uzupełnij dane kontaktowe w zakładce Dane firmy.</p>
+              <p className="adm-dash__empty">Brak danych.</p>
             ) : (
               <ul className="adm-dash__contact adm-dash__contact--plain">
                 {contactRows.map((row) => (
@@ -123,13 +155,11 @@ function AdminHome({ onSelect }) {
             <DashTile
               id="komunikaty"
               icon="notices"
-              title="Alerty strony"
-              action="Zarządzaj ›"
-              compact
+              title="Komunikaty"
               onOpen={() => onSelect('komunikaty')}
             >
               {data.activeNotices.length === 0 ? (
-                <p className="adm-dash__notice-empty">Brak aktywnych komunikatów na stronie.</p>
+                <p className="adm-dash__empty">Brak komunikatów.</p>
               ) : (
                 <ul className="adm-dash__notice-list">
                   {data.activeNotices.map((notice) => (
@@ -147,8 +177,7 @@ function AdminHome({ onSelect }) {
       <DashTile
         id="cennik"
         icon="pricing"
-        title="Cennik zabiegów"
-        action="Zarządzaj ›"
+        title="Cennik"
         onOpen={() => onSelect('cennik')}
       >
         {data.priceRows.length === 0 ? (
@@ -171,11 +200,10 @@ function AdminHome({ onSelect }) {
         id="pakiety"
         icon="packages"
         title="Pakiety"
-        action="Zarządzaj ›"
         onOpen={() => onSelect('pakiety')}
       >
         {data.packages.length === 0 ? (
-          <p className="adm-dash__empty">Brak pakietów — dodaj zestawy w zakładce Pakiety.</p>
+          <p className="adm-dash__empty">Brak pakietów.</p>
         ) : (
           <ul className="adm-dash__packages">
             {data.packages.map((pkg) => (

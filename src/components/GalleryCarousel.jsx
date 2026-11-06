@@ -1,5 +1,5 @@
 import useLoopCarousel from '../lib/useLoopCarousel'
-import { TILE_HEIGHT, TILE_WIDTH, captionOf, imageSrc, tileLabel } from './galleryHelpers'
+import { TILE_HEIGHT, TILE_WIDTH, imageSrc, tileLabel, treatmentOf } from './galleryHelpers'
 
 // Portfolio na telefonie: zdjęcia w zapętlonej karuzeli przesuwanej palcem (jak pakiety).
 // Karty są wyśrodkowane, z brzegu widać sąsiednie; kliknięcie otwiera powiększenie.
@@ -15,7 +15,7 @@ function GalleryCarousel({ images, autoPlay, onOpen }) {
     const isClone = loop && copy !== 1
     images.forEach((image, i) => {
       const index = copy * count + i
-      const { treatment, fact } = captionOf(image)
+      const treatment = treatmentOf(image)
       cards.push(
         <li
           key={`${copy}-${image.id}`}
@@ -38,7 +38,7 @@ function GalleryCarousel({ images, autoPlay, onOpen }) {
             <span className="gal-card__media">
               <img
                 src={imageSrc(image)}
-                alt={image.alt || ''}
+                alt={treatment}
                 width={TILE_WIDTH}
                 height={TILE_HEIGHT}
                 loading="lazy"
@@ -47,7 +47,6 @@ function GalleryCarousel({ images, autoPlay, onOpen }) {
               />
             </span>
             {treatment && <span className="gal-card__name">{treatment}</span>}
-            {fact && <span className="gal-card__fact">{fact}</span>}
           </button>
         </li>,
       )

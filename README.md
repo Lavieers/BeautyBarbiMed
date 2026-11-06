@@ -11,7 +11,7 @@ z danymi przechowywanymi w Supabase.
 - sekcje: powitalna, o gabinecie, pakiety zabiegowe, dobór pielęgnacji, standard wizyty,
   cennik, galeria, opinie, FAQ i kontakt z mapą,
 - okna z opisem zabiegu i pakietu (opis, dla kogo, efekty, przeciwwskazania, cena),
-- okno rezerwacji i pasek komunikatów (np. urlop, zmiana godzin),
+- pasek komunikatów (np. urlop, zmiana godzin),
 - treści domyślne wbudowane w kod – strona działa także bez połączenia z bazą.
 
 **Panel administracyjny** (`/admin`)
@@ -156,8 +156,10 @@ Zdjęcia do okien zabiegów należy wgrywać w formacie PNG.
 
 1. Zbuduj aplikację: `npm run build`.
 2. Wdróż katalog `dist` na hostingu statycznym (np. Vercel, Netlify – preset „Vite”).
-3. Ustaw zmienne środowiskowe `VITE_SUPABASE_URL` i `VITE_SUPABASE_ANON_KEY` w panelu
-   hostingu (plik `.env` nie jest częścią repozytorium).
+3. Ustaw zmienne środowiskowe w panelu hostingu (plik `.env` nie jest częścią repozytorium):
+   `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` oraz `VITE_SITE_URL` (docelowy adres strony,
+   np. `https://beautybarbimed.pl`). Od `VITE_SITE_URL` zależą canonical, podgląd linku i
+   `sitemap.xml`. Bez tej zmiennej opis, dane gabinetu i `robots.txt` i tak trafiają do buildu.
 4. Skonfiguruj przekierowanie wszystkich nieznanych adresów na `index.html`. Bez tego
    bezpośrednie wejście na `/admin` zwróci błąd 404. Presety Vercel i Netlify robią to
    automatycznie.

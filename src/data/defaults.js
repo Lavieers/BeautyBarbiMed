@@ -1,11 +1,11 @@
-// Treści domyślne — używane, dopóki dana sekcja nie zostanie zapisana w bazie
-// (tabela `sections`) oraz jako awaryjny zapas, gdy Supabase jest niedostępny.
-// Kształt każdego obiektu musi zgadzać się z tym, co zapisuje panel admina.
+// Teksty sekcji. Baza nadpisuje tylko to, co panel nadal edytuje
+// (opis na górze strony, akapit i zespół w „O gabinecie”, pakiety, cennik, dane firmy).
+// Reszta zostaje tutaj, także po odświeżeniu.
 
 export const contactDefaults = {
   city: 'Lublin',
   address: 'ul. Eugeniusza Romera 30, 20-487 Lublin',
-  hours: ['pon.–pt. 09:00–19:00', 'sob. 09:00–15:00'],
+  hours: ['pon - pt: 10:00 - 18:00', 'sobota: 08:00 - 13:00', 'niedziela - nieczynne'],
   phone: '+48 501 280 578',
   phoneHref: 'tel:+48501280578',
   facebook: 'https://www.facebook.com/profile.php?id=61579249767619',
@@ -36,12 +36,12 @@ export const sectionDefaults = {
 
   about: {
     kicker: 'Duet Ekspertek',
-    titleLead: 'Nowy gabinet,',
-    titleAccent: 'sprawdzone ręce',
+    titleLead: 'Doświadczenie,',
+    titleAccent: 'które czuć w dłoniach',
     lead:
-      'Beauty Barbi Med to nasza kameralna przestrzeń, w której pasję do świadomej pielęgnacji łączymy z twardymi kompetencjami. Tworzymy zgrany, dwuosobowy zespół specjalistek, dzięki czemu możesz liczyć na w pełni indywidualne podejście – zawsze wiesz, kto się Tobą zajmie.',
+      'Beauty Barbi Med założyła pielęgniarka, która przez lata pracowała z\u00a0pacjentami. Z zawodu wyniosła nawyk dokładności i spokojnej uwagi, który dziś towarzyszy każdej wizycie w gabinecie.',
     paragraph:
-      'Naszym absolutnym fundamentem jest bezpieczeństwo medyczne. Lata doświadczenia w ochronie zdrowia pozwalają nam gwarantować bezkompromisową sterylność i precyzję. Specjalizujemy się w zaawansowanej mezoterapii igłowej oraz profesjonalnej stylizacji oprawy oka, dbając o Ciebie wyłącznie przy użyciu certyfikowanych preparatów.',
+      'W mezoterapii, stylizacji brwi i rzęs czy pedicure podejście jest takie samo: zabieg dobrany do potrzeb konkretnej osoby, a nie do gotowego schematu. Podstawą są bezpieczeństwo i precyzja: certyfikowane preparaty, spokojna atmosfera i pełna dbałość o Twój komfort.',
     teamLabel: 'Dwuosobowy zespół',
     team: [
       {
@@ -579,22 +579,10 @@ export const sectionDefaults = {
     bookingLabel: 'Rezerwacja terminu',
     bookingText:
       'Wolne terminy znajdziesz w Booksy 24/7. Masz pytania? Zadzwoń – chętnie doradzimy.',
-    panelLabel: 'Rezerwacja',
-    panelTitle: 'Umów wizytę w dogodnym terminie',
-    panelText:
-      'Rezerwuj 24/7 online przez Booksy lub zadzwoń do nas, jeśli masz dodatkowe pytania przed zabiegiem.',
     primaryCta: 'Umów wizytę',
     routeCta: 'Wyznacz trasę',
     facebookLabel: 'Facebook',
     entrancePlaceholder: 'Zdjęcie wejścia',
-  },
-
-  booking: {
-    kicker: 'Rezerwacja Wizyty',
-    title: 'Wybierz dogodny sposób',
-    text:
-      'Sprawdź wolne terminy online na Booksy lub skontaktuj się z nami bezpośrednio pod numerem telefonu.',
-    note: 'Przed zabiegami mezoterapii zawsze przeprowadzamy wywiad medyczny.',
   },
 
   footer: {

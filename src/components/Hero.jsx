@@ -1,7 +1,8 @@
+import { useLayoutEffect, useRef, useState } from 'react'
 import { motion } from 'motion/react'
 import heroImage from '../assets/hero-bg.webp'
 import Button from './Button'
-import { useSection } from '../content/context'
+import { useContactInfo, useSection } from '../content/context'
 import { mediaUrl } from '../lib/supabaseConfig'
 import './Hero.scss'
 
@@ -10,20 +11,38 @@ const fadeUp = {
   animate: { opacity: 1, y: 0 },
 }
 
-function Hero({ onBook }) {
+function Hero() {
   const content = useSection('hero')
+  const contact = useContactInfo()
   const background = mediaUrl(content.backgroundImage) || heroImage
+  const frameRef = useRef(null)
+  // Raz, przy pierwszym rysowaniu: czy w HTML jest już zdjęcie hero. To zwykła wartość do renderu, nie ref.
+  const [adoptStatic] = useState(
+    () => typeof document !== 'undefined' && Boolean(document.getElementById('lcp-hero-img')),
+  )
+
+  useLayoutEffect(() => {
+    const img = document.getElementById('lcp-hero-img')
+    const frame = frameRef.current
+    if (!img || !frame) return
+    img.classList.add('hero__background')
+    img.removeAttribute('style')
+    const current = img.getAttribute('src') || ''
+    const nextName = String(background).split('/').pop()
+    if (nextName && !current.endsWith(nextName)) img.src = background
+    frame.prepend(img)
+  }, [background])
 
   const primaryLabel = content.primaryCta || 'Umów wizytę'
   const secondaryLabel = content.secondaryCta || 'Zabiegi i cennik'
 
   return (
-    <section className="hero" id="home" aria-label="Sekcja powitalna">
-      <div
-        className="hero__background"
-        style={{ backgroundImage: `url(${background})` }}
-        aria-hidden="true"
-      />
+    <section className="hero hero--photo" id="home" aria-label="Sekcja powitalna">
+      <div ref={frameRef}>
+        {!adoptStatic && (
+          <img className="hero__background" src={background} alt="" fetchPriority="high" />
+        )}
+      </div>
       <div className="hero__veil" aria-hidden="true" />
 
       <div className="hero__content">
@@ -57,7 +76,7 @@ function Hero({ onBook }) {
           {...fadeUp}
           transition={{ duration: 0.95, delay: 0.22, ease: [0.22, 1, 0.36, 1] }}
         >
-          <Button variant="cta-primary" onClick={onBook}>
+          <Button variant="cta-primary" href={contact.booksy} external>
             {primaryLabel}
           </Button>
 

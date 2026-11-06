@@ -1,75 +1,44 @@
-.adm-contact {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  min-height: 0;
+.adm-panel.adm-contact {
+  width: 100%;
   max-width: none;
+}
 
-  &__grid {
+.adm-contact {
+  &__body {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
-    grid-template-rows: minmax(0, 1fr);
-    gap: clamp(0.55rem, 1vw, 0.75rem);
-    flex: 1;
-    min-height: 0;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 1rem;
     align-items: stretch;
   }
 
-  &__stage {
+  &__window {
     display: flex;
     flex-direction: column;
-    min-height: 0;
-    padding: clamp(0.75rem, 1.3vw, 0.95rem);
+    gap: 1.15rem;
+    min-width: 0;
+    height: 100%;
+    padding: 1.15rem 1.25rem;
     background: #fff;
-    border: 1px solid rgba(var(--zloto-rgb), 0.34);
-    border-radius: calc(var(--radius) + 4px);
-    box-shadow:
-      0 1px 0 rgba(255, 255, 255, 0.95) inset,
-      0 8px 22px rgba(42, 33, 28, 0.05);
-    overflow: hidden;
+    border: 1px solid rgba(var(--color-deep-rgb), 0.12);
+    border-radius: 8px;
 
-    &--map {
-      .adm-contact__map-wrap {
-        flex: 1;
-        min-height: 0;
-        display: flex;
-        flex-direction: column;
-      }
+    // The space above the first field (padding + label + gap) is the shared inset.
+    &--details {
+      padding-bottom: calc(1.15rem + 0.875rem * 1.25 + 0.3rem);
+    }
+
+    // "Dodaj godziny" is centered in the inset under the last time row.
+    &--hours {
+      gap: 11px;
+      padding-bottom: 10px;
     }
   }
 
-  &__head {
+  &__main {
     display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    flex-shrink: 0;
-    margin-bottom: clamp(0.45rem, 1vh, 0.65rem);
-    padding-bottom: clamp(0.4rem, 0.9vh, 0.55rem);
-    border-bottom: 1px solid rgba(var(--zloto-rgb), 0.2);
-  }
-
-  &__title {
-    margin: 0;
-    font-family: var(--font-heading);
-    font-size: clamp(0.9375rem, 1.1vw, 1.05rem);
-    font-weight: 500;
-    color: var(--bordo);
-  }
-
-  &__body {
-    display: grid;
-    grid-template-rows: auto minmax(0, 1.25fr) minmax(0, 1fr);
-    flex: 1;
-    gap: clamp(0.55rem, 1.5vh, 0.85rem);
-    min-height: 0;
-    overflow: hidden;
-  }
-
-  &__row {
-    display: grid;
-    grid-template-columns: minmax(0, 1.45fr) minmax(0, 0.95fr);
-    gap: clamp(0.45rem, 1vw, 0.75rem);
-    align-items: end;
+    flex-direction: column;
+    gap: 1rem;
+    min-width: 0;
   }
 
   &__block {
@@ -77,77 +46,186 @@
 
     &--hours {
       display: flex;
+      flex: 1;
       flex-direction: column;
       min-height: 0;
-
-      .adm-list {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-evenly;
-        gap: clamp(0.35rem, 1vh, 0.55rem);
-        margin-bottom: clamp(0.25rem, 0.8vh, 0.45rem);
-      }
-
-      .adm-list__row {
-        align-items: center;
-        gap: 0.45rem;
-      }
     }
 
     &--social {
       display: flex;
       flex-direction: column;
-      justify-content: space-evenly;
-      min-height: 0;
-      gap: clamp(0.35rem, 1.2vh, 0.65rem);
-      padding-top: clamp(0.35rem, 1vh, 0.55rem);
-      border-top: 1px solid rgba(var(--color-deep-rgb), 0.08);
+      gap: 0.6rem;
     }
   }
 
-  &__hours .adm-field__label {
-    flex-shrink: 0;
+  &__schedule {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 0.65rem;
+    margin: 0.35rem 0 0;
+    padding: 0;
+    list-style: none;
+
+    &:has(> :nth-child(3)) {
+      justify-content: space-between;
+      gap: 0.4rem;
+    }
   }
 
-  &__add-line {
-    align-self: flex-start;
-    flex-shrink: 0;
-    padding: 0.4rem 0.65rem;
-    font-size: 0.75rem;
+  &__schedule-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) calc(2.225rem + 2px);
+    gap: 0.15rem 0.55rem;
+    align-items: center;
   }
 
-  &__hours .adm-btn--quiet {
-    flex-shrink: 0;
-    padding: 0.35rem 0.55rem;
-    font-size: 0.75rem;
+  &__schedule-days,
+  &__schedule-times {
+    display: grid;
+    gap: 0.35rem;
+    align-items: center;
+    min-width: 0;
+
+    .adm-input {
+      min-width: 0;
+    }
   }
 
-  &__social-title {
-    margin: 0;
-    flex-shrink: 0;
-    font-size: 0.6875rem;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+  &__schedule-days {
+    grid-column: 1;
+    grid-row: 1;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  }
+
+  &__schedule-times {
+    grid-column: 1;
+    grid-row: 2;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto;
+
+    &.is-closed .adm-input {
+      opacity: 0.4;
+    }
+  }
+
+  &__schedule-dash {
     color: var(--color-deep-soft);
+    font-size: 0.875rem;
+    line-height: 1;
+  }
+
+  &__closed {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    height: calc(2.225rem + 2px);
+    margin: 0;
+    padding: 0 0.55rem;
+    font-family: inherit;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--color-deep-soft);
+    background: #fff;
+    border: 1px solid rgba(var(--color-deep-rgb), 0.14);
+    border-radius: var(--radius);
+    cursor: pointer;
+
+    &.is-on {
+      color: var(--krem);
+      background: var(--bordo);
+      border-color: var(--bordo);
+    }
+  }
+
+  &__add-line.adm-btn {
+    position: static;
+    display: inline-flex;
+    align-items: center;
+    align-self: start;
+    gap: 0.35rem;
+    margin-top: 0;
+    padding: 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--bordo);
+    background: transparent;
+    border-radius: 0;
+
+    &:hover:not(:disabled) {
+      background: transparent;
+    }
+  }
+
+  &__add-icon {
+    width: 0.9rem;
+    height: 0.9rem;
+    flex-shrink: 0;
+  }
+
+  &__trash {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    width: calc(2.225rem + 2px);
+    height: calc(2.225rem + 2px);
+    padding: 0;
+    color: #8a3f44;
+    background: none;
+    border: 0;
+    cursor: pointer;
+
+    svg {
+      width: 1.1rem;
+      height: 1.1rem;
+    }
+
+    &:hover {
+      color: #6e3034;
+    }
   }
 
   &__social-field {
     display: grid;
-    grid-template-columns: 2.15rem minmax(0, 1fr);
-    gap: 0.55rem;
+    grid-template-columns: 1.15rem minmax(0, 1fr) auto;
+    gap: 0.55rem 0.65rem;
     align-items: center;
+  }
+
+  &__check {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 1.75rem;
+    height: 1.75rem;
+    color: var(--bordo);
+    text-decoration: none;
+
+    &[aria-disabled='true'] {
+      color: rgba(var(--color-deep-rgb), 0.35);
+      pointer-events: none;
+    }
+  }
+
+  &__check-icon {
+    width: 0.95rem;
+    height: 0.95rem;
   }
 
   &__social-icon-wrap {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 2.15rem;
-    height: 2.15rem;
-    background: transparent;
-    border: 0;
+    width: 1.15rem;
+    height: 1.15rem;
     color: var(--bordo);
   }
 
@@ -156,32 +234,20 @@
     height: 1.1rem;
   }
 
-  &__map-wrap {
-    overflow: hidden;
-    border: 1px solid rgba(var(--zloto-rgb), 0.35);
-    border-radius: var(--radius);
-    background: var(--color-pink-soft);
-  }
-
-  &__map {
-    display: block;
-    width: 100%;
-    flex: 1;
-    min-height: 8rem;
-    height: 100%;
-    border: 0;
-  }
-
-  &__save {
-    flex-shrink: 0;
+  &__save.adm-actions {
     align-items: center;
-    min-height: 2.85rem;
-    margin-top: 0.5rem;
-    padding-top: 0.5rem;
+    margin-top: 1.15rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(var(--color-deep-rgb), 0.16);
   }
 
-  &__save-btn {
+  &__save-btn.adm-btn {
+    box-sizing: border-box;
+    height: calc(2.225rem + 2px);
     min-width: 11rem;
+    font-size: 0.875rem;
+    letter-spacing: 0;
+    text-transform: none;
   }
 
   &__status {
@@ -192,101 +258,54 @@
   }
 
   .adm-field {
-    gap: 0.28rem;
+    gap: 0.3rem;
   }
 
   .adm-field__label {
-    font-size: 0.8125rem;
+    font-size: 0.875rem;
+    font-weight: 600;
     line-height: 1.25;
+    color: var(--color-text-dark);
   }
 
   .adm-input {
-    padding: clamp(0.45rem, 1.1vh, 0.58rem) 0.65rem;
+    box-sizing: border-box;
+    width: 100%;
+    height: calc(2.225rem + 2px);
+    padding: 0 0.65rem;
     font-size: 0.875rem;
     line-height: 1.4;
+    background: #fff;
+    border-color: rgba(var(--color-deep-rgb), 0.14);
+
+    &:focus {
+      background: #fff;
+      border-color: rgba(var(--bordo-rgb), 0.45);
+      box-shadow: none;
+    }
   }
 }
 
-@media (max-width: 900px) {
-  .adm-contact__grid {
-    grid-template-columns: 1fr;
-    grid-template-rows: minmax(0, 1.1fr) minmax(0, 0.9fr);
-    overflow-y: auto;
-  }
-
-  .adm-contact__row {
-    grid-template-columns: 1fr;
-    align-items: stretch;
-  }
-
-  .adm-contact__body {
-    grid-template-rows: auto auto auto;
-    overflow-y: auto;
-  }
-
-  .adm-contact__block--hours .adm-list,
-  .adm-contact__block--social {
-    justify-content: flex-start;
-  }
-
-  .adm-contact__stage--map .adm-contact__map {
-    min-height: 12rem;
-  }
-}
-
-// Telefon / tablet: wszystko układa się naturalnie jeden pod drugim
-// (bez stałych wysokości wierszy i wewnętrznego przewijania, które powodowały nachodzenie tekstu).
 @media (max-width: 900px) {
   .adm-contact {
-    flex: none;
-    min-height: auto;
-
-    &__grid {
-      flex: none;
-      grid-template-rows: auto;
-      overflow: visible;
-    }
-
-    &__stage {
-      overflow: visible;
-    }
-
     &__body {
-      grid-template-rows: none;
-      grid-auto-rows: auto;
-      overflow: visible;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
     }
 
-    &__block--hours,
-    &__block--social {
-      min-height: auto;
+    &__window,
+    &__window--details,
+    &__window--hours {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      padding: 1rem;
     }
 
-    &__block--hours .adm-list {
+    &__schedule {
       flex: none;
-    }
-
-    &__block--social {
-      gap: 0.65rem;
-    }
-
-    &__row {
-      gap: 0.75rem;
-    }
-
-    &__stage--map .adm-contact__map-wrap {
-      flex: none;
-    }
-
-    // Mapa dwa razy wyższa niż wcześniej (12rem → 24rem).
-    &__stage--map .adm-contact__map {
-      flex: none;
-      height: 24rem;
-      min-height: 24rem;
-    }
-
-    &__save {
-      margin-top: 0.85rem;
+      justify-content: flex-start;
     }
   }
 }

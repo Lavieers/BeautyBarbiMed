@@ -164,23 +164,8 @@
     overflow: hidden;
   }
 
-  &__caption-fact {
-    font-family: var(--font-body);
-    font-size: 0.78rem;
-    line-height: 1.35;
-    color: var(--color-text);
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
   &__item--lead &__caption-name {
     font-size: clamp(1.05rem, 1.4vw, 1.35rem);
-  }
-
-  &__item--lead &__caption-fact {
-    font-size: clamp(0.8rem, 1vw, 0.92rem);
   }
 
   &__zoom {
@@ -327,26 +312,14 @@
     }
   }
 
-  &__treatment,
-  &__fact {
+  &__treatment {
     display: block;
     text-align: center;
-  }
-
-  &__treatment {
     font-family: var(--font-heading);
     font-style: italic;
     font-size: clamp(1.05rem, 1.4vw, 1.35rem);
     line-height: 1.3;
     color: rgba(var(--color-cream-rgb), 0.95);
-  }
-
-  &__fact {
-    margin-top: 0.2rem;
-    font-family: var(--font-body);
-    font-size: 0.875rem;
-    letter-spacing: 0.02em;
-    color: rgba(var(--color-cream-rgb), 0.78);
   }
 
   &__close {
@@ -559,26 +532,13 @@
   }
 
   &__name {
-    margin: 0.85rem 0 0.2rem;
+    margin: 0.85rem 0 0;
     font-family: var(--font-heading);
     font-size: 1.25rem;
     font-weight: 600;
     line-height: 1.2;
     color: var(--color-text-dark);
     text-wrap: balance;
-  }
-
-  &__fact {
-    margin: 0;
-    font-family: var(--font-body);
-    font-size: 0.9rem;
-    line-height: 1.45;
-    color: var(--color-text);
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
   }
 }
 

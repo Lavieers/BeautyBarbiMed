@@ -1,8 +1,8 @@
 import { motion } from 'motion/react'
 import Button from './Button'
 import Icon from './Icon'
+import { useContactInfo } from '../content/context'
 import { treatmentTitleLines } from '../data/treatmentGuide'
-import './BookingModal.scss'
 import './PackageModal.scss'
 
 // Cena z cennika: „270 zł” → duża liczba i mały napis PLN, jak w oknie pakietu.
@@ -20,7 +20,8 @@ function Price({ value }) {
 // (TreatmentModal) oraz podgląd w panelu admina – dzięki temu oba wyglądają tak samo.
 // `still` wyłącza animacje wejścia (podgląd w panelu ma tylko się odświeżać).
 // `slots` pozwala panelowi admina podmienić miejsca na pola do pisania.
-function TreatmentCard({ name, price, guide, nav, onBook, onClose, still = false, slots = {} }) {
+function TreatmentCard({ name, price, guide, nav, onClose, still = false, slots = {} }) {
+  const contact = useContactInfo()
   const lines = treatmentTitleLines(name)
   const fade = still ? false : { opacity: 0 }
   const slide = still ? false : { opacity: 0, y: 6 }
@@ -125,7 +126,12 @@ function TreatmentCard({ name, price, guide, nav, onBook, onClose, still = false
           </div>
 
           <div className="package-modal__contact">
-            <Button variant="cta-accent" className="package-modal__call" onClick={onBook}>
+            <Button
+              variant="cta-accent"
+              className="package-modal__call"
+              href={still ? undefined : contact.booksy}
+              external={!still}
+            >
               <Icon name="calendar" />
               Umów wizytę
             </Button>

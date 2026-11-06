@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import PackageCard from '../../components/PackageCard'
 import useMediaQuery from '../../lib/useMediaQuery'
 import ScaledPreview from '../ScaledPreview'
-import { packagePhoto } from '../../data/packageImages'
+import { mediaUrl } from '../../lib/supabaseConfig'
 import { usePhotoUpload } from '../photoUpload'
 import { InlineNumber, InlinePhotoTools, InlineSteps, InlineText } from './InlineEdit'
 import './PackageEditor.scss'
@@ -66,32 +66,21 @@ export function PackageEditorModal({ title, size, dirty, onClose, footer, childr
 
 // ── Okno „Nowy pakiet” ─────────────────────────────────────────────────────────
 
-function PhotoField({ pkgId, value, category, onChange }) {
+function PhotoField({ value, onChange }) {
   const { inputRef, busy, error, open, pick } = usePhotoUpload(onChange)
-  const photo = packagePhoto({ id: pkgId, image: value }, category)
+  const src = value ? mediaUrl(value) : ''
 
   return (
-    <div className="adm-field">
-      <span className="adm-field__label">Zdjęcie pakietu</span>
-      <div className="adm-pkg-photo">
-        <img className="adm-pkg-photo__thumb" src={photo.src} alt="" style={{ objectPosition: photo.position }} />
-        <div className="adm-pkg-photo__side">
-          <div className="adm-field__media-row">
-            <button type="button" className="adm-btn adm-btn--ghost" onClick={open} disabled={busy}>
-              {busy ? 'Wgrywam…' : value ? 'Zmień zdjęcie' : 'Wybierz zdjęcie'}
-            </button>
-            {value ? (
-              <button type="button" className="adm-btn adm-btn--quiet" onClick={() => onChange('')}>
-                Wróć do domyślnego
-              </button>
-            ) : null}
-          </div>
-          <span className="adm-field__hint">
-            PNG, JPG lub WEBP. Bez własnego zdjęcia pakiet pokaże zdjęcie domyślne.
-          </span>
-          {error ? <span className="adm-field__error">{error}</span> : null}
-        </div>
-      </div>
+    <div className={`adm-pkg-add__photo${src ? ' adm-pkg-add__photo--set' : ''}`}>
+      <button type="button" className="adm-pkg-add__photo-pick" onClick={open} disabled={busy}>
+        {src ? <img src={src} alt="" /> : <span>{busy ? 'Wgrywam…' : 'kliknij aby dodać zdjęcie'}</span>}
+      </button>
+      {src ? (
+        <button type="button" className="adm-pkg-add__photo-clear" onClick={() => onChange('')}>
+          Usuń
+        </button>
+      ) : null}
+      {error ? <span className="adm-field__error">{error}</span> : null}
       <input
         ref={inputRef}
         type="file"
@@ -104,51 +93,61 @@ function PhotoField({ pkgId, value, category, onChange }) {
 }
 
 // To, co widać na karcie pakietu na stronie głównej (okno dodawania pakietu).
-export function CardFields({ value, category, onChange }) {
+export function CardFields({ value, tabs, categoryIndex, onCategory, onChange }) {
   return (
-    <>
-      <label className="adm-field">
-        <span className="adm-field__label">Nazwa pakietu</span>
-        <input
-          className="adm-input"
-          value={value.name ?? ''}
-          onChange={(event) => onChange({ name: event.target.value })}
-          placeholder="np. Odświeżenie i blask"
-        />
-      </label>
-
-      <PhotoField
-        pkgId={value.id}
-        value={value.image ?? ''}
-        category={category}
-        onChange={(image) => onChange({ image })}
+    <div className="adm-pkg-add">
+      <input
+        className="adm-pkg-add__name"
+        value={value.name ?? ''}
+        onChange={(event) => onChange({ name: event.target.value })}
+        placeholder="Nazwa"
+        aria-label="Nazwa pakietu"
       />
 
-      <label className="adm-field adm-pkg-modal__price">
-        <span className="adm-field__label">Cena w pakiecie (zł)</span>
-        <input
-          type="number"
-          min="0"
-          inputMode="numeric"
-          className="adm-input"
-          value={value.price ?? ''}
-          onChange={(event) =>
-            onChange({ price: event.target.value === '' ? '' : Number(event.target.value) })
-          }
-        />
-      </label>
+      <textarea
+        className="adm-pkg-add__text"
+        rows={5}
+        value={value.description ?? ''}
+        onChange={(event) => onChange({ description: event.target.value })}
+        placeholder="Opis"
+        aria-label="Opis"
+      />
 
-      <label className="adm-field">
-        <span className="adm-field__label">Krótki opis na karcie</span>
-        <textarea
-          className="adm-input adm-input--area"
-          rows={2}
-          value={value.description ?? ''}
-          onChange={(event) => onChange({ description: event.target.value })}
-          placeholder="Np. Dla skóry zmęczonej, pozbawionej energii i naturalnego blasku"
-        />
-      </label>
-    </>
+      <PhotoField value={value.image ?? ''} onChange={(image) => onChange({ image })} />
+
+      <div className="adm-pkg-add__meta">
+        <label className="adm-pkg-add__price">
+          <input
+            type="number"
+            min="0"
+            inputMode="numeric"
+            value={value.price ?? ''}
+            onChange={(event) =>
+              onChange({ price: event.target.value === '' ? '' : Number(event.target.value) })
+            }
+            placeholder="Cena"
+            aria-label="Cena"
+          />
+          <span>zł</span>
+        </label>
+
+        {tabs?.length ? (
+          <label className="adm-pkg-add__tab">
+            <select
+              value={categoryIndex}
+              aria-label="Zakładka"
+              onChange={(event) => onCategory(Number(event.target.value))}
+            >
+              {tabs.map((tab) => (
+                <option key={tab.id} value={tab.index}>
+                  {tab.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        ) : null}
+      </div>
+    </div>
   )
 }
 

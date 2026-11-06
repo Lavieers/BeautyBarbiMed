@@ -47,6 +47,12 @@ function normalizeDays(value) {
   return cleaned.charAt(0).toUpperCase() + cleaned.slice(1)
 }
 
+export function formatHoursLine(line) {
+  const parsed = parseHoursLine(line)
+  if (!parsed.time) return parsed.days
+  return `${parsed.days}: ${parsed.time}`
+}
+
 export function parseHoursLine(line) {
   const text = String(line ?? '').replace(/\s+/g, ' ').trim()
 

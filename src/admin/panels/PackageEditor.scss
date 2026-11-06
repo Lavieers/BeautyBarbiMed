@@ -3,8 +3,8 @@
 
 .adm-modal__panel.adm-pkg-modal {
   &--add {
-    width: min(34rem, 100%);
-    max-height: calc(100svh - 2.5rem);
+    width: min(36rem, calc(100vw - 2rem));
+    max-height: calc(100svh - 2rem);
   }
 
   &--edit {
@@ -196,6 +196,280 @@
 
   .package-modal__contact {
     align-self: center;
+  }
+}
+
+// Okno „Nowy pakiet”: białe pola i ciche przyciski. Okno edycji zostaje bez zmian.
+.adm-modal__panel.adm-pkg-modal--add {
+  border: 1px solid rgba(var(--color-deep-rgb), 0.12);
+  box-shadow: 0 16px 40px rgba(42, 33, 28, 0.12);
+
+  .adm-modal__head {
+    align-items: center;
+    padding: 16px 16px 12px;
+    border-bottom-color: rgba(var(--color-deep-rgb), 0.08);
+  }
+
+  .adm-modal__close {
+    border: 0;
+    border-radius: 0;
+  }
+
+  .adm-pkg-modal__body {
+    scrollbar-gutter: auto;
+  }
+
+  .adm-pkg-modal__add {
+    padding: 12px 16px 0;
+  }
+
+  .adm-pkg-modal__foot {
+    gap: 8px;
+    margin: 16px 0 0;
+    padding: 0 16px 16px;
+    border-top: 0;
+  }
+}
+
+.adm-pkg-add {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 11.25rem;
+  grid-template-areas:
+    'name photo'
+    'text photo'
+    'meta meta';
+  column-gap: 24px;
+  row-gap: 16px;
+
+  &__name,
+  &__text,
+  &__tab select {
+    width: 100%;
+    margin: 0;
+    padding: 0 0 6px;
+    font: inherit;
+    color: var(--color-text-dark);
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid rgba(var(--color-deep-rgb), 0.16);
+    border-radius: 0;
+    box-shadow: none;
+
+    &::placeholder {
+      font-size: 0.9375rem;
+      color: rgba(var(--color-deep-rgb), 0.38);
+    }
+
+    &:focus {
+      outline: none;
+      background: transparent;
+      border-bottom-color: var(--zloto);
+      box-shadow: none;
+    }
+  }
+
+  &__name {
+    grid-area: name;
+    font-size: 0.9375rem;
+  }
+
+  &__text {
+    grid-area: text;
+    display: block;
+    field-sizing: content;
+    min-height: 10rem;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    resize: vertical;
+  }
+
+  &__photo {
+    grid-area: photo;
+    position: relative;
+    display: flex;
+    min-width: 0;
+    min-height: 0;
+    border: 1px solid rgba(var(--color-deep-rgb), 0.16);
+
+    &:focus-within {
+      border-color: var(--zloto);
+    }
+  }
+
+  &__photo-pick {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    width: 100%;
+    min-height: 0;
+    margin: 0;
+    padding: 0.75rem;
+    font: inherit;
+    font-size: 0.9375rem;
+    color: rgba(var(--color-deep-rgb), 0.38);
+    text-align: center;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+
+    img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    &:disabled {
+      cursor: default;
+    }
+  }
+
+  &__photo-clear {
+    position: absolute;
+    right: 0.45rem;
+    bottom: 0.4rem;
+    z-index: 1;
+    margin: 0;
+    padding: 0.1rem 0.35rem;
+    font: inherit;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-deep-soft);
+    background: #fff;
+    border: 0;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--bordo);
+    }
+  }
+
+  &__meta {
+    grid-area: meta;
+    display: grid;
+    grid-template-columns: minmax(8rem, 0.7fr) minmax(0, 1.3fr);
+    gap: 16px 24px;
+  }
+
+  &__price {
+    display: flex;
+    align-items: baseline;
+    gap: 0.35rem;
+    min-width: 0;
+    border-bottom: 1px solid rgba(var(--color-deep-rgb), 0.16);
+
+    &:focus-within {
+      border-bottom-color: var(--zloto);
+    }
+
+    input {
+      flex: 1;
+      width: auto;
+      min-width: 0;
+      margin: 0;
+      padding: 0 0 6px;
+      font: inherit;
+      font-size: 0.9375rem;
+      color: var(--color-text-dark);
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+      -moz-appearance: textfield;
+
+      &::placeholder {
+        font-size: 0.9375rem;
+        color: rgba(var(--color-deep-rgb), 0.38);
+      }
+
+      &:focus {
+        outline: none;
+      }
+
+      &::-webkit-outer-spin-button,
+      &::-webkit-inner-spin-button {
+        margin: 0;
+        -webkit-appearance: none;
+      }
+    }
+
+    span {
+      flex: none;
+      padding-bottom: 6px;
+      font-size: 0.9375rem;
+      color: rgba(var(--color-deep-rgb), 0.38);
+    }
+  }
+
+  &__tab select {
+    cursor: pointer;
+    font-size: 0.9375rem;
+    appearance: none;
+    background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='%233f302b' stroke-opacity='.45' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") right 0.05rem bottom 0.55rem / 0.7rem no-repeat;
+    padding-right: 1.15rem;
+  }
+
+  .adm-field__error {
+    position: absolute;
+    right: 0.45rem;
+    bottom: 0.35rem;
+    left: 0.45rem;
+    background: #fff;
+  }
+}
+
+@media (max-width: 40rem) {
+  .adm-pkg-add {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'name'
+      'text'
+      'photo'
+      'meta';
+
+    &__photo {
+      min-height: 10rem;
+    }
+
+    &__meta {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+}
+
+.adm-pkg-add__save,
+.adm-pkg-add__cancel {
+  box-sizing: border-box;
+  width: 6.5rem;
+  height: 2rem;
+  margin: 0;
+  padding: 0 12px;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0;
+  text-transform: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.adm-pkg-add__save {
+  color: var(--krem);
+  background: var(--bordo);
+  border: 1px solid var(--bordo);
+}
+
+.adm-pkg-add__cancel {
+  color: var(--color-text-dark);
+  background: #fff;
+  border: 1px solid rgba(var(--color-deep-rgb), 0.14);
+
+  &:hover {
+    color: var(--bordo);
+    border-color: rgba(var(--bordo-rgb), 0.35);
   }
 }
 

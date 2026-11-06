@@ -3,19 +3,21 @@ import { motion, useReducedMotion } from 'motion/react'
 import Button from './Button'
 import Icon from './Icon'
 import { useContactInfo, useSection } from '../content/context'
+import { formatHoursLine } from '../lib/hours'
 import { defaultMapEmbedSrc, mapEmbedSrc } from '../lib/mapEmbed'
 import './Contact.scss'
 
-function Contact({ onBook }) {
+function Contact() {
   const reduced = useReducedMotion()
   const [mapActive, setMapActive] = useState(false)
   const content = useSection('contact')
   const contactData = useContactInfo()
-  const hours = Array.isArray(contactData.hours)
+  const hours = (Array.isArray(contactData.hours)
     ? contactData.hours.filter(Boolean)
     : contactData.hours
       ? [contactData.hours]
       : []
+  ).map(formatHoursLine)
   const phoneHref = contactData.phoneHref || ''
   const mapSrc = mapEmbedSrc(contactData.mapEmbedUrl) || defaultMapEmbedSrc
 
@@ -150,7 +152,7 @@ function Contact({ onBook }) {
             )}
           </ul>
 
-          <Button variant="cta-primary" block onClick={onBook}>
+          <Button variant="cta-primary" block href={contactData.booksy} external>
             {content.primaryCta || 'Umów wizytę'}
           </Button>
 

@@ -4,9 +4,62 @@ $marker-size: 0.6rem;
 $marker-top: 0.32rem;
 $marker-gap: 1.5rem;
 
+// Tło i krzyżyk wspólne dla okien pakietu i zabiegu.
+.booking {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+
+  &__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(var(--color-deep-rgb), 0.55);
+    backdrop-filter: blur(6px);
+  }
+
+  &__close {
+    position: absolute;
+    top: 0.9rem;
+    right: 0.9rem;
+    width: 2.15rem;
+    height: 2.15rem;
+    padding: 0;
+    background: none;
+    border: 1px solid rgba(197, 160, 89, 0.4);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+
+    span {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0.7rem;
+      height: 1px;
+      background: var(--color-text-dark);
+
+      &:first-child {
+        transform: translate(-50%, -50%) rotate(45deg);
+      }
+
+      &:last-child {
+        transform: translate(-50%, -50%) rotate(-45deg);
+      }
+    }
+
+    &:hover {
+      background: rgba(197, 160, 89, 0.14);
+      border-color: var(--color-gold);
+    }
+  }
+}
+
 // Okno pakietu: ciemna, wiśniowa karta bez zaokrągleń – zdjęcie w złotej ramce po lewej (45%),
-// treść po prawej (55%). Tło za oknem i przycisk zamknięcia pochodzą z okna rezerwacji (.booking*).
-// Na telefonie kolumny układają się jedna pod drugą.
+// treść po prawej (55%). Na telefonie kolumny układają się jedna pod drugą.
 .package-modal {
   --pm-gold: var(--color-gold);
   --pm-gold-rgb: var(--color-gold-rgb);
@@ -117,6 +170,7 @@ $marker-gap: 1.5rem;
       width: 100%;
       height: 100%;
       object-fit: cover;
+      filter: url(#pkg-grade) contrast(1.12) saturate(1.38) brightness(1.03);
     }
 
     // delikatne przyciemnienie zdjęcia – wtapia się w ciemną kartę

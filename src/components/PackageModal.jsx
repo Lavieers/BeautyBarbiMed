@@ -3,7 +3,6 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import PackageCard from './PackageCard'
 import useModalBehavior from '../lib/useModalBehavior'
 import useSwipe from '../lib/useSwipe'
-import './BookingModal.scss'
 import './PackageModal.scss'
 
 // Okno „Dowiedz się więcej” przy pakiecie – pakiety rezerwuje się telefonicznie.

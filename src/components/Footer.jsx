@@ -1,4 +1,5 @@
 import { useContactInfo, useSection } from '../content/context'
+import { formatHoursLine } from '../lib/hours'
 import { usePortfolioImages } from '../data/galleryFallback'
 import logo from '../assets/logo.webp'
 import Icon from './Icon'
@@ -11,7 +12,7 @@ function Footer() {
   const year = new Date().getFullYear()
   const content = useSection('footer')
   const contactData = useContactInfo()
-  const hours = Array.isArray(contactData.hours) ? contactData.hours.filter(Boolean) : []
+  const hours = (Array.isArray(contactData.hours) ? contactData.hours.filter(Boolean) : []).map(formatHoursLine)
   const hasGallery = usePortfolioImages().length > 0
 
   // Te same sekcje co w pasku górnym (portfolio znika, gdy nie ma zdjęć).

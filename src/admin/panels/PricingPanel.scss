@@ -4,18 +4,13 @@
   padding-bottom: 1rem;
 
   &__stage {
-    padding: clamp(0.85rem, 1.4vw, 1.05rem);
-    background: rgba(255, 255, 255, 0.58);
-    border: 1px solid rgba(var(--zloto-rgb), 0.34);
-    border-radius: calc(var(--radius) + 4px);
-    box-shadow: 0 8px 22px rgba(42, 33, 28, 0.05);
+    padding: 0;
   }
 
   &__empty {
     margin: 0;
-    padding: 1.5rem 1rem;
-    text-align: center;
-    font-size: 0.9375rem;
+    font-size: 0.875rem;
+    line-height: 1.45;
     color: var(--color-deep-soft);
   }
 
@@ -26,17 +21,15 @@
   &__table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
 
     thead th {
-      padding: 0.5rem 0.65rem 0.55rem;
-      font-size: 0.6875rem;
-      font-weight: 600;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
+      padding: 0 0 8px;
+      font-size: 0.8125rem;
+      font-weight: 500;
       text-align: left;
       color: var(--color-deep-soft);
-      border-bottom: 1px solid rgba(var(--color-deep-rgb), 0.12);
+      border-bottom: 1px solid rgba(var(--color-deep-rgb), 0.16);
     }
 
     tbody td {
@@ -45,33 +38,41 @@
       border-bottom: 1px solid rgba(var(--color-deep-rgb), 0.08);
     }
 
-    tbody tr:last-child td {
-      border-bottom: none;
+    th:first-child,
+    td:first-child,
+    th:nth-child(3),
+    td.adm-pricing__price {
+      width: 1%;
+      white-space: nowrap;
+    }
+
+    th:nth-child(2),
+    td:nth-child(2) {
+      width: 99%;
     }
 
     th:nth-child(3),
     td.adm-pricing__price {
-      text-align: right;
-      white-space: nowrap;
+      text-align: left;
+      padding-right: 5rem;
     }
   }
 
   &__row-hit {
     display: block;
     width: 100%;
-    padding: 0.55rem 0.65rem;
+    padding: 10px 0;
     text-align: left;
     font: inherit;
     color: inherit;
     background: transparent;
-    border: none;
+    border: 0;
     cursor: pointer;
 
-    &:hover .adm-pricing__hint {
-      opacity: 1;
+    &:hover .adm-pricing__name {
+      color: var(--bordo);
     }
 
-    // po zamknięciu okna (np. Esc) fokus wraca na wiersz – bez ramki
     &:focus,
     &:focus-visible {
       outline: none;
@@ -81,32 +82,34 @@
   &__name {
     display: block;
     font-weight: 500;
+    line-height: 1.4;
     color: var(--color-text-dark);
-    line-height: 1.35;
-  }
-
-  &__hint {
-    display: block;
-    margin-top: 0.15rem;
-    font-size: 0.6875rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: var(--color-deep-soft);
-    opacity: 0;
-    transition: opacity 0.15s ease;
   }
 
   &__price {
-    padding: 0.55rem 0.65rem !important;
+    padding: 10px 5rem 10px 24px !important;
     font-family: var(--font-heading);
-    font-size: 0.9375rem;
+    font-size: 1rem;
     color: var(--bordo);
   }
 
+  thead th:nth-child(2),
   tbody td:nth-child(2) {
-    padding: 0.55rem 0.65rem;
-    color: var(--color-text);
+    padding-left: 10px;
+  }
+
+  thead th:nth-child(3) {
+    padding-left: 24px;
+  }
+
+  tbody td:nth-child(2) {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-size: 0.8125rem;
+    font-style: italic;
+    font-weight: 400;
+    line-height: 1.35;
+    color: var(--color-deep-soft);
   }
 
   &__save {
@@ -133,7 +136,6 @@
     color: #a3283f;
   }
 
-  // chwilowe podświetlenie świeżo dodanej pozycji
   &__row--flash td {
     animation: adm-pricing-flash 2.6s ease-out;
   }
@@ -142,7 +144,6 @@
     align-self: center;
     margin-left: 0.4rem;
   }
-
 }
 
 @media (min-width: 60rem) {
@@ -151,7 +152,75 @@
   }
 }
 
-@media (max-width: 900px) {
+// Telefon i tablet: nazwa, pod nią kategoria, cena po prawej. Nagłówki kolumn schowane.
+@media (max-width: 1100px) {
+  .adm-pricing__table-wrap {
+    overflow-x: visible;
+  }
+
+  .adm-pricing__table {
+    thead {
+      display: none;
+    }
+
+    &,
+    tbody,
+    tr,
+    td {
+      display: block;
+      width: auto;
+    }
+
+    tr {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      column-gap: 0.85rem;
+      row-gap: 0.1rem;
+      padding: 0.7rem 0;
+      border-bottom: 1px solid rgba(var(--color-deep-rgb), 0.08);
+    }
+
+    tbody td {
+      border-bottom: 0;
+      white-space: normal;
+    }
+
+    td:first-child,
+    td:nth-child(2),
+    td.adm-pricing__price {
+      width: auto;
+    }
+
+    td:first-child {
+      grid-column: 1;
+      grid-row: 1;
+      white-space: normal;
+    }
+
+    td.adm-pricing__category {
+      grid-column: 1;
+      grid-row: 2;
+      padding: 0;
+    }
+
+    td.adm-pricing__price {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+      padding: 0 !important;
+      text-align: right;
+      white-space: nowrap;
+    }
+  }
+
+  .adm-pricing tbody td.adm-pricing__category {
+    padding: 0;
+  }
+
+  .adm-pricing__row-hit {
+    padding: 0;
+  }
+
   .adm-pricing__save {
     padding-right: 0;
     padding-bottom: 3.5rem;
@@ -161,7 +230,7 @@
 @keyframes adm-pricing-flash {
   0%,
   45% {
-    background: rgba(var(--zloto-rgb), 0.28);
+    background: rgba(var(--bordo-rgb), 0.06);
   }
 
   100% {

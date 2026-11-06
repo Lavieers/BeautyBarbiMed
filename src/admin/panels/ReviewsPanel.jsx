@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { supabase } from '../../lib/supabase'
-import { useContent } from '../../content/context'
+import { useContent, useSection } from '../../content/context'
 import { useAdminTable } from '../useAdminTable'
 import AdminIcon from '../AdminIcon'
 import './ReviewsPanel.scss'
@@ -21,10 +21,39 @@ function sortedRows(rows) {
   )
 }
 
-function excerpt(text, max = 120) {
+function excerpt(text, max = 160) {
   const clean = String(text ?? '').trim().replace(/\s+/g, ' ')
   if (clean.length <= max) return clean
   return `${clean.slice(0, max).trim()}…`
+}
+
+function formatWhen(value) {
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return { day: '—', time: '' }
+
+  const day = new Intl.DateTimeFormat('pl-PL', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    timeZone: 'Europe/Warsaw',
+  }).format(date)
+  const time = new Intl.DateTimeFormat('pl-PL', {
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: 'Europe/Warsaw',
+  }).format(date)
+
+  return { day, time }
+}
+
+function moveId(ids, fromId, toId) {
+  const from = ids.findIndex((id) => String(id) === String(fromId))
+  const to = ids.findIndex((id) => String(id) === String(toId))
+  if (from < 0 || to < 0 || from === to) return ids
+  const next = [...ids]
+  const [item] = next.splice(from, 1)
+  next.splice(to, 0, item)
+  return next
 }
 
 function ReviewStars({ rating, className }) {
@@ -51,9 +80,8 @@ function StarRatingInput({ value, onChange }) {
   const filled = Number(value) >= 1 && Number(value) <= 5 ? Math.round(Number(value)) : 0
 
   return (
-    <div className="adm-field adm-reviews__rating-field">
-      <span className="adm-field__label">Ocena</span>
-      <div className="adm-reviews__star-picker" role="radiogroup" aria-label="Wybierz ocenę">
+    <div className="adm-reviews__rating-field">
+      <div className="adm-reviews__star-picker" role="radiogroup" aria-label="Ocena">
         {[1, 2, 3, 4, 5].map((stars) => (
           <button
             key={stars}
@@ -114,68 +142,90 @@ function ReviewsModal({ title, children, onClose }) {
   )
 }
 
+function treatmentNames(groups) {
+  const seen = new Set()
+  const names = []
+
+  for (const group of groups ?? []) {
+    for (const row of group.rows ?? []) {
+      const name = String(row?.name ?? '').trim()
+      const key = name.toLocaleLowerCase('pl')
+      if (!name || seen.has(key)) continue
+      seen.add(key)
+      names.push(name)
+    }
+  }
+
+  return names
+}
+
 function ReviewForm({ value, onChange }) {
+  const pricing = useSection('pricing')
+  const treatments = useMemo(() => treatmentNames(pricing.groups), [pricing.groups])
   const patch = (next) => onChange({ ...value, ...next })
 
+  const published = value.is_published !== false
+
   return (
-    <>
-      <label className="adm-field">
-        <span className="adm-field__label">Imię klientki</span>
-        <input
-          className="adm-input"
-          value={value.author ?? ''}
-          onChange={(event) => patch({ author: event.target.value })}
-          placeholder="np. Anna K."
-        />
-      </label>
-
-      <StarRatingInput value={value.rating} onChange={(rating) => patch({ rating })} />
-
-      <label className="adm-field">
-        <span className="adm-field__label">Treść opinii</span>
-        <textarea
-          className="adm-input adm-input--area"
-          rows={4}
-          value={value.body ?? ''}
-          onChange={(event) => patch({ body: event.target.value })}
-          placeholder="Krótka, autentyczna recenzja…"
-        />
-      </label>
-
-      <label className="adm-field">
-        <span className="adm-field__label">Zabieg (opcjonalnie)</span>
-        <input
-          className="adm-input"
-          value={value.treatment ?? ''}
-          onChange={(event) => patch({ treatment: event.target.value })}
-          placeholder="np. Mezoterapia twarzy"
-        />
-      </label>
-
-      <div className="adm-row adm-reviews__checks">
-        <label className="adm-field adm-field--check">
-          <input
-            type="checkbox"
-            checked={Boolean(value.is_published)}
-            onChange={(event) => patch({ is_published: event.target.checked })}
-          />
-          <span>Widoczna na stronie</span>
-        </label>
-
-        <label className="adm-field adm-field--check">
-          <input
-            type="checkbox"
-            checked={Boolean(value.is_featured)}
-            onChange={(event) => patch({ is_featured: event.target.checked })}
-          />
-          <span>Wyróżniona</span>
-        </label>
+    <div className="adm-reviews__form">
+      <div className="adm-reviews__rating-row">
+        <StarRatingInput value={value.rating} onChange={(rating) => patch({ rating })} />
+        <div className="adm-reviews__publish" role="group" aria-label="Widoczność opinii">
+          <button
+            type="button"
+            className={published ? 'is-on' : ''}
+            aria-pressed={published}
+            onClick={() => patch({ is_published: true })}
+          >
+            Publiczna
+          </button>
+          <button
+            type="button"
+            className={published ? '' : 'is-on'}
+            aria-pressed={!published}
+            onClick={() => patch({ is_published: false })}
+          >
+            Prywatna
+          </button>
+        </div>
       </div>
 
-      <p className="adm-field__hint adm-reviews__modal-hint">
-        Kolejność na liście zmieniasz strzałkami ↑↓ — niższy numer = wyżej w karuzeli na stronie.
-      </p>
-    </>
+      <label className="adm-reviews__quote">
+        <span className="visually-hidden">Treść opinii</span>
+        <textarea
+          rows={5}
+          value={value.body ?? ''}
+          onChange={(event) => patch({ body: event.target.value })}
+          placeholder="Treść opinii"
+        />
+      </label>
+
+      <div className="adm-reviews__who">
+        <label>
+          <span className="visually-hidden">Imię</span>
+          <input
+            value={value.author ?? ''}
+            onChange={(event) => patch({ author: event.target.value })}
+            placeholder="Imię"
+          />
+        </label>
+        <label>
+          <span className="visually-hidden">Zabieg</span>
+          <input
+            list="adm-review-treatments"
+            autoComplete="off"
+            value={value.treatment ?? ''}
+            onChange={(event) => patch({ treatment: event.target.value })}
+            placeholder="Zabieg"
+          />
+          <datalist id="adm-review-treatments">
+            {treatments.map((name) => (
+              <option key={name} value={name} />
+            ))}
+          </datalist>
+        </label>
+      </div>
+    </div>
   )
 }
 
@@ -185,8 +235,39 @@ function ReviewsPanel() {
   const [busy, setBusy] = useState(false)
   const [status, setStatus] = useState(null)
   const [modal, setModal] = useState(null)
+  const [query, setQuery] = useState('')
+  const [filter, setFilter] = useState('all')
+  const [orderIds, setOrderIds] = useState(null)
+  const dragRef = useRef(null)
+  const ignoreClick = useRef(false)
+  const orderRef = useRef([])
 
-  const ordered = useMemo(() => sortedRows(rows), [rows])
+  const ordered = useMemo(() => {
+    const base = sortedRows(rows)
+    if (!orderIds) return base
+    const byId = new Map(base.map((row) => [row.id, row]))
+    const ranked = orderIds.map((id) => byId.get(id)).filter(Boolean)
+    const extra = base.filter((row) => !orderIds.includes(row.id))
+    return [...ranked, ...extra]
+  }, [rows, orderIds])
+
+  orderRef.current = ordered
+
+  const visible = useMemo(() => {
+    const byStatus = ordered.filter((row) => {
+      const published = row.is_published !== false
+      if (filter === 'public') return published
+      if (filter === 'private') return !published
+      return true
+    })
+    const needle = query.trim().toLowerCase()
+    if (!needle) return byStatus
+    return byStatus.filter((row) =>
+      [row.author, row.body, row.treatment].some((value) =>
+        String(value ?? '').toLowerCase().includes(needle),
+      ),
+    )
+  }, [ordered, query, filter])
 
   const afterChange = async (text) => {
     await reload()
@@ -259,90 +340,219 @@ function ReviewsPanel() {
     await afterChange('Opinia usunięta.')
   }
 
-  const move = async (id, direction) => {
-    const list = sortedRows(rows)
-    const index = list.findIndex((row) => row.id === id)
-    const target = index + direction
-    if (index < 0 || target < 0 || target >= list.length) return
+  const refreshList = async () => {
+    setBusy(true)
+    await reload()
+    await refresh()
+    setBusy(false)
+  }
 
-    const next = [...list]
-    ;[next[index], next[target]] = [next[target], next[index]]
+  const setVisibility = async (row, published) => {
+    if ((row.is_published !== false) === published) return
 
-    setStatus({ kind: 'busy', text: 'Zmieniam kolejność…' })
-
-    const updates = next.map((row, position) =>
-      supabase.from('reviews').update({ sort_order: position + 1 }).eq('id', row.id),
-    )
-
-    const results = await Promise.all(updates)
-    const failed = results.find((result) => result.error)
-    if (failed?.error) {
-      setStatus({ kind: 'error', text: failed.error.message })
+    setBusy(true)
+    const { error } = await supabase.from('reviews').update({ is_published: published }).eq('id', row.id)
+    if (error) {
+      setStatus({ kind: 'error', text: error.message })
+      setBusy(false)
       return
     }
 
-    await afterChange('Kolejność zapisana.')
+    await afterChange(published ? 'Opinia jest publiczna.' : 'Opinia jest prywatna.')
+    setBusy(false)
+  }
+
+  const persistOrder = async (ids) => {
+    setBusy(true)
+    const results = await Promise.all(
+      ids.map((id, position) =>
+        supabase.from('reviews').update({ sort_order: position + 1 }).eq('id', id),
+      ),
+    )
+    const failed = results.find((result) => result.error)
+    if (failed?.error) {
+      setOrderIds(null)
+      setStatus({ kind: 'error', text: failed.error.message })
+      setBusy(false)
+      return
+    }
+
+    await reload()
+    await refresh()
+    setOrderIds(null)
+    setBusy(false)
+  }
+
+  const openRow = (event, row) => {
+    if (ignoreClick.current) {
+      ignoreClick.current = false
+      return
+    }
+    if (event.target.closest('.adm-reviews__actions')) return
+    setModal({ mode: 'edit', value: { ...row } })
+  }
+
+  const clearDragMarks = () => {
+    document.querySelectorAll('.adm-reviews__item.is-dragging, .adm-reviews__item.is-over').forEach((item) => {
+      item.classList.remove('is-dragging', 'is-over')
+    })
+  }
+
+  const onDragStart = (event, id) => {
+    if (event.target.closest('.adm-reviews__actions')) {
+      event.preventDefault()
+      return
+    }
+    ignoreClick.current = true
+    dragRef.current = id
+    event.dataTransfer.effectAllowed = 'move'
+    event.dataTransfer.setData('text/plain', String(id))
+    const row = event.currentTarget
+    requestAnimationFrame(() => row.classList.add('is-dragging'))
+  }
+
+  const onDragOver = (event) => {
+    event.preventDefault()
+    event.dataTransfer.dropEffect = 'move'
+    const row = event.currentTarget
+    if (row.classList.contains('is-over')) return
+    document.querySelectorAll('.adm-reviews__item.is-over').forEach((item) => item.classList.remove('is-over'))
+    row.classList.add('is-over')
+  }
+
+  const onDrop = (event, id) => {
+    event.preventDefault()
+    const fromId = event.dataTransfer.getData('text/plain') || dragRef.current
+    clearDragMarks()
+    dragRef.current = null
+    if (!fromId || String(fromId) === String(id)) return
+    const ids = moveId(orderRef.current.map((row) => row.id), fromId, id)
+    setOrderIds(ids)
+    persistOrder(ids)
+  }
+
+  const onDragEnd = () => {
+    clearDragMarks()
+    dragRef.current = null
   }
 
   return (
     <div className="adm-panel adm-panel--home adm-reviews">
+      <div className="adm-reviews__toolbar">
+        <div className="adm-reviews__filters" role="group" aria-label="Filtr opinii">
+          {[
+            ['all', 'Wszystkie opinie'],
+            ['public', 'Publiczne'],
+            ['private', 'Prywatne'],
+          ].map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              className={filter === id ? 'is-on' : ''}
+              aria-pressed={filter === id}
+              onClick={() => setFilter(id)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <div className="adm-reviews__tools">
+          <label className="adm-reviews__search">
+            <AdminIcon name="search" className="adm-reviews__search-icon" />
+            <input
+              type="search"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Szukaj opinii"
+              aria-label="Szukaj opinii"
+            />
+          </label>
+          <button type="button" className="adm-reviews__reload" disabled={busy} onClick={refreshList}>
+            <AdminIcon name="refresh" className="adm-reviews__reload-icon" />
+            Odśwież
+          </button>
+        </div>
+      </div>
+
       <section className="adm-reviews__stage" aria-label="Opinie klientek">
         {loading ? (
           <p className="adm-reviews__empty">Wczytuję…</p>
         ) : ordered.length === 0 ? (
+          <p className="adm-reviews__empty">Brak opinii.</p>
+        ) : visible.length === 0 ? (
           <p className="adm-reviews__empty">
-            Brak opinii — dodaj pierwszą plusem w rogu. Publikuj tylko za zgodą autorki.
+            {query.trim() ? 'Nic nie pasuje do wyszukiwania.' : 'Brak opinii w tym filtrze.'}
           </p>
         ) : (
           <ul className="adm-reviews__list">
-            {ordered.map((row, index) => (
-              <li key={row.id} className="adm-reviews__item">
-                <span className="adm-reviews__order">{index + 1}</span>
+            {visible.map((row) => {
+              const when = formatWhen(row.created_at)
+              const published = row.is_published !== false
 
-                <button
-                  type="button"
-                  className="adm-reviews__hit"
-                  disabled={busy}
-                  onClick={() => setModal({ mode: 'edit', value: { ...row } })}
+              return (
+                <li
+                  key={row.id}
+                  data-review-id={row.id}
+                  draggable
+                  className={`adm-reviews__item${published ? '' : ' is-private'}`}
+                  onClick={(event) => openRow(event, row)}
+                  onDragStart={(event) => onDragStart(event, row.id)}
+                  onDragOver={onDragOver}
+                  onDrop={(event) => onDrop(event, row.id)}
+                  onDragEnd={onDragEnd}
                 >
-                  <div className="adm-reviews__line">
-                    <ReviewStars rating={row.rating} />
-                    <span className="adm-reviews__author">{row.author}</span>
-                    {row.treatment ? (
-                      <span className="adm-reviews__treatment">{row.treatment}</span>
-                    ) : null}
-                    <span className="adm-reviews__edit-hint">Edytuj</span>
+                  <div className="adm-reviews__when">
+                    <span className="adm-reviews__date">{when.day}</span>
+                    <span className="adm-reviews__time">{when.time}</span>
                   </div>
-                  <p className="adm-reviews__excerpt">{excerpt(row.body)}</p>
-                </button>
 
-                <div className="adm-reviews__flags">
-                  {!row.is_published ? <span className="adm-reviews__flag">Ukryta</span> : null}
-                  {row.is_featured ? <span className="adm-reviews__flag adm-reviews__flag--feat">Wyróżniona</span> : null}
-                </div>
+                  <div className="adm-reviews__person">
+                    <span className="adm-reviews__author">{row.author}</span>
+                    {row.treatment ? <span className="adm-reviews__treatment">{row.treatment}</span> : null}
+                  </div>
 
-                <div className="adm-reviews__reorder">
-                  <button
-                    type="button"
-                    className="adm-reviews__arrow"
-                    aria-label="Przesuń wyżej na liście"
-                    disabled={index === 0 || busy}
-                    onClick={() => move(row.id, -1)}
+                  <div className="adm-reviews__copy">
+                    <ReviewStars rating={row.rating} />
+                    <p className="adm-reviews__excerpt">{excerpt(row.body)}</p>
+                  </div>
+
+                  <div
+                    className="adm-reviews__actions"
+                    onPointerDown={(event) => event.stopPropagation()}
                   >
-                    ↑
-                  </button>
-                  <button
-                    type="button"
-                    className="adm-reviews__arrow"
-                    aria-label="Przesuń niżej na liście"
-                    disabled={index === ordered.length - 1 || busy}
-                    onClick={() => move(row.id, 1)}
-                  >
-                    ↓
-                  </button>
-                </div>
-              </li>
-            ))}
+                    <div className="adm-reviews__visibility" role="group" aria-label="Widoczność opinii">
+                      <button
+                        type="button"
+                        className={published ? 'is-on' : ''}
+                        aria-pressed={published}
+                        disabled={busy}
+                        onClick={() => setVisibility(row, true)}
+                      >
+                        Publiczna
+                      </button>
+                      <button
+                        type="button"
+                        className={published ? '' : 'is-on'}
+                        aria-pressed={!published}
+                        disabled={busy}
+                        onClick={() => setVisibility(row, false)}
+                      >
+                        Prywatna
+                      </button>
+                    </div>
+                    <button
+                      type="button"
+                      className="adm-reviews__trash"
+                      aria-label="Usuń opinię"
+                      disabled={busy}
+                      onClick={() => remove(row)}
+                    >
+                      <AdminIcon name="trash" />
+                    </button>
+                  </div>
+                </li>
+              )
+            })}
           </ul>
         )}
       </section>
@@ -363,17 +573,17 @@ function ReviewsPanel() {
           onClose={() => setModal(null)}
         >
           <ReviewForm value={modal.value} onChange={(value) => setModal({ ...modal, value })} />
-          <div className="adm-modal__foot">
-            <button type="button" className="adm-btn adm-btn--primary" disabled={busy} onClick={saveModal}>
+          <div className="adm-modal__foot adm-reviews__foot">
+            <button type="button" className="adm-reviews__save" disabled={busy} onClick={saveModal}>
               {modal.mode === 'add' ? 'Dodaj' : 'Zapisz'}
             </button>
-            <button type="button" className="adm-btn adm-btn--ghost" onClick={() => setModal(null)}>
+            <button type="button" className="adm-reviews__cancel" onClick={() => setModal(null)}>
               Anuluj
             </button>
             {modal.mode === 'edit' ? (
               <button
                 type="button"
-                className="adm-btn adm-btn--quiet adm-reviews__delete"
+                className="adm-reviews__delete"
                 disabled={busy}
                 onClick={() => remove(modal.value)}
               >

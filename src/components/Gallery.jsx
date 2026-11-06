@@ -4,7 +4,7 @@ import { useSection } from '../content/context'
 import { usePortfolioImages } from '../data/galleryFallback'
 import useMediaQuery from '../lib/useMediaQuery'
 import GalleryCarousel from './GalleryCarousel'
-import { TILE_HEIGHT, TILE_WIDTH, captionOf, imageSrc, tileLabel } from './galleryHelpers'
+import { TILE_HEIGHT, TILE_WIDTH, imageSrc, tileLabel, treatmentOf } from './galleryHelpers'
 import './Gallery.scss'
 
 const focusableSelector = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
@@ -31,16 +31,6 @@ function Gallery() {
   const previouslyFocused = useRef(null)
   const openIndex = activeIndex !== null && activeIndex < images.length ? activeIndex : null
   const isOpen = openIndex !== null
-
-  // Zachowuje zgodność z treścią zapisaną przed odświeżeniem projektu.
-  const usesPreviousHeading =
-    content.kicker === 'Portfolio & Gabinet' && content.titleLead === 'Zajrzyj do naszego'
-  const heading = usesPreviousHeading ? 'Poznaj nasze portfolio' : content.titleLead
-  const headingAccent = usesPreviousHeading ? '' : content.titleAccent
-  const intro =
-    content.intro === 'Precyzja wykonania, sterylne warunki i serdeczna atmosfera przy ul. Romera 30.'
-      ? 'Zobacz efekty pracy tworzonej z troską o każdy detal.'
-      : content.intro
 
   const close = useCallback(() => setActiveIndex(null), [])
 
@@ -136,21 +126,20 @@ function Gallery() {
   const active = openIndex === null ? null : images[openIndex]
   const layout = layoutOf(images.length)
   const featured = layout === 'trio' || layout === 'mosaic'
-  const activeCaption = active ? captionOf(active) : { treatment: '', fact: '' }
-  const hasActiveCaption = Boolean(activeCaption.treatment || activeCaption.fact)
+  const activeName = active ? treatmentOf(active) : ''
 
   return (
     <section className="gallery" id="galeria" aria-labelledby="gallery-title">
       <div className="gallery__header">
-        {content.kicker && !usesPreviousHeading && <p className="gallery__kicker">{content.kicker}</p>}
+        {content.kicker && <p className="gallery__kicker">{content.kicker}</p>}
         <motion.h2 id="gallery-title" className="gallery__title" {...reveal(0.05)}>
-          {heading}
-          {headingAccent && <span>{headingAccent}</span>}
+          {content.titleLead}
+          {content.titleAccent && <span>{content.titleAccent}</span>}
         </motion.h2>
         <span className="gallery__ornament" aria-hidden="true" />
-        {intro && (
+        {content.intro && (
           <motion.p className="gallery__intro" {...reveal(0.12)}>
-            {intro}
+            {content.intro}
           </motion.p>
         )}
       </div>
@@ -164,7 +153,7 @@ function Gallery() {
           aria-label="Portfolio zabiegów i gabinetu"
         >
           {images.map((image, index) => {
-            const { treatment, fact } = captionOf(image)
+            const treatment = treatmentOf(image)
             const lead = featured && index === 0
 
             return (
@@ -181,15 +170,14 @@ function Gallery() {
                 >
                   <img
                     src={imageSrc(image)}
-                    alt={image.alt || ''}
+                    alt={treatment}
                     width={TILE_WIDTH}
                     height={TILE_HEIGHT}
                     loading="lazy"
                   />
-                  {(treatment || fact) && (
+                  {treatment && (
                     <span className="gallery__caption">
-                      {treatment && <span className="gallery__caption-name">{treatment}</span>}
-                      {fact && <span className="gallery__caption-fact">{fact}</span>}
+                      <span className="gallery__caption-name">{treatment}</span>
                     </span>
                   )}
                   <span className="gallery__zoom" aria-hidden="true">
@@ -217,8 +205,8 @@ function Gallery() {
             className="lightbox"
             role="dialog"
             aria-modal="true"
-            aria-labelledby={hasActiveCaption ? 'gallery-lightbox-caption' : undefined}
-            aria-label={hasActiveCaption ? undefined : 'Powiększone zdjęcie'}
+            aria-labelledby={activeName ? 'gallery-lightbox-caption' : undefined}
+            aria-label={activeName ? undefined : 'Powiększone zdjęcie'}
             tabIndex={-1}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -253,16 +241,13 @@ function Gallery() {
             <figure className="lightbox__figure">
               <img
                 src={imageSrc(active)}
-                alt={active.alt || activeCaption.treatment || ''}
+                alt={activeName}
                 width={TILE_WIDTH}
                 height={TILE_HEIGHT}
               />
-              {hasActiveCaption && (
+              {activeName && (
                 <figcaption id="gallery-lightbox-caption">
-                  {activeCaption.treatment && (
-                    <span className="lightbox__treatment">{activeCaption.treatment}</span>
-                  )}
-                  {activeCaption.fact && <span className="lightbox__fact">{activeCaption.fact}</span>}
+                  <span className="lightbox__treatment">{activeName}</span>
                 </figcaption>
               )}
             </figure>

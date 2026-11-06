@@ -29,10 +29,11 @@ autorstwa magnific” z odnośnikiem do strony zdjęcia w serwisie.
 
 | Plik | Miejsce użycia |
 | --- | --- |
-| `guide-biopen.webp` | Sekcja „Dobierz pielęgnację” – Biopen |
+| `guide-biopen.webp` | Pakiet „Odmłodzenie Premium” |
 | `guide-diament.webp` | Sekcja „Dobierz pielęgnację” – mikrodermabrazja |
 | `guide-maska.webp` | Sekcja „Dobierz pielęgnację” oraz okna zabiegów i pakietów – maska na twarz |
-| `guide-rzesy.webp` | Sekcja „Dobierz pielęgnację” – stylizacja rzęs |
+| `guide-rzesy.webp` | Pakiet „Piękne spojrzenie” oraz okna przedłużania rzęs |
+| `mezomig.webp` | Sekcja „Dobierz pielęgnację” – głęboka regeneracja, mezoterapia mikroigłowa |
 | `mezo-bezigla.webp` | Okno pakietu „Mezoterapia bezigłowa” |
 | `mezo-igla.webp` | Okno pakietu „Mezoterapia igłowa” |
 | `mezo-mikro.webp` | Okno pakietu „Mezoterapia mikroigłowa” |
@@ -45,6 +46,9 @@ autorstwa magnific” z odnośnikiem do strony zdjęcia w serwisie.
 
 | Plik | Miejsce użycia |
 | --- | --- |
-| `guide-mezo.webp` | Sekcja „Dobierz pielęgnację” – konsultacja |
-| `guide-suchosc.webp` | Sekcja „Dobierz pielęgnację” – peeling |
+| `guide-mezo.webp` | Sekcja „Dobierz pielęgnację” – przebarwienia, oraz okno konsultacji |
+| `guide-suchosc.webp` | Pakiet „Odświeżenie i blask” oraz okna zabiegów (stymulacja, masaż Kobido) |
 | `mezo.webp` | Okno pakietów z kategorii mezoterapii (zdjęcie ogólne) |
+| `mezoigg.webp` | Sekcja „Dobierz pielęgnację” – suchość i brak blasku, mezoterapia igłowa |
+
+Oznaczenie `mezoigg.webp`: Photo by <a href="https://unsplash.com/@miinrad?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Mina Rad</a> on <a href="https://unsplash.com/photos/botox-injection-being-administered-to-a-woman-qehqLHZ9toc?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>

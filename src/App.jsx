@@ -16,24 +16,14 @@ import NoticeBanner from './components/NoticeBanner'
 import { useSection } from './content/context'
 import './App.scss'
 
-// Okna dialogowe pobierają się dopiero przy pierwszym otwarciu – nie opóźniają startu strony.
-const loadBookingModal = () => import('./components/BookingModal')
+// Okna pakietu i zabiegu pobierają się dopiero przy pierwszym otwarciu – nie opóźniają startu strony.
 const loadPackageModal = () => import('./components/PackageModal')
 const loadTreatmentModal = () => import('./components/TreatmentModal')
-const BookingModal = lazy(loadBookingModal)
 const PackageModal = lazy(loadPackageModal)
 const TreatmentModal = lazy(loadTreatmentModal)
 
 function App() {
-  const [bookingOpen, setBookingOpen] = useState(false)
-  const [bookingUsed, setBookingUsed] = useState(false)
   const skinGuide = useSection('skinGuide')
-
-  const openBooking = useCallback(() => {
-    setBookingUsed(true)
-    setBookingOpen(true)
-  }, [])
-  const closeBooking = useCallback(() => setBookingOpen(false), [])
 
   // „Dowiedz się więcej” przy pakiecie – pakiet zostaje w stanie po zamknięciu,
   // żeby okno mogło się płynnie wygasić z tą samą treścią.
@@ -53,15 +43,10 @@ function App() {
   )
   const selectTreatment = useCallback((id) => openTreatment(id), [openTreatment])
   const closeTreatment = useCallback(() => setTreatmentInfo((prev) => ({ ...prev, open: false })), [])
-  const bookFromTreatment = useCallback(() => {
-    closeTreatment()
-    openBooking()
-  }, [closeTreatment, openBooking])
 
   // Gdy przeglądarka złapie oddech, dociągamy okna w tle – pierwsze kliknięcie otwiera je bez czekania.
   useEffect(() => {
     const preload = () => {
-      loadBookingModal()
       loadPackageModal()
       loadTreatmentModal()
     }
@@ -78,12 +63,12 @@ function App() {
   return (
     <div className="app">
       <NoticeBanner />
-      <Navbar onBook={openBooking} />
+      <Navbar />
       <main>
-        <Hero onBook={openBooking} />
+        <Hero />
         <About />
         <Offer onPackageInfo={openPackage} />
-        <SkinGuide onBook={openBooking} onTreatmentInfo={openTreatment} />
+        <SkinGuide onTreatmentInfo={openTreatment} />
 
         {(skinGuide.quote || skinGuide.quoteSignature) && (
           <div className="between-quote">
@@ -96,16 +81,15 @@ function App() {
           </div>
         )}
 
-        <Process onBook={openBooking} />
+        <Process />
         <Pricing onTreatmentInfo={openTreatment} />
         <Gallery />
         <Reviews />
         <Faq />
-        <Contact onBook={openBooking} />
+        <Contact />
       </main>
       <Footer />
       <Suspense fallback={null}>
-        {bookingUsed && <BookingModal open={bookingOpen} onClose={closeBooking} />}
         {packageInfo.pkg && (
           <PackageModal
             open={packageInfo.open}
@@ -121,7 +105,6 @@ function App() {
             ids={treatmentInfo.ids}
             currentId={treatmentInfo.id}
             onSelect={selectTreatment}
-            onBook={bookFromTreatment}
             onClose={closeTreatment}
           />
         )}

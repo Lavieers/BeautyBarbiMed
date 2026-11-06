@@ -1,53 +1,69 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { isSupabaseConfigured } from '../lib/supabaseConfig'
 import { contactDefaults, sectionDefaults } from '../data/defaults'
-import { ContentContext, isNoticeVisible } from './context'
+import { ContentContext, isNoticePending } from './context'
 import { DEFAULT_THEME, themeTokens } from './themes'
 
-const LEGACY_OFFER_INTRO =
-  /^starannie dobrane terapie/i
+// Panel edytuje tylko te pola. Reszta sekcji zostaje w kodzie — stary zapis
+// z czasów, gdy dało się zmieniać całą stronę, nie podmienia już tekstu.
+const LIVE_SECTION_FIELDS = {
+  hero: ['description'],
+  about: ['paragraph', 'teamLabel', 'team'],
+  offer: ['categories'],
+  pricing: ['groups'],
+}
 
-function applySectionContentPatches(sectionMap) {
-  let next = sectionMap
+function mergeLiveSections(rows) {
+  const next = { ...sectionDefaults }
 
-  const offer = next.offer
-  if (offer) {
-    const intro = typeof offer.intro === 'string' ? offer.intro.trim() : ''
-    const isLegacyIntro =
-      !intro ||
-      LEGACY_OFFER_INTRO.test(intro) ||
-      /odst[eę]pach\s+2\s*[–-]\s*4\s*tygodni/i.test(intro) ||
-      /^zabiegi w pakiecie/i.test(intro) ||
-      /^postaw na kompleksową/i.test(intro)
+  for (const row of rows ?? []) {
+    const fields = LIVE_SECTION_FIELDS[row?.key]
+    if (!fields || !row.content || typeof row.content !== 'object') continue
 
-    if (isLegacyIntro) {
-      next = { ...next, offer: { ...offer, intro: sectionDefaults.offer.intro } }
+    // W bazie leży starszy, pełny zapis sekcji „O gabinecie”. Nowy panel
+    // zapisuje tylko akapit i zespół (z polem source). Bez tego znacznika
+    // strona zostaje przy tekście z kodu.
+    if (row.key === 'about' && row.content.source !== 'copy-editor') continue
+
+    const section = { ...(sectionDefaults[row.key] ?? {}) }
+    for (const field of fields) {
+      if (row.content[field] != null) section[field] = row.content[field]
     }
+    next[row.key] = section
   }
 
-  const hero = next.hero
-  if (hero) {
-    const eyebrow = typeof hero.eyebrow === 'string' ? hero.eyebrow.trim() : ''
-    const description = typeof hero.description === 'string' ? hero.description.trim() : ''
-    const isLegacyHero =
-      /kosmetologia medyczna/i.test(eyebrow) ||
-      /pewną ręką/i.test(description) ||
-      /mistrzowska stylizacja rzęs/i.test(description) ||
-      (hero.trustHighlights?.length ?? 0) > 0
+  return next
+}
 
-    if (isLegacyHero) {
-      next = {
-        ...next,
-        hero: {
-          ...hero,
-          eyebrow: sectionDefaults.hero.eyebrow,
-          titleLead: sectionDefaults.hero.titleLead,
-          titleAccent: sectionDefaults.hero.titleAccent,
-          description: sectionDefaults.hero.description,
-          trustHighlights: [],
-        },
-      }
-    }
+function sameNotices(current, next) {
+  if (!Array.isArray(current) || current.length !== next.length) return false
+
+  return current.every((notice, index) => {
+    const other = next[index]
+    return (
+      notice.id === other.id &&
+      notice.updated_at === other.updated_at &&
+      notice.message === other.message &&
+      notice.kind === other.kind &&
+      notice.starts_at === other.starts_at &&
+      notice.ends_at === other.ends_at &&
+      notice.is_active === other.is_active
+    )
+  })
+}
+
+function mergeContact(saved) {
+  const next = { ...contactDefaults }
+
+  for (const [key, value] of Object.entries(saved ?? {})) {
+    if (value == null || value === '') continue
+    if (Array.isArray(value) && value.length === 0) continue
+    next[key] = value
+  }
+
+  if (typeof next.phone === 'string') next.phone = next.phone.replace(/\s+/g, ' ').trim()
+  if (typeof next.address === 'string') {
+    next.address = next.address.replace(/(\d{2}-\d{3}),\s+/g, '$1 ').replace(/\s+/g, ' ').trim()
   }
 
   return next
@@ -74,29 +90,21 @@ async function fetchContent() {
       .from('reviews')
       .select('*')
       .order('sort_order', { ascending: true })
-      .order('created_at', { ascending: false }),
+      .order('created_at', { ascending: true }),
   ])
 
   const firstError = [settings, sections, notices, gallery, reviews].find((r) => r.error)?.error
   if (firstError) throw firstError
 
-  const sectionMap = { ...sectionDefaults }
-  for (const row of sections.data ?? []) {
-    if (row?.key) {
-      sectionMap[row.key] = { ...(sectionDefaults[row.key] ?? {}), ...(row.content ?? {}) }
-    }
-  }
-
-  const patchedSections = applySectionContentPatches(sectionMap)
-
   return {
-    contact: { ...contactDefaults, ...(settings.data?.contact ?? {}) },
-    sections: patchedSections,
+    contact: mergeContact(settings.data?.contact),
+    sections: mergeLiveSections(sections.data),
     theme: settings.data?.theme || DEFAULT_THEME,
     themeOverrides: settings.data?.theme_overrides ?? {},
-    // RLS odsiewa komunikaty spoza okna czasowego, ale przy zalogowanym
-    // adminie zapytanie zwraca wszystko — filtrujemy jeszcze raz u siebie.
-    notices: (notices.data ?? []).filter((notice) => isNoticeVisible(notice)),
+    // Zaplanowane komunikaty zostają w pamięci, żeby pasek włączył się sam
+    // o godzinie startu. Zakończone odpadają. RLS anonima i tak oddaje tylko
+    // wiersze, które polityka uzna za publiczne.
+    notices: (notices.data ?? []).filter((notice) => isNoticePending(notice)),
     gallery: gallery.data ?? [],
     reviews: reviews.data ?? [],
   }
@@ -129,6 +137,34 @@ function ContentProvider({ children }) {
 
     let cancelled = false
 
+    const syncNotices = async () => {
+      try {
+        const { supabase } = await import('../lib/supabase')
+        const { data, error: cause } = await supabase
+          .from('notices')
+          .select('*')
+          .order('created_at', { ascending: false })
+
+        if (cancelled || cause) return
+
+        const notices = (data ?? []).filter((notice) => isNoticePending(notice))
+
+        setData((current) => {
+          if (!current || sameNotices(current.notices, notices)) return current
+          return { ...current, notices }
+        })
+      } catch {
+        // Kolejna próba przy następnym tyknięciu.
+      }
+    }
+
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') syncNotices()
+    }
+
+    const timer = window.setInterval(syncNotices, 15000)
+    document.addEventListener('visibilitychange', onVisible)
+
     const run = async () => {
       try {
         const content = await fetchContent()
@@ -150,6 +186,8 @@ function ContentProvider({ children }) {
 
     return () => {
       cancelled = true
+      window.clearInterval(timer)
+      document.removeEventListener('visibilitychange', onVisible)
     }
   }, [])
 

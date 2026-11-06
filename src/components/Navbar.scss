@@ -181,6 +181,13 @@
     gap: 0.85rem;
   }
 
+  &__booksy {
+    flex: none;
+    display: block;
+    width: 1.15rem;
+    height: 0.85rem;
+  }
+
   &__toggle {
     display: none;
     align-items: center;

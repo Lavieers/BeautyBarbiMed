@@ -6,7 +6,6 @@ import { packageTitleLines } from '../data/packageStories'
 import { packagePhoto } from '../data/packageImages'
 import { resolveLead, resolveSteps } from '../lib/packageDetails'
 import { bindPolishWidows, polishCopy } from '../lib/polishText'
-import './BookingModal.scss'
 import './PackageModal.scss'
 
 // Lista kroków – ta sama oś z punktami co w sekcji „Standard wizyty”.

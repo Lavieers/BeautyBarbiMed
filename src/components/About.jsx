@@ -1,30 +1,14 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
 import salonImage from '../assets/salon.webp'
 import { useContactInfo, useSection } from '../content/context'
-import { sectionDefaults } from '../data/defaults'
 import Icon from './Icon'
 import { getAboutScrollMarginTop } from '../lib/aboutSectionScroll'
 import './About.scss'
 
-const aboutCopy = {
-  lead:
-    'Beauty Barbi Med tworzą dwie specjalistki: Barbara - pielęgniarka i ekspertka mezoterapii igłowej, oraz Klaudia - stylistka brwi i rzęs. Łączymy świadomą pielęgnację z indywidualną opieką, więc zawsze wiesz, kto się Tobą zajmuje.',
-  paragraph:
-    'Bezpieczeństwo i precyzja są dla nas najważniejsze. Pracujemy na certyfikowanych preparatach, w kameralnej atmosferze i z pełną troską o Twój komfort.',
-}
-
-function resolveAboutCopy(about, hero) {
-  const fallback = sectionDefaults.about
-  const sameAsHero = about.titleLead?.trim() === hero.titleLead?.trim() && about.titleAccent?.trim() === hero.titleAccent?.trim()
-  return sameAsHero ? { ...about, titleLead: fallback.titleLead, titleAccent: fallback.titleAccent } : about
-}
-
 function About() {
   const reduced = useReducedMotion()
-  const about = useSection('about')
-  const hero = useSection('hero')
-  const content = useMemo(() => resolveAboutCopy(about, hero), [about, hero])
+  const content = useSection('about')
   const contact = useContactInfo()
   const [locationStreet, ...locationCityParts] = (contact.address || 'ul. Eugeniusza Romera 30, 20-487 Lublin').split(', ')
   const locationCity = locationCityParts.join(', ')
@@ -61,11 +45,19 @@ function About() {
     <div className="about__body">
       <div className="about__copy">
         <motion.h2 id="about-title" className="about__title" {...reveal(.05)}>{content.titleLead} <span>{content.titleAccent}</span></motion.h2>
-        <motion.blockquote className="about__quote" {...reveal(.1)}>„Przenieśliśmy naszą pasję do nowego wnętrza przy ul. Romera 30, by stworzyć standard, na który zasługujesz.”</motion.blockquote>
-        <motion.p className="about__lead" {...reveal(.12)}>{aboutCopy.lead}</motion.p>
-        <motion.p className="about__text" {...reveal(.18)}>{aboutCopy.paragraph}</motion.p>
+        <motion.p className="about__lead" {...reveal(.12)}>{content.lead}</motion.p>
+        <motion.p className="about__text" {...reveal(.18)}>{content.paragraph}</motion.p>
       </div>
-      <div className="about__team-grid"><p className="about__team-label">{content.teamLabel || 'Nasz zespół'}</p>{(content.team ?? []).map(({ id, name, role }) => <div key={id} className="about__expert-card"><h3 className="about__expert-name">{name}</h3><p className="about__expert-role">{role}</p></div>)}</div>
+      {(content.team ?? []).length > 0 && (
+        <div className="about__team-grid">
+          {(content.team ?? []).map(({ id, name, role }) => (
+            <div key={id} className="about__expert-card">
+              <h3 className="about__expert-name">{name}</h3>
+              <p className="about__expert-role">{role}</p>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   </div></section>
 }

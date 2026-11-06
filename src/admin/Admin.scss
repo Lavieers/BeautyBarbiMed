@@ -1,13 +1,13 @@
 // Panel treści — prosty układ z bocznym menu, kolory jak na stronie głównej.
 
 .adm {
-  --adm-sidebar-w: 15.5rem;
+  --adm-sidebar-w: 15rem;
 
   display: flex;
 
   min-height: 100svh;
 
-  background: var(--color-deep-tint);
+  background: #fff;
 
   color: var(--color-text-dark);
 
@@ -29,25 +29,13 @@
 
     width: min(var(--adm-sidebar-w), 100%);
 
-    padding: 1rem 0.75rem 0.85rem;
+    padding: 16px 10px 12px;
 
     color: rgba(var(--krem-rgb), 0.92);
 
-    /* Gradient przypięty do okna — nie rozciąga się na wysokość długiej treści obok. */
+    background: #431020;
 
-    background-color: #431020;
-
-    background-image: linear-gradient(155deg, #661c32 0%, #431020 55%, #2c0a15 100%);
-
-    background-repeat: no-repeat;
-
-    background-size: min(var(--adm-sidebar-w), 100vw) 100svh;
-
-    background-attachment: fixed;
-
-    border-right: 1px solid rgba(var(--zloto-rgb), 0.22);
-
-    box-shadow: 6px 0 28px rgba(var(--bordo-rgb), 0.22);
+    border-right: 1px solid #2c0a15;
 
     position: sticky;
 
@@ -67,29 +55,9 @@
 
   &__brand {
 
-    padding: 0.15rem 0.35rem 0.85rem;
+    padding: 2px 6px 0;
 
-    margin-bottom: 0.45rem;
-
-    border-bottom: 1px solid rgba(var(--zloto-rgb), 0.22);
-
-  }
-
-
-
-  &__brand-kicker {
-
-    margin: 0;
-
-    font-size: 0.625rem;
-
-    font-weight: 600;
-
-    letter-spacing: 0.12em;
-
-    text-transform: uppercase;
-
-    color: rgba(var(--zloto-rgb), 0.78);
+    margin: 0 0 16px;
 
   }
 
@@ -97,7 +65,7 @@
 
   &__brand-name {
 
-    margin: 0.15rem 0 0;
+    margin: 0;
 
     font-family: var(--font-heading);
 
@@ -119,13 +87,9 @@
 
     flex-direction: column;
 
-    gap: 0.35rem;
-
     margin-top: auto;
 
-    padding: 0.65rem 0.25rem 0.1rem;
-
-    border-top: 1px solid rgba(var(--zloto-rgb), 0.2);
+    padding: 16px 0 0;
 
   }
 
@@ -141,14 +105,35 @@
 
     min-width: 0;
 
-    background: linear-gradient(180deg, rgb(var(--krem-rgb)) 0%, var(--color-deep-tint) 100%);
+    background: #fff;
 
-    &--offer,
-    &--contact {
+    &--offer {
 
-      max-height: 100svh;
+      min-height: 100svh;
 
-      overflow: hidden;
+      background: #fff;
+
+      overflow: visible;
+
+    }
+
+
+
+    &--copy {
+
+      min-height: 100svh;
+
+      background: #fff;
+
+    }
+
+
+
+    &--reviews {
+
+      min-height: 100svh;
+
+      background: #fff;
 
     }
 
@@ -168,7 +153,7 @@
 
     padding: 0.85rem 1rem;
 
-    background: rgb(var(--color-cream-rgb));
+    background: #fff;
 
     border-bottom: 1px solid var(--border-subtle);
 
@@ -208,8 +193,7 @@
 
 
 
-    &--offer,
-    &--contact {
+    &--offer {
 
       display: flex;
 
@@ -217,13 +201,31 @@
 
       flex-direction: column;
 
-      min-height: 0;
+      justify-content: safe center;
 
       padding-top: 0.45rem;
 
-      padding-bottom: 0.85rem;
+      padding-bottom: 1.25rem;
 
-      overflow: hidden;
+      background: #fff;
+
+      overflow: visible;
+
+    }
+
+
+
+    &--copy {
+
+      background: #fff;
+
+    }
+
+
+
+    &--reviews {
+
+      background: #fff;
 
     }
 
@@ -239,7 +241,7 @@
 
   flex-direction: column;
 
-  gap: 0.18rem;
+  gap: 2px;
 
 
 
@@ -257,25 +259,23 @@
 
     flex-shrink: 0;
 
-    min-width: 1.35rem;
+    min-width: 1.25rem;
 
-    padding: 0.12rem 0.4rem;
+    padding: 0.05rem 0.35rem;
 
     font-size: 0.6875rem;
 
-    font-weight: 700;
+    font-weight: 600;
 
-    line-height: 1.2;
+    line-height: 1.3;
 
     text-align: center;
 
     color: rgb(var(--krem-rgb));
 
-    background: rgba(200, 72, 90, 0.92);
+    background: rgba(255, 255, 255, 0.14);
 
     border-radius: 999px;
-
-    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.15);
 
   }
 
@@ -287,11 +287,13 @@
 
     align-items: center;
 
-    gap: 0.65rem;
+    gap: 10px;
 
     width: 100%;
 
-    padding: 0.62rem 0.7rem;
+    min-height: 36px;
+
+    padding: 6px;
 
     font-family: inherit;
 
@@ -299,19 +301,19 @@
 
     font-weight: 500;
 
+    line-height: 1.2;
+
     text-align: left;
 
-    color: rgba(var(--krem-rgb), 0.88);
+    color: rgba(var(--krem-rgb), 0.72);
 
     background: transparent;
 
-    border: 1px solid transparent;
+    border: 0;
 
-    border-radius: calc(var(--radius) + 2px);
+    border-radius: var(--radius);
 
     cursor: pointer;
-
-    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 
 
 
@@ -321,8 +323,6 @@
 
       background: rgba(255, 255, 255, 0.06);
 
-      border-color: rgba(var(--zloto-rgb), 0.4);
-
     }
 
 
@@ -331,11 +331,7 @@
 
       color: rgb(var(--krem-rgb));
 
-      background: rgba(0, 0, 0, 0.2);
-
-      border-color: rgba(var(--zloto-rgb), 0.72);
-
-      box-shadow: inset 0 0 0 1px rgba(var(--krem-rgb), 0.06);
+      background: rgba(255, 255, 255, 0.1);
 
     }
 
@@ -347,19 +343,20 @@
 
     flex-shrink: 0;
 
-    width: 1.25rem;
+    width: 18px;
 
-    height: 1.25rem;
+    height: 18px;
 
-    color: var(--color-gold-light);
+    color: rgba(var(--krem-rgb), 0.55);
 
   }
 
 
 
+  &__link:hover &__icon,
   &__link--active &__icon {
 
-    color: var(--color-gold);
+    color: rgb(var(--krem-rgb));
 
   }
 
@@ -862,25 +859,31 @@
 
     align-items: center;
 
-    justify-content: center;
+    justify-content: flex-start;
 
-    gap: 0.45rem;
+    gap: 10px;
 
     width: 100%;
 
-    padding: 0.45rem 0.55rem;
+    min-height: 36px;
 
-    font-size: 0.8125rem;
+    padding: 6px;
+
+    font-size: 0.875rem;
+
+    font-weight: 500;
 
     text-transform: none;
 
-    letter-spacing: 0.01em;
+    letter-spacing: 0;
 
-    color: rgba(var(--krem-rgb), 0.78);
+    color: rgba(var(--krem-rgb), 0.72);
 
     background: transparent;
 
-    border: 1px solid transparent;
+    border: 0;
+
+    border-radius: var(--radius);
 
 
 
@@ -889,6 +892,16 @@
       color: rgb(var(--krem-rgb));
 
       background: rgba(255, 255, 255, 0.06);
+
+    }
+
+
+
+    .adm-btn__icon {
+
+      width: 18px;
+
+      height: 18px;
 
     }
 
@@ -1008,7 +1021,7 @@
 
   font-family: var(--font-body);
 
-  background: var(--color-deep-tint);
+  background: #fff;
 
 
 
@@ -1111,17 +1124,26 @@
 }
 
 
+// Zespół: tabela i teksty pod nią. Strona przewija się, gdy osób jest więcej.
+@media (min-width: 1024px) {
+  .adm__main--copy {
+    min-height: 100svh;
+  }
+
+  .adm__body--copy {
+    padding-bottom: 2rem;
+  }
+}
+
 // Telefon / tablet: panele „Pakiety” i „Dane firmy” nie są już zamknięte w oknie 100svh —
 // strona przewija się normalnie, więc nic na siebie nie nachodzi.
 @media (max-width: 900px) {
-  .adm__main--offer,
-  .adm__main--contact {
+  .adm__main--offer {
     max-height: none;
     overflow: visible;
   }
 
-  .adm__body--offer,
-  .adm__body--contact {
+  .adm__body--offer {
     flex: none;
     overflow: visible;
     padding-bottom: 5rem;
@@ -1165,7 +1187,7 @@
     &__mobile-desc {
       display: block;
       padding: 0.1rem 1rem 0.75rem;
-      background: rgb(var(--color-cream-rgb));
+      background: #fff;
       border-bottom: 1px solid var(--border-subtle);
 
       p {
@@ -1257,12 +1279,9 @@
       width: 100%;
       height: auto;
       max-height: calc(100svh - var(--adm-bar-h));
-      padding: 0.85rem 0.75rem;
+      padding: 16px 10px 12px;
       border-right: none;
-      border-bottom: 1px solid rgba(var(--zloto-rgb), 0.3);
-      box-shadow: none;
-      background-attachment: scroll;
-      background-size: 100% 100%;
+      border-bottom: 1px solid #2c0a15;
       overscroll-behavior: contain;
       // Zamknięte: schowane nad paskiem (pasek przykrywa je z góry).
       visibility: hidden;
@@ -1278,12 +1297,12 @@
     }
 
     &__brand {
-      padding-bottom: 0.7rem;
-      margin-bottom: 0.45rem;
+      margin-bottom: 10px;
     }
 
     &__sidebar-foot {
-      margin-top: 0.75rem;
+      margin-top: 10px;
+      padding-top: 0;
     }
 
     &__body {

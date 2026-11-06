@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useContent, useGallery, useSection } from '../content/context'
+import { useContent, useGallery, useNotices, useSection } from '../content/context'
 import { mediaUrl } from '../lib/supabase'
 
 function flattenPackages(categories) {
@@ -54,11 +54,20 @@ function socialHandle(url) {
 function shortUrl(url) {
   const clean = String(url ?? '').trim()
   if (!clean) return ''
-  return clean
-    .replace(/^https?:\/\//i, '')
-    .replace(/^www\./i, '')
-    .replace(/\?do=invite$/i, '')
-    .replace(/\/$/, '')
+  try {
+    const parsed = new URL(clean.includes('://') ? clean : `https://${clean}`)
+    ;[...parsed.searchParams.keys()].forEach((key) => {
+      if (key === 'locale' || key === 'do' || key.startsWith('utm_')) parsed.searchParams.delete(key)
+    })
+    const query = parsed.searchParams.toString()
+    const path = parsed.pathname.replace(/\/$/, '')
+    return `${parsed.host.replace(/^www\./i, '')}${path}${query ? `?${query}` : ''}`
+  } catch {
+    return clean
+      .replace(/^https?:\/\//i, '')
+      .replace(/^www\./i, '')
+      .replace(/\/$/, '')
+  }
 }
 
 function excerpt(text, max = 120) {
@@ -68,10 +77,24 @@ function excerpt(text, max = 120) {
   return `${clean.slice(0, max - 1).trim()}…`
 }
 
+function teamPeople(team) {
+  const source = Array.isArray(team) ? team : []
+  return source
+    .map((person, index) => ({
+      id: person?.id || `osoba-${index + 1}`,
+      name: String(person?.name ?? '').trim(),
+      role: String(person?.role ?? '').trim(),
+      phone: String(person?.phone ?? '').trim(),
+    }))
+    .filter((person) => person.name || person.role)
+}
+
 export function useAdminDashboard() {
-  const { contact, notices, reviews, gallery: galleryRows } = useContent()
+  const { contact, reviews, gallery: galleryRows } = useContent()
+  const notices = useNotices()
   const offer = useSection('offer')
   const pricing = useSection('pricing')
+  const about = useSection('about')
   const publishedGallery = useGallery()
 
   return useMemo(() => {
@@ -88,7 +111,7 @@ export function useAdminDashboard() {
     const galleryPreview = publishedGallery.slice(0, 4).map((image) => ({
       key: image.id ?? image.storage_path,
       src: image.src || mediaUrl(image.storage_path),
-      label: image.category || image.alt || '',
+      label: image.category || '',
     }))
 
     const activeNotices = notices ?? []
@@ -110,8 +133,9 @@ export function useAdminDashboard() {
       galleryPreview,
       galleryTotal: (galleryRows ?? []).length,
       activeNotices,
+      team: teamPeople(about.team),
     }
-  }, [contact, notices, reviews, galleryRows, offer, pricing, publishedGallery])
+  }, [contact, notices, reviews, galleryRows, offer, pricing, about, publishedGallery])
 }
 
 export function useAdminHomeMeta() {

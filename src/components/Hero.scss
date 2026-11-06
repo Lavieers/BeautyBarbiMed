@@ -6,13 +6,44 @@
   align-items: center;
   min-height: 100svh;
   overflow: hidden;
+  background:
+    radial-gradient(ellipse 46rem 34rem at 92% 58%, rgba(var(--zloto-rgb), 0.2), transparent 68%),
+    radial-gradient(ellipse 24rem 20rem at 100% 0%, rgba(var(--bordo-rgb), 0.06), transparent 72%),
+    var(--color-cream);
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 18%;
+    bottom: 16%;
+    right: max(7vw, 2.5rem);
+    width: 1px;
+    background: linear-gradient(
+      180deg,
+      transparent,
+      rgba(var(--zloto-rgb), 0.65) 18%,
+      rgba(var(--zloto-rgb), 0.65) 82%,
+      transparent
+    );
+    pointer-events: none;
+  }
+
+  &--photo {
+    background: var(--color-cream);
+
+    &::after {
+      display: none;
+    }
+  }
 
   &__background {
     position: absolute;
     inset: 0;
-    background-size: cover;
-    background-position: right center;
-    background-repeat: no-repeat;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: right center;
+    pointer-events: none;
   }
 
   &__veil {
@@ -137,9 +168,16 @@
   @media (max-width: 900px) {
     min-height: auto;
     min-height: 100svh;
+    background:
+      radial-gradient(ellipse 90% 42% at 50% 100%, rgba(var(--zloto-rgb), 0.16), transparent 72%),
+      var(--color-cream);
+
+    &::after {
+      display: none;
+    }
 
     &__background {
-      background-position: 74% center;
+      object-position: 74% center;
     }
 
     &__veil {

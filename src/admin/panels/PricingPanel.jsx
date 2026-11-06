@@ -143,8 +143,6 @@ function PricingPanel() {
       return
     }
 
-    const unsaved = 'Kliknij „Zapisz na stronie”, żeby zmiany pojawiły się na stronie.'
-
     if (modal.mode === 'add') {
       const nextRows = [...rows, row]
       setRows(nextRows)
@@ -153,10 +151,10 @@ function PricingPanel() {
           (item) => item.name === row.name && item.price === row.price && item.category === row.category,
         ),
       )
-      setStatus({ kind: 'ok', text: `Dodano zabieg „${row.name}” do listy. ${unsaved}` })
+      setStatus({ kind: 'ok', text: `Dodano „${row.name}”.` })
     } else {
       setRows(rows.map((item, index) => (index === modal.rowIndex ? row : item)))
-      setStatus({ kind: 'ok', text: `Zmieniono „${row.name}”. ${unsaved}` })
+      setStatus({ kind: 'ok', text: `Zmieniono „${row.name}”.` })
     }
 
     closeModal()
@@ -168,7 +166,7 @@ function PricingPanel() {
     setRows(rows.filter((_, index) => index !== rowIndex))
     setStatus({
       kind: 'ok',
-      text: `Usunięto „${removed?.name ?? 'pozycję'}” z listy. Kliknij „Zapisz na stronie”, żeby zmiana pojawiła się na stronie.`,
+      text: `Usunięto „${removed?.name ?? 'pozycję'}”.`,
     })
     closeModal()
   }
@@ -177,7 +175,7 @@ function PricingPanel() {
     <div className="adm-panel adm-panel--home adm-pricing">
       <section className="adm-pricing__stage" aria-label="Cennik zabiegów">
         {rows.length === 0 ? (
-          <p className="adm-pricing__empty">Cennik jest pusty — dodaj pierwszą pozycję plusem w rogu.</p>
+          <p className="adm-pricing__empty">Cennik jest pusty.</p>
         ) : (
           <div className="adm-pricing__table-wrap">
             <table className="adm-pricing__table">
@@ -196,16 +194,11 @@ function PricingPanel() {
                     className={rowIndex === flashRow ? 'adm-pricing__row--flash' : undefined}
                   >
                     <td>
-                      <button
-                        type="button"
-                        className="adm-pricing__row-hit"
-                        onClick={() => openEdit(rowIndex)}
-                      >
+                      <button type="button" className="adm-pricing__row-hit" onClick={() => openEdit(rowIndex)}>
                         <span className="adm-pricing__name">{row.name}</span>
-                        <span className="adm-pricing__hint">Kliknij, aby edytować</span>
                       </button>
                     </td>
-                    <td>{row.category}</td>
+                    <td className="adm-pricing__category">{row.category}</td>
                     <td className="adm-pricing__price">{row.price}</td>
                   </tr>
                 ))}
@@ -242,9 +235,6 @@ function PricingPanel() {
                   Usuń
                 </button>
               ) : null}
-              <span className="adm-pkg-modal__hint">
-                Kliknij w nazwę, opis, czas, cenę lub zdjęcie w oknie i wpisz zmianę. Tak okno zobaczą klientki.
-              </span>
               {modal.error ? (
                 <span className="adm-status adm-status--error adm-pricing__modal-error" role="alert">
                   {modal.error}

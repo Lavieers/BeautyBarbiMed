@@ -8,22 +8,11 @@ export function imageSrc(image) {
   return mediaUrl(image?.storage_path)
 }
 
-export function captionOf(image) {
-  return {
-    treatment: (image?.category || '').trim(),
-    fact: (image?.caption || '').trim(),
-  }
+export function treatmentOf(image) {
+  return (image?.category || '').trim()
 }
 
 export function tileLabel(image) {
-  const { treatment, fact } = captionOf(image)
-  const parts = []
-
-  for (const part of [image?.alt, treatment, fact]) {
-    const text = (part || '').trim()
-    if (text && !parts.includes(text)) parts.push(text)
-  }
-
-  parts.push('Powiększ zdjęcie')
-  return parts.join('. ')
+  const name = treatmentOf(image)
+  return name ? `${name}. Powiększ zdjęcie` : 'Powiększ zdjęcie'
 }

@@ -78,6 +78,19 @@
       object-fit: cover;
       user-select: none;
       -webkit-user-drag: none;
+      // wspólna ciepła tonacja, z zachowanym kolorem i ostrzejszym rysunkiem
+      filter: url(#pkg-grade) contrast(1.12) saturate(1.38) brightness(1.03);
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background: rgb(var(--zloto-rgb));
+      opacity: 0.08;
+      mix-blend-mode: color;
     }
   }
 
@@ -88,6 +101,7 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
+    z-index: 2;
     padding: 0.38rem 0.6rem;
     border: 0;
     border-radius: 6px;
