@@ -198,7 +198,7 @@
   }
 
   // ── Responsive ───────────────────────────────────────────────────────────────
-  @media (max-width: 720px) {
+  @media (max-width: 900px) {
     &__list {
       grid-template-columns: 1fr;
       gap: clamp(2.5rem, 4vw, 3.5rem) 0;

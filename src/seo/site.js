@@ -10,7 +10,7 @@ export const SITE_TITLE =
   'Beauty Barbi Med - Gabinet Medycyny Estetycznej i Kosmetologii | Lublin'
 
 export const SITE_DESCRIPTION =
-  'Gabinet kosmetologii i medycyny estetycznej w Lublinie przy ul. Romera 30. Mezoterapia, stylizacja rzęs i brwi, pielęgnacja dłoni. Umów wizytę online.'
+  'Gabinet kosmetologii i medycyny estetycznej w Lublinie przy ul. Romera 30. Mezoterapia i pielęgnacja twarzy, które odświeżają spojrzenie. Umów wizytę online.'
 
 const SCHEMA_DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 

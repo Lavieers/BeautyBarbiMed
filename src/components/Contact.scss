@@ -249,6 +249,8 @@
   }
 
   @media (max-width: 900px) {
+    min-height: auto;
+
     &__layout {
       grid-template-columns: minmax(0, 1fr);
     }
@@ -267,7 +269,7 @@
 
     &__map {
       flex: none;
-      height: clamp(12rem, 50vw, 18rem);
+      height: clamp(16rem, 52vw, 22rem);
     }
   }
 

@@ -171,6 +171,7 @@ const rawGuide = {
       co('Odświeżenie klasycznej aplikacji rzęs: doklejenie brakujących rzęs sztucznych do nowo wyrośniętych naturalnych.'),
       dlaKogo('Dla osób, które mają założoną aplikację 1:1 i chcą utrzymać naturalny efekt.'),
       przebieg('Usunięcie odrostów i aplikacja rzęs. Czas: ok. 60–90 min.'),
+      efekty('Równa, naturalna linia rzęs – wygląd jak po świeżo założonej aplikacji 1:1.'),
       wazne('Wykonywane do 3 tygodni od poprzedniej wizyty.'),
     ],
   },
@@ -181,6 +182,7 @@ const rawGuide = {
       co('Uzupełnienie lekkich objętości (pęczków 2–3 rzęs), aby przywrócić spojrzeniu puszystość.'),
       dlaKogo('Dla stałych klientek ceniących wyraźniejsze, ale wciąż lekkie zagęszczenie.'),
       przebieg('Precyzyjne dopełnienie linii rzęs pęczkami. Czas: ok. 90 min.'),
+      efekty('Przywrócona puszystość spojrzenia i równa linia lekkiej objętości.'),
     ],
   },
   'przed-2-3d': {
@@ -279,6 +281,11 @@ export function buildGuide(row) {
   const guide = {}
   for (const field of GUIDE_TEXT_FIELDS) {
     guide[field] = typeof info[field] === 'string' ? info[field] : (base?.[field] ?? '')
+  }
+  // Zapis cennika ma puste „Efekty” przy konsultacji (przypadkowe usunięcie w panelu).
+  // Zapis nie da się stąd nadpisać, więc na karcie wraca zdanie z tego pliku.
+  if (rowKey(row) === 'konsultacja' && !String(guide.effects ?? '').trim()) {
+    guide.effects = base?.effects ?? ''
   }
   const custom = info.image ? mediaUrl(info.image) : ''
   guide.image = custom || base?.image || fallbackImage

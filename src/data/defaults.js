@@ -23,11 +23,11 @@ export const contactDefaults = {
 
 export const sectionDefaults = {
   hero: {
-    eyebrow: 'Kosmetologia Medyczna & Oprawa Spojrzenia · Lublin',
+    eyebrow: 'Kosmetologia medyczna i świeże spojrzenie · Lublin',
     titleLead: 'Kobiece piękno oparte na',
     titleAccent: 'wiedzy medycznej',
     description:
-      'Zaawansowane zabiegi rewitalizacji cery i mezoterapii wykonywane pewną ręką dyplomowanej pielęgniarki oraz mistrzowska stylizacja rzęs i dłoni w kameralnym gabinecie przy ul. Romera 30.',
+      'Zaawansowane zabiegi rewitalizacji cery i mezoterapii wykonywane pewną ręką dyplomowanej pielęgniarki w kameralnym gabinecie przy ul. Romera 30 w Lublinie. Skóra odzyskuje blask, a spojrzenie — świeżość.',
     primaryCta: 'Umów wizytę',
     secondaryCta: 'Zabiegi i cennik',
     trustHighlights: [],
@@ -356,7 +356,7 @@ export const sectionDefaults = {
           'Efekt w serii zabiegów',
         ],
         duration: 'ok. 60 min',
-        price: 'RF 270 zł + Kobido 150 zł',
+        price: '420 zł',
         serviceId: 'mezoterapia',
       },
       {
@@ -568,8 +568,6 @@ export const sectionDefaults = {
   reviews: {
     titleLead: 'Co mówią o nas',
     titleAccent: 'klientki',
-    intro:
-      'Jesteśmy nowym miejscem, dlatego pokazujemy wybrane opinie naszych pierwszych klientek.',
     fallbackReviews: [],
   },
 

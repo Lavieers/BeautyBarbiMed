@@ -28,5 +28,63 @@
   &__expert-role { @include eyebrow(left); margin: 0 0 .35rem; line-height: 1.4; }
   @media (min-width: 1025px) { &__body { padding: 1rem 0; } }
   @media (max-width: 1024px) { &__inner { grid-template-columns: 1fr; gap: 3rem; } &__visual { width: 100%; max-width: 34rem; min-height: clamp(25rem, 90vw, 32rem); margin: 0 auto; padding-right: 3.4rem; } &__frame { inset: 1rem 3.4rem 2.5rem 0; } &__team-grid { margin-top: 1.75rem; } }
-  @media (max-width: 640px) { &__visual { min-height: 25rem; padding: .75rem 2.5rem 2rem 0; } &__frame { inset: .75rem 2.5rem 2rem 0; border-width: .35rem; } &__location-card { width: 9.5rem; min-height: 11.5rem; padding: 1.2rem .85rem; } &__team-grid { grid-template-columns: 1fr; } }
+
+  @media (max-width: 900px) {
+    padding-block: var(--section-pad-y);
+
+    &__visual {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      width: 100%;
+      max-width: 34rem;
+      min-height: 0;
+      margin: 0 auto;
+      padding: 0;
+    }
+
+    &__frame {
+      position: relative;
+      inset: auto;
+      flex: 0 0 auto;
+      width: 100%;
+      min-height: clamp(16rem, 46vw, 18rem);
+    }
+
+    /* Pasek pod kadrem — nie zasłania wnętrza, adres ma pełną szerokość. */
+    &__location-card {
+      position: relative;
+      right: auto;
+      bottom: auto;
+      width: 100%;
+      min-height: 0;
+      flex-flow: row wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 0.3rem 0.7rem;
+      padding: 0.85rem 1rem;
+
+      strong { margin: 0; }
+
+      span:not(.about__location-pin) {
+        flex: 1 1 100%;
+        min-width: 0;
+      }
+
+      i {
+        flex: 1 1 100%;
+        width: auto;
+        margin: 0.1rem 0;
+      }
+    }
+  }
+
+  @media (max-width: 640px) {
+    &__inner { gap: 2rem; }
+    /* Tytuł i lead przed zdjęciem, zespół za zdjęciem. */
+    &__body { display: contents; }
+    &__copy { order: -1; }
+    &__frame { border-width: .35rem; }
+    &__team-grid { order: 1; grid-template-columns: 1fr; margin-top: 0; }
+  }
 }

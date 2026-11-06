@@ -38,7 +38,7 @@ function Hero() {
 
   return (
     <section className="hero hero--photo" id="home" aria-label="Sekcja powitalna">
-      <div ref={frameRef}>
+      <div className="hero__frame" ref={frameRef}>
         {!adoptStatic && (
           <img className="hero__background" src={background} alt="" fetchPriority="high" />
         )}

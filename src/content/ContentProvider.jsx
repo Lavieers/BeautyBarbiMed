@@ -13,6 +13,11 @@ const LIVE_SECTION_FIELDS = {
   pricing: ['groups'],
 }
 
+// Stary opis z panelu zapowiada stylizację rzęs. Zostaje w bazie, ale na stronie
+// wraca zdanie z kodu, dopóki opis nie zostanie zapisany na nowo.
+const RETIRED_HERO_DESCRIPTION =
+  'Zaawansowane zabiegi rewitalizacji cery i mezoterapii wykonywane pewną ręką dyplomowanej pielęgniarki oraz mistrzowska stylizacja rzęs i dłoni w kameralnym gabinecie przy ul. Romera 30.'
+
 function mergeLiveSections(rows) {
   const next = { ...sectionDefaults }
 
@@ -30,6 +35,10 @@ function mergeLiveSections(rows) {
       if (row.content[field] != null) section[field] = row.content[field]
     }
     next[row.key] = section
+  }
+
+  if (next.hero?.description === RETIRED_HERO_DESCRIPTION) {
+    next.hero = { ...next.hero, description: sectionDefaults.hero.description }
   }
 
   return next

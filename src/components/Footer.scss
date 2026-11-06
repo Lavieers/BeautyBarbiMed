@@ -38,10 +38,9 @@
 
   &__logo {
     display: block;
-    width: calc(2.9rem * 1.2);
-    height: calc(2.9rem * 1.2);
-    border-radius: 50%;
-    object-fit: cover;
+    width: 4.4rem;
+    height: 4.4rem;
+    object-fit: contain;
   }
 
   &__name {
@@ -124,6 +123,35 @@
       font-size: 0.875rem;
       line-height: var(--line-editorial);
       color: rgba(var(--color-cream-rgb), 0.88);
+    }
+  }
+
+  &__legal {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 1.1rem;
+  }
+
+  &__policy {
+    padding: 0;
+    border: 0;
+    background: none;
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    line-height: var(--line-editorial);
+    color: var(--color-gold-light);
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--color-cream);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-gold-light);
+      outline-offset: 3px;
     }
   }
 

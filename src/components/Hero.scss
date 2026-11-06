@@ -36,6 +36,12 @@
     }
   }
 
+  &__frame {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
   &__background {
     position: absolute;
     inset: 0;
@@ -166,8 +172,14 @@
   }
 
   @media (max-width: 900px) {
-    min-height: auto;
+    /* Telefon i tablet: kadr na cały ekran, przyciski przy dolnej krawędzi. */
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    width: 100%;
+    height: auto;
     min-height: 100svh;
+    overflow-anchor: none;
     background:
       radial-gradient(ellipse 90% 42% at 50% 100%, rgba(var(--zloto-rgb), 0.16), transparent 72%),
       var(--color-cream);
@@ -198,19 +210,27 @@
     }
 
     &__content {
-      width: auto;
-      max-width: 100%;
-      margin-right: var(--page-padding-x);
-      padding: calc(var(--navbar-height) + 1.5rem) 0 3.25rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      width: 100%;
+      min-width: 0;
+      max-width: none;
+      min-height: 100svh;
+      margin-left: 0;
+      margin-right: 0;
+      padding:
+        calc(var(--navbar-height) + var(--notice-height, 0px) + 1.35rem)
+        var(--page-padding-x)
+        2rem;
     }
-  }
 
-  @media (max-width: 768px) {
-    min-height: auto;
-    overflow: visible;
+    &__description {
+      max-width: none;
+    }
 
-    &__content {
-      padding-bottom: 3.25rem;
+    &__actions {
+      margin-top: auto;
     }
   }
 
@@ -225,7 +245,4 @@
     }
   }
 
-  @media (max-width: 480px) {
-    min-height: 0;
-  }
 }

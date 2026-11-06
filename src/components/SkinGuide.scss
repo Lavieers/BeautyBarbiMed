@@ -556,19 +556,36 @@ section.skin-guide {
       grid-template-columns: 1fr;
       height: auto;
       max-height: none;
+      gap: 0.7rem;
     }
 
     &__tabs {
-      max-height: none;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.65rem;
+      width: 100%;
       height: auto;
+      max-height: none;
+      overflow: visible;
     }
 
     &__tab {
-      flex: 0 0 auto;
+      width: 100%;
+      max-width: none;
+      white-space: normal;
+      height: auto;
       min-height: var(--sg-tab-min-h);
     }
 
+    &__tab-label {
+      flex: 1 1 auto;
+      min-width: 0;
+      white-space: normal;
+      text-wrap: balance;
+    }
+
     &__display {
+      width: 100%;
       scroll-margin-top: calc(
         var(--navbar-height-compact) + var(--notice-height, 0px) + 0.5rem -
           var(--section-scroll-lift, 0px)
@@ -591,14 +608,16 @@ section.skin-guide {
     &__card-media {
       grid-row: 1;
       grid-column: 1;
-      aspect-ratio: unset;
-      height: max(
-        calc(100cqi * 3.2 / 5 + 20px),
-        calc(clamp(6.35rem, 25.5vw, 8.35rem) + 20px)
-      );
-      min-height: calc(clamp(6.35rem, 25.5vw, 8.35rem) + 20px);
-      max-height: none;
-      align-self: auto;
+      align-self: start;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      height: auto;
+      min-height: 0;
+      max-height: 15rem;
+
+      img {
+        object-fit: cover;
+      }
     }
 
     &__card-body {
@@ -659,13 +678,16 @@ section.skin-guide {
       }
 
       .skin-guide__meta-value {
-        display: block;
+        display: inline-flex;
+        align-items: center;
         width: auto;
         margin: 0;
         padding: 0;
-        font-size: 2rem;
+        font-size: 1.4rem;
         font-weight: 600;
         line-height: 1;
+        white-space: nowrap;
+        translate: 0 calc(var(--cta-lift, 2px) * -1.5);
       }
     }
 

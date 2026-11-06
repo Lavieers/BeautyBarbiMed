@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import logo from '../assets/logo.webp'
+import logoMark from '../assets/logotb-mark.png'
 import Button from './Button'
 import { useContactInfo } from '../content/context'
 import { usePortfolioImages } from '../data/galleryFallback'
@@ -103,7 +103,9 @@ function Navbar() {
 
       <div className="navbar__inner">
         <a href="#home" className="navbar__brand" aria-label="Beauty Barbi Med - strona główna">
-          <img src={logo} alt="" width="256" height="256" className="navbar__logo" />
+          <span className="navbar__logo-frame">
+            <img src={logoMark} alt="" width="829" height="890" className="navbar__logo" />
+          </span>
           <span className="navbar__brand-text">
             <span className="navbar__name">Beauty Barbi Med</span>
             <span className="navbar__tagline">Kosmetologia & Stylizacja</span>

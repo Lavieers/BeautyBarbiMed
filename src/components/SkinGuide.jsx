@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import gabinetInterior from '../assets/gabinet-wnetrze.webp'
 import mezoMikro from '../assets/mezomig.webp'
@@ -153,8 +153,10 @@ function SkinGuide({ onTreatmentInfo }) {
   const [selectedId, setSelectedId] = useState(options[0]?.id || 'zmarszczki')
   const tabRefs = useRef([])
   const tabsRef = useRef(null)
-  const displayRef = useRef(null)
   const [tabsHeightPx, setTabsHeightPx] = useState(null)
+  const [accordion, setAccordion] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 900px)').matches,
+  )
 
   useEffect(() => {
     const tabsEl = tabsRef.current
@@ -181,24 +183,23 @@ function SkinGuide({ onTreatmentInfo }) {
       desktopQuery.removeEventListener('change', syncTabsHeight)
       window.removeEventListener('resize', syncTabsHeight)
     }
-  }, [options])
+  }, [options, accordion])
 
-  // Na telefonie karta zabiegu leży pod listą zakładek – po kliknięciu przewijamy do niej,
-  // żeby było widać, co się zmieniło.
-  const selectByClick = (id) => {
-    setSelectedId(id)
-    if (!window.matchMedia('(max-width: 900px)').matches) return
-    displayRef.current?.scrollIntoView({
-      behavior: reduced ? 'auto' : 'smooth',
-      block: 'start',
-    })
-  }
+  useEffect(() => {
+    const query = window.matchMedia('(max-width: 900px)')
+    const sync = () => setAccordion(query.matches)
+    sync()
+    query.addEventListener('change', sync)
+    window.addEventListener('resize', sync)
+    return () => {
+      query.removeEventListener('change', sync)
+      window.removeEventListener('resize', sync)
+    }
+  }, [])
 
   const current = options.find((opt) => opt.id === selectedId) || options[0]
-  const treatmentIds =
-    onTreatmentInfo && guideTreatmentIds[current?.id]?.length ? guideTreatmentIds[current.id] : null
 
-  const renderDetails = (variant) => {
+  const renderDetails = (variant, option) => {
     const chip = variant === 'chip'
     const className = chip ? 'skin-guide__media-chip' : 'skin-guide__book skin-guide__foot-details'
     const label = chip ? (
@@ -212,13 +213,15 @@ function SkinGuide({ onTreatmentInfo }) {
         <Icon name="chevronRight" className="skin-guide__foot-details-arrow" aria-hidden="true" />
       </>
     )
+    const ids =
+      onTreatmentInfo && guideTreatmentIds[option?.id]?.length ? guideTreatmentIds[option.id] : null
 
-    if (treatmentIds) {
+    if (ids) {
       return (
         <button
           type="button"
           className={className}
-          onClick={() => onTreatmentInfo(treatmentIds[0], treatmentIds)}
+          onClick={() => onTreatmentInfo(ids[0], ids)}
         >
           {label}
         </button>
@@ -231,6 +234,81 @@ function SkinGuide({ onTreatmentInfo }) {
       </a>
     )
   }
+
+  const renderCard = (option) => (
+    <div className="skin-guide__card-inner">
+      <div className="skin-guide__card-media">
+        <img
+          src={optionImage(option)}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          style={
+            !option.image && OPTION_IMAGE_POSITION[option.id]
+              ? { objectPosition: OPTION_IMAGE_POSITION[option.id] }
+              : undefined
+          }
+        />
+        <p className="skin-guide__media-badge">{content.expertBadge || 'Rekomendacja eksperta'}</p>
+        <div className="skin-guide__media-details">{renderDetails('chip', option)}</div>
+      </div>
+
+      <div className="skin-guide__card-body">
+        <header className="skin-guide__card-head">
+          {option.tag ? <p className="skin-guide__rec-tag">{option.tag}</p> : null}
+          <h3 className="skin-guide__rec-title">{option.recommended}</h3>
+        </header>
+
+        <p className="skin-guide__rec-lead">{renderRecLead(option.desc)}</p>
+
+        <div className="skin-guide__why">
+          <p className="skin-guide__why-head">Dlaczego warto?</p>
+          <ul className="skin-guide__why-list">
+            {whyItems(option)
+              .slice(0, 6)
+              .map((line, index) => (
+                <li key={`${option.id}-why-${index}`} className="skin-guide__why-item">
+                  <span className="skin-guide__why-icon">
+                    <WhyCheckIcon />
+                  </span>
+                  <span className="skin-guide__why-text">{renderWhyLine(line)}</span>
+                </li>
+              ))}
+          </ul>
+        </div>
+
+        <footer className="skin-guide__card-foot">
+          <div className="skin-guide__foot-meta">
+            <div className="skin-guide__meta-item">
+              <span className="skin-guide__meta-label">Czas</span>
+              <span className="skin-guide__meta-value">{option.duration}</span>
+            </div>
+            <div className="skin-guide__meta-item skin-guide__meta-item--price-block">
+              <span className="skin-guide__meta-label">Cena</span>
+              <span className="skin-guide__meta-value">{option.price}</span>
+            </div>
+          </div>
+          <div className="skin-guide__foot-cta">
+            <div className="skin-guide__foot-sub">
+              <span className="skin-guide__foot-price" aria-label={`Cena ${option.price}`}>
+                {option.price}
+              </span>
+              {renderDetails('link', option)}
+            </div>
+            <Button
+              variant="cta-primary"
+              size="compact"
+              className="skin-guide__foot-book"
+              href={contact.booksy}
+              external
+            >
+              Umów wizytę
+            </Button>
+          </div>
+        </footer>
+      </div>
+    </div>
+  )
 
   const reveal = (delay = 0) =>
     reduced
@@ -281,130 +359,68 @@ function SkinGuide({ onTreatmentInfo }) {
           <div
             ref={tabsRef}
             className="skin-guide__tabs"
-            role="tablist"
-            aria-orientation="vertical"
+            role={accordion ? undefined : 'tablist'}
+            aria-orientation={accordion ? undefined : 'vertical'}
             aria-label="Dobierz zabieg"
           >
-          {options.map((opt, index) => {
-            const isSelected = opt.id === current?.id
-            return (
-              <button
-                key={opt.id}
-                ref={(node) => {
-                  tabRefs.current[index] = node
-                }}
-                type="button"
-                role="tab"
-                id={`skin-guide-tab-${opt.id}`}
-                aria-selected={isSelected}
-                aria-controls="skin-guide-panel"
-                tabIndex={isSelected ? 0 : -1}
-                className={`skin-guide__tab${isSelected ? ' skin-guide__tab--active' : ''}`}
-                onClick={() => selectByClick(opt.id)}
-                onKeyDown={(event) => moveTab(event, index, options, tabRefs, setSelectedId)}
-              >
-                <span className="skin-guide__tab-marker" aria-hidden="true" />
-                <span className="skin-guide__tab-label">{opt.label}</span>
-              </button>
-            )
-          })}
+            {options.map((opt, index) => {
+              const isSelected = opt.id === current?.id
+              const tab = (
+                <button
+                  ref={(node) => {
+                    tabRefs.current[index] = node
+                  }}
+                  type="button"
+                  role={accordion ? undefined : 'tab'}
+                  id={`skin-guide-tab-${opt.id}`}
+                  aria-selected={accordion ? undefined : isSelected}
+                  aria-controls={accordion ? undefined : 'skin-guide-panel'}
+                  tabIndex={accordion || isSelected ? 0 : -1}
+                  className={`skin-guide__tab${accordion || isSelected ? ' skin-guide__tab--active' : ''}`}
+                  onClick={() => setSelectedId(opt.id)}
+                  onKeyDown={(event) => moveTab(event, index, options, tabRefs, setSelectedId)}
+                >
+                  <span className="skin-guide__tab-marker" aria-hidden="true" />
+                  <span className="skin-guide__tab-label">{opt.label}</span>
+                </button>
+              )
+
+              if (!accordion) return <Fragment key={opt.id}>{tab}</Fragment>
+
+              return (
+                <Fragment key={opt.id}>
+                  {tab}
+                  <div className="skin-guide__display">
+                    <article className="skin-guide__card">{renderCard(opt)}</article>
+                  </div>
+                </Fragment>
+              )
+            })}
           </div>
 
-          <div
-            ref={displayRef}
-            className="skin-guide__display"
-            id="skin-guide-panel"
-            role="tabpanel"
-            aria-labelledby={current ? `skin-guide-tab-${current.id}` : undefined}
-          >
-          <AnimatePresence mode="wait">
-            {current && (
-              <motion.article
-                key={current.id}
-                className="skin-guide__card"
-                initial={{ opacity: 0, y: reduced ? 0 : 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: reduced ? 0 : -10 }}
-                transition={{ duration: reduced ? 0 : 0.32, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <div className="skin-guide__card-inner">
-                  <div className="skin-guide__card-media">
-                    <img
-                      src={optionImage(current)}
-                      alt=""
-                      loading="lazy"
-                      decoding="async"
-                      style={
-                        !current.image && OPTION_IMAGE_POSITION[current.id]
-                          ? { objectPosition: OPTION_IMAGE_POSITION[current.id] }
-                          : undefined
-                      }
-                    />
-                    <p className="skin-guide__media-badge">
-                      {content.expertBadge || 'Rekomendacja eksperta'}
-                    </p>
-                    <div className="skin-guide__media-details">{renderDetails('chip')}</div>
-                  </div>
-
-                  <div className="skin-guide__card-body">
-                    <header className="skin-guide__card-head">
-                      {current.tag ? <p className="skin-guide__rec-tag">{current.tag}</p> : null}
-                      <h3 className="skin-guide__rec-title">{current.recommended}</h3>
-                    </header>
-
-                    <p className="skin-guide__rec-lead">{renderRecLead(current.desc)}</p>
-
-                    <div className="skin-guide__why">
-                      <p className="skin-guide__why-head">Dlaczego warto?</p>
-                      <ul className="skin-guide__why-list">
-                        {whyItems(current)
-                          .slice(0, 6)
-                          .map((line, index) => (
-                            <li key={`${current.id}-why-${index}`} className="skin-guide__why-item">
-                              <span className="skin-guide__why-icon">
-                                <WhyCheckIcon />
-                              </span>
-                              <span className="skin-guide__why-text">{renderWhyLine(line)}</span>
-                            </li>
-                          ))}
-                      </ul>
-                    </div>
-
-                    <footer className="skin-guide__card-foot">
-                      <div className="skin-guide__foot-meta">
-                        <div className="skin-guide__meta-item">
-                          <span className="skin-guide__meta-label">Czas</span>
-                          <span className="skin-guide__meta-value">{current.duration}</span>
-                        </div>
-                        <div className="skin-guide__meta-item skin-guide__meta-item--price-block">
-                          <span className="skin-guide__meta-label">Cena</span>
-                          <span className="skin-guide__meta-value">{current.price}</span>
-                        </div>
-                      </div>
-                      <div className="skin-guide__foot-cta">
-                        <div className="skin-guide__foot-sub">
-                          <span className="skin-guide__foot-price" aria-label={`Cena ${current.price}`}>
-                            {current.price}
-                          </span>
-                          {renderDetails('link')}
-                        </div>
-                        <Button
-                          variant="cta-primary"
-                          size="compact"
-                          className="skin-guide__foot-book"
-                          href={contact.booksy}
-                          external
-                        >
-                          Umów wizytę
-                        </Button>
-                      </div>
-                    </footer>
-                  </div>
-                </div>
-              </motion.article>
-            )}
-          </AnimatePresence>
-          </div>
+          {accordion ? null : (
+            <div
+              className="skin-guide__display"
+              id="skin-guide-panel"
+              role="tabpanel"
+              aria-labelledby={current ? `skin-guide-tab-${current.id}` : undefined}
+            >
+              <AnimatePresence mode="wait">
+                {current && (
+                  <motion.article
+                    key={current.id}
+                    className="skin-guide__card"
+                    initial={{ opacity: 0, y: reduced ? 0 : 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: reduced ? 0 : -10 }}
+                    transition={{ duration: reduced ? 0 : 0.32, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    {renderCard(current)}
+                  </motion.article>
+                )}
+              </AnimatePresence>
+            </div>
+          )}
         </div>
       </div>
     </section>

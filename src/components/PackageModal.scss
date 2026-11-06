@@ -677,7 +677,7 @@ $marker-gap: 1.5rem;
     // opis ma się mieścić w oknie bez przewijania
     @media (max-width: 52rem) {
       .package-modal__media {
-        height: clamp(13.5rem, 30svh, 21rem); // 3× wyższe zdjęcie niż wcześniej
+        height: calc(clamp(4.5rem, 10svh, 7rem) + 60px);
       }
 
       .package-modal__content {
@@ -721,7 +721,7 @@ $marker-gap: 1.5rem;
 
       .package-modal__footer {
         margin-top: 0.4rem;
-        padding-top: calc(0.7rem + 8px);
+        padding-top: 0.7rem;
       }
 
       .package-modal__contact .package-modal__call {
@@ -790,7 +790,7 @@ $marker-gap: 1.5rem;
     }
 
     @media (max-width: 52rem) {
-      // Wyższa specyficzność niż `height: auto` powyżej – jedna wysokość dla każdego zabiegu.
+      // Ta sama wysokość przy każdym zabiegu; dłuższy opis przewija się nad stopką.
       height: min(52rem, calc(100svh - 2.5rem));
       min-height: min(52rem, calc(100svh - 2.5rem));
       max-height: min(52rem, calc(100svh - 2.5rem));
@@ -808,9 +808,9 @@ $marker-gap: 1.5rem;
         overflow-y: auto;
       }
 
-      .package-modal__important,
       .package-modal__footer {
         flex: none;
+        margin-top: auto;
       }
     }
   }
@@ -880,8 +880,10 @@ $marker-gap: 1.5rem;
     }
 
     &.package-modal--treatment .package-modal__body {
-      flex: none;
-      overflow: visible;
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-x: clip;
+      overflow-y: auto;
       margin-left: 0;
       padding: 0;
     }
@@ -1046,15 +1048,6 @@ $marker-gap: 1.5rem;
         gap: max(0px, calc(clamp(0.35rem, 2.2svh, 1.15rem) - 3px));
         width: 100%;
         min-height: 0;
-      }
-    }
-  }
-
-  // Zabieg na telefonie: stałe zdjęcie (reguła ogólna wyżej je obniża) i stopka przy dole karty.
-  &.package-modal--treatment {
-    @media (max-width: 52rem) {
-      .package-modal__media {
-        height: clamp(13.5rem, 30svh, 21rem);
       }
     }
   }

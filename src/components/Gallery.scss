@@ -211,7 +211,7 @@
     }
   }
 
-  @media (max-width: 640px) {
+  @media (max-width: 900px) {
     &__intro {
       white-space: normal;
     }
@@ -419,7 +419,17 @@
   --gal-card-width: min(74cqw, 21rem);
   --gal-side: calc((100cqw - var(--gal-card-width)) / 2);
 
-  @media (max-width: 1599.98px) {
+  // Karuzela jest na ekranie tylko do 900 px. Tu szerokość jak w pakietach: karta na środku, z brzegu widać sąsiadów.
+  @media (max-width: 900px) {
+    --gal-card-width: min(60cqw, 21rem);
+  }
+
+  // Tablet: karta może urosnąć do około 26 rem, nadal węższa niż ekran.
+  @media (min-width: 700px) and (max-width: 900px) {
+    --gal-card-width: min(60cqw, 26rem);
+  }
+
+  @media (min-width: 901px) and (max-width: 1599.98px) {
     --gal-card-width: min(66.6cqw, 18.9rem);
   }
 

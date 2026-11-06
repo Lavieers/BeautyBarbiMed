@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import Button from './Button'
 import Icon from './Icon'
@@ -18,6 +18,7 @@ function Offer({ onPackageInfo }) {
   const content = useSection('offer')
   const categories = content.categories ?? []
   const [activeIndex, setActiveIndex] = useState(0)
+  const tabsRef = useRef(null)
   const count = categories.length
   const safeIndex = count === 0 ? 0 : activeIndex >= count ? 0 : activeIndex
 
@@ -40,6 +41,29 @@ function Offer({ onPackageInfo }) {
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [goPrev, goNext])
+
+  // Na telefonie i tablecie rząd zakładek się przewija — aktywna ma zostać w kadrze.
+  useEffect(() => {
+    const root = tabsRef.current
+    if (!root || window.matchMedia('(min-width: 901px)').matches) return undefined
+
+    const align = () => {
+      const tab = root.querySelector('.offer__tab--active')
+      if (!tab) return
+      const edge = 8
+      const rootRect = root.getBoundingClientRect()
+      const tabRect = tab.getBoundingClientRect()
+      if (tabRect.left < rootRect.left + 1) {
+        root.scrollBy({ left: tabRect.left - rootRect.left - edge, behavior: 'auto' })
+      } else if (tabRect.right > rootRect.right - 1) {
+        root.scrollBy({ left: tabRect.right - rootRect.right + edge, behavior: 'auto' })
+      }
+    }
+
+    align()
+    window.addEventListener('resize', align)
+    return () => window.removeEventListener('resize', align)
+  }, [safeIndex])
 
   const reveal = (delay = 0) =>
     reduced
@@ -90,7 +114,7 @@ function Offer({ onPackageInfo }) {
 
       {count > 0 && (
         <motion.div className="offer__carousel-wrap" {...reveal(0.14)}>
-          <div className="offer__tabs" role="tablist" aria-label="Kategorie pakietów">
+          <div className="offer__tabs" role="tablist" aria-label="Kategorie pakietów" ref={tabsRef}>
             {categories.map((category, index) => (
               <button
                 key={category.id}

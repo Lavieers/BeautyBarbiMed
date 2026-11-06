@@ -276,6 +276,20 @@
     }
   }
 
+  // Tablet: nie trzy wąskie karty. Dwie równe, gdy treść ma przynajmniej ~280px,
+  // inaczej jedna karta i skraj następnej.
+  @media (max-width: 900px) {
+    &__card {
+      width: 88cqi;
+    }
+
+    @container (min-width: 42rem) {
+      &__card {
+        width: calc((100cqi - var(--carousel-gap)) / 2);
+      }
+    }
+  }
+
   @media (max-width: 640px) {
     &__bottom {
       flex-direction: column;

@@ -81,11 +81,17 @@
     text-decoration: none;
   }
 
-  &__logo {
-    height: 2.5rem;
+  &__logo-frame {
+    flex: none;
     width: auto;
+    height: 3.35rem;
+  }
+
+  &__logo {
     display: block;
-    border-radius: 50%;
+    width: auto;
+    height: 3.35rem;
+    object-fit: contain;
   }
 
   &__brand-text {

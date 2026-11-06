@@ -1,8 +1,10 @@
+import { useState } from 'react'
 import { useContactInfo, useSection } from '../content/context'
 import { formatHoursLine } from '../lib/hours'
 import { usePortfolioImages } from '../data/galleryFallback'
-import logo from '../assets/logo.webp'
+import logo from '../assets/logotb-footer.png'
 import Icon from './Icon'
+import PrivacyModal from './PrivacyModal'
 import { navLinks } from './navLinks'
 import './Footer.scss'
 
@@ -14,6 +16,7 @@ function Footer() {
   const contactData = useContactInfo()
   const hours = (Array.isArray(contactData.hours) ? contactData.hours.filter(Boolean) : []).map(formatHoursLine)
   const hasGallery = usePortfolioImages().length > 0
+  const [privacyOpen, setPrivacyOpen] = useState(false)
 
   // Te same sekcje co w pasku górnym (portfolio znika, gdy nie ma zdjęć).
   const links = hasGallery ? navLinks : navLinks.filter((link) => link.href !== '#galeria')
@@ -28,7 +31,7 @@ function Footer() {
       <div className="footer__inner">
         <div className="footer__brand">
           <a href="#home" className="footer__logo-link" aria-label="Beauty Barbi Med - początek strony">
-            <img src={logo} alt="" width="256" height="256" loading="lazy" decoding="async" className="footer__logo" />
+            <img src={logo} alt="" width="1408" height="1408" loading="lazy" decoding="async" className="footer__logo" />
             <span className="footer__name">Beauty Barbi Med</span>
           </a>
           <p className="footer__tagline">{content.tagline}</p>
@@ -81,7 +84,12 @@ function Footer() {
       </div>
 
       <div className="footer__bar">
-        <p>© {year} Beauty Barbi Med. Wszelkie prawa zastrzeżone.</p>
+        <div className="footer__legal">
+          <p>© {year} Beauty Barbi Med. Wszelkie prawa zastrzeżone.</p>
+          <button type="button" className="footer__policy" onClick={() => setPrivacyOpen(true)}>
+            Polityka prywatności
+          </button>
+        </div>
         <p className="footer__credit">
           <span>Created by Lavieers</span>
           <a
@@ -96,6 +104,8 @@ function Footer() {
           </a>
         </p>
       </div>
+
+      <PrivacyModal open={privacyOpen} onClose={() => setPrivacyOpen(false)} contact={contactData} />
     </footer>
   )
 }
