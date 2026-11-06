@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import logoMark from '../assets/logotb-mark.png'
 import Button from './Button'
 import { useContactInfo } from '../content/context'
@@ -18,6 +19,8 @@ function BooksyMark() {
 }
 
 function Navbar() {
+  const { pathname } = useLocation()
+  const sectionHref = (href) => (pathname === '/' ? href : `/${href}`)
   const contact = useContactInfo()
   const hasGallery = usePortfolioImages().length > 0
   const links = useMemo(
@@ -95,14 +98,14 @@ function Navbar() {
           <span>Lublin, ul. Romera 30</span> · <span>Kameralny gabinet medycyny estetycznej i stylizacji</span>
         </p>
         <div className="navbar__top-right">
-          <a href="#kontakt" className="navbar__top-link" onClick={onSectionClick}>
+          <a href={sectionHref('#kontakt')} className="navbar__top-link" onClick={onSectionClick}>
             Dojazd & Godziny
           </a>
         </div>
       </div>
 
       <div className="navbar__inner">
-        <a href="#home" className="navbar__brand" aria-label="Beauty Barbi Med - strona główna">
+        <a href={sectionHref('#home')} className="navbar__brand" aria-label="Beauty Barbi Med - strona główna">
           <span className="navbar__logo-frame">
             <img src={logoMark} alt="" width="829" height="890" className="navbar__logo" />
           </span>
@@ -119,7 +122,7 @@ function Navbar() {
             return (
               <li key={href}>
                 <a
-                  href={href}
+                  href={sectionHref(href)}
                   className={active ? 'navbar__link navbar__link--active' : 'navbar__link'}
                   aria-current={active ? 'true' : undefined}
                   onClick={onSectionClick}
@@ -165,7 +168,7 @@ function Navbar() {
             return (
               <li key={href}>
                 <a
-                  href={href}
+                  href={sectionHref(href)}
                   className={active ? 'navbar__drawer-link--active' : undefined}
                   aria-current={active ? 'true' : undefined}
                   onClick={onSectionClick}

@@ -7,8 +7,8 @@ function RobotsMeta() {
   useEffect(() => {
     const meta = document.getElementById('robots')
     if (!meta) return
-    const admin = pathname === '/admin' || pathname.startsWith('/admin/')
-    meta.setAttribute('content', admin ? 'noindex, nofollow' : 'index, follow')
+    const home = pathname === '/'
+    meta.setAttribute('content', home ? 'index, follow' : 'noindex, nofollow')
   }, [pathname])
 
   return null

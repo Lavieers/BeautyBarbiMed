@@ -1,6 +1,7 @@
 import { Suspense, lazy, useLayoutEffect } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import App from './App.jsx'
+import NotFound from './components/NotFound.jsx'
 import ContentProvider from './content/ContentProvider.jsx'
 import LocalBusiness from './seo/LocalBusiness.jsx'
 import RobotsMeta from './seo/RobotsMeta.jsx'
@@ -35,6 +36,7 @@ function Root() {
               </Suspense>
             }
           />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </ContentProvider>
     </BrowserRouter>
