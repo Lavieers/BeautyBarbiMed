@@ -157,7 +157,6 @@ $marker-gap: 1.5rem;
     }
   }
 
-  // ── Zdjęcie w złotej ramce ─────────────────────────────────────────────────
   &__media {
     position: relative;
     min-height: 0;
@@ -252,7 +251,6 @@ $marker-gap: 1.5rem;
       }
     }
   }
-  // ── Kolumna z treścią ──────────────────────────────────────────────────────
   &__content {
     display: flex;
     flex-direction: column;
@@ -286,6 +284,11 @@ $marker-gap: 1.5rem;
     font-size: 0.625rem;
     font-weight: 500;
     letter-spacing: 0.5em;
+
+    &--tab {
+      letter-spacing: 0.14em;
+      line-height: 1.45;
+    }
     text-transform: uppercase;
     color: rgba(var(--pm-gold-rgb), 0.95);
 
@@ -324,7 +327,6 @@ $marker-gap: 1.5rem;
     color: var(--pm-copy-muted);
   }
 
-  // ── Kolejne kroki: subtelna oś z punktami ──────────────────────────────────
   &__flow {
     margin: 0;
     padding: 0;
@@ -404,7 +406,6 @@ $marker-gap: 1.5rem;
     color: var(--pm-copy-muted);
   }
 
-  // ── Cena, telefon i informacje ─────────────────────────────────────────────
   &__footer {
     flex: none;
     display: grid;
@@ -539,7 +540,6 @@ $marker-gap: 1.5rem;
     }
   }
 
-  // ── Okno zabiegu (cennik i „Dobierz pielęgnację”) ──────────────────────────
   // Ta sama karta co pakiet: nagłówek, czas zabiegu, szeroki opis, a pod nim bloki
   // (tytuł, ozdobna kreska, treść) jeden pod drugim – bez ramek i kolumn. Uwaga „Ważne”
   // stoi na dole, na środku, tuż nad kreską z ceną. Całość ma się mieścić bez przewijania.
@@ -815,7 +815,6 @@ $marker-gap: 1.5rem;
     }
   }
 
-  // ── Telefon i wąskie okna: jedna kolumna, całość treści przewija się razem ──
   @media (max-width: 52rem) {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: auto minmax(0, 1fr);
@@ -891,6 +890,10 @@ $marker-gap: 1.5rem;
     &__kicker {
       padding-right: 0;
       letter-spacing: 0.4em;
+
+      &--tab {
+        letter-spacing: 0.12em;
+      }
     }
 
     &__title {
@@ -909,6 +912,10 @@ $marker-gap: 1.5rem;
         margin-bottom: 0.45rem;
         font-size: clamp(0.52rem, 0.38rem + 1.6cqi, 0.58rem);
         letter-spacing: clamp(0.22em, 0.14em + 0.35cqi, 0.32em);
+
+        &--tab {
+          letter-spacing: 0.08em;
+        }
       }
 
       .package-modal__title {

@@ -134,6 +134,8 @@ function cleanLink(value) {
 
   try {
     const parsed = new URL(hasProtocol ? compact : `https://${compact}`)
+    if (parsed.username || parsed.password) return ''
+    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return ''
     const drop = new Set(['locale', 'fbclid', 'mibextid'])
     for (const key of [...parsed.searchParams.keys()]) {
       const name = key.toLowerCase()

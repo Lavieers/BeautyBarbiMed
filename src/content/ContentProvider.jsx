@@ -61,6 +61,29 @@ function sameNotices(current, next) {
   })
 }
 
+const PUBLIC_LINK_FIELDS = ['facebook', 'instagram', 'booksy', 'mapLink', 'reviewsLink']
+
+function safeHttpUrl(value) {
+  const raw = String(value ?? '').trim()
+  if (!raw) return ''
+
+  const hasProtocol = /^[a-z][a-z\d+.-]*:/i.test(raw)
+
+  try {
+    const url = new URL(hasProtocol ? raw : `https://${raw}`)
+    if (url.username || url.password) return ''
+    if (url.protocol !== 'https:' && url.protocol !== 'http:') return ''
+    return hasProtocol ? raw : url.href
+  } catch {
+    return ''
+  }
+}
+
+function safePhoneHref(value) {
+  const raw = String(value ?? '').trim().replace(/\s+/g, '')
+  return /^tel:\+?[0-9]{8,15}$/i.test(raw) ? raw : ''
+}
+
 function mergeContact(saved) {
   const next = { ...contactDefaults }
 
@@ -69,6 +92,13 @@ function mergeContact(saved) {
     if (Array.isArray(value) && value.length === 0) continue
     next[key] = value
   }
+
+  for (const key of PUBLIC_LINK_FIELDS) {
+    if (!next[key]) continue
+    next[key] = safeHttpUrl(next[key]) || contactDefaults[key]
+  }
+
+  if (next.phoneHref) next.phoneHref = safePhoneHref(next.phoneHref) || contactDefaults.phoneHref
 
   if (typeof next.phone === 'string') next.phone = next.phone.replace(/\s+/g, ' ').trim()
   if (typeof next.address === 'string') {

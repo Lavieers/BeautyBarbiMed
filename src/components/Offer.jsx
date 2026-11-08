@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import Button from './Button'
 import Icon from './Icon'
 import { useSection } from '../content/context'
+import useMediaQuery from '../lib/useMediaQuery'
 import PackageCarousel from './PackageCarousel'
 import './Offer.scss'
 import './PackageCarousel.scss'
@@ -13,11 +14,21 @@ function tabLabelFor(category) {
   return category.title.replace(/^PAKIET(Y)? /i, '')
 }
 
-function Offer({ onPackageInfo }) {
+function Offer({ onPackageInfo, revealedCategoryId = null, revealedPackageId = null }) {
   const reduced = useReducedMotion()
+  const compact = useMediaQuery('(max-width: 900px)')
   const content = useSection('offer')
   const categories = content.categories ?? []
   const [activeIndex, setActiveIndex] = useState(0)
+  // Na telefonie pakiety wszystkich zakładek stoją w jednym rzędzie: po ostatnim
+  // pakiecie zakładki wjeżdża pierwszy z następnej, a zakładka podświetla się sama.
+  const sequence = useMemo(
+    () =>
+      categories.flatMap((category, categoryIndex) =>
+        (category.packages ?? []).map((pkg) => ({ pkg, category, categoryIndex })),
+      ),
+    [categories],
+  )
   const tabsRef = useRef(null)
   const count = categories.length
   const safeIndex = count === 0 ? 0 : activeIndex >= count ? 0 : activeIndex
@@ -32,6 +43,13 @@ function Offer({ onPackageInfo }) {
 
   const goPrev = useCallback(() => goTo(safeIndex - 1), [safeIndex, goTo])
   const goNext = useCallback(() => goTo(safeIndex + 1), [safeIndex, goTo])
+
+  // Szczegóły pakietu przechodzą między zakładkami — oznaczenie zakładki idzie za oknem.
+  useEffect(() => {
+    if (!revealedCategoryId) return
+    const index = categories.findIndex((item) => item.id === revealedCategoryId)
+    if (index >= 0 && index !== safeIndex) setActiveIndex(index)
+  }, [revealedCategoryId, categories, safeIndex])
 
   useEffect(() => {
     const onKey = (event) => {
@@ -152,26 +170,39 @@ function Offer({ onPackageInfo }) {
               role="tabpanel"
               aria-labelledby={active ? `offer-tab-${active.id}` : undefined}
             >
-              <AnimatePresence mode="popLayout" initial={false}>
-                {active && (
-                  <motion.article
-                    key={active.id}
-                    className="offer__slide"
-                    initial={reduced ? false : { opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={reduced ? undefined : { opacity: 0 }}
-                    transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-                  >
-                    <PackageCarousel
+              {compact ? (
+                sequence.length > 0 && (
+                  <PackageCarousel
+                    sequence={sequence}
+                    activeCategoryIndex={safeIndex}
+                    onCategoryChange={goTo}
+                    focusPackageId={revealedPackageId}
+                    autoPlay={!reduced && !revealedCategoryId}
+                    onPackageInfo={onPackageInfo}
+                  />
+                )
+              ) : (
+                <AnimatePresence mode="popLayout" initial={false}>
+                  {active && (
+                    <motion.article
                       key={active.id}
-                      packages={packages}
-                      category={active}
-                      autoPlay={!reduced}
-                      onPackageInfo={onPackageInfo}
-                    />
-                  </motion.article>
-                )}
-              </AnimatePresence>
+                      className="offer__slide"
+                      initial={reduced ? false : { opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={reduced ? undefined : { opacity: 0 }}
+                      transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                    >
+                      <PackageCarousel
+                        key={active.id}
+                        packages={packages}
+                        category={active}
+                        autoPlay={!reduced}
+                        onPackageInfo={onPackageInfo}
+                      />
+                    </motion.article>
+                  )}
+                </AnimatePresence>
+              )}
             </div>
 
             <button

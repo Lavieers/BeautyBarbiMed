@@ -2,8 +2,14 @@
 
 .about {
   @include section-shell;
-  /* scroll-margin-top ustawiane w JS — wyśrodkowanie sekcji przy hash / kółku */
-  padding-block: clamp(4.75rem, 8vw, 7.25rem);
+  --about-pad-top: clamp(4.75rem, 8vw, 7.25rem);
+  padding-block: var(--about-pad-top);
+  /* Klik w menu: początek treści tuż pod navbarem, nie środek sekcji. */
+  &[id] {
+    scroll-margin-top: calc(
+      var(--navbar-height-compact) + var(--notice-height, 0px) + 0.35rem - var(--about-pad-top)
+    );
+  }
   background: var(--color-cream);
   &__inner { @include section-inner; display: grid; grid-template-columns: minmax(19rem, .9fr) minmax(0, 1.1fr); gap: clamp(3rem, 6vw, 6.75rem); align-items: center; }
   &__visual { position: relative; min-height: clamp(26rem, 38vw, 34rem); padding: 1rem 3.6rem 2.5rem 0; }
@@ -30,7 +36,8 @@
   @media (max-width: 1024px) { &__inner { grid-template-columns: 1fr; gap: 3rem; } &__visual { width: 100%; max-width: 34rem; min-height: clamp(25rem, 90vw, 32rem); margin: 0 auto; padding-right: 3.4rem; } &__frame { inset: 1rem 3.4rem 2.5rem 0; } &__team-grid { margin-top: 1.75rem; } }
 
   @media (max-width: 900px) {
-    padding-block: var(--section-pad-y);
+    --about-pad-top: var(--section-pad-y);
+    padding-block: var(--about-pad-top);
 
     &__visual {
       display: flex;

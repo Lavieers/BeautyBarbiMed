@@ -413,8 +413,7 @@
   }
 }
 
-// Karuzela portfolio na telefonie (patrz GalleryCarousel.jsx) – ten sam układ co karuzela pakietów:
-// pełna szerokość ekranu, wyśrodkowane karty, z brzegu widać sąsiednie.
+// Pełna szerokość ekranu, wyśrodkowane karty, z brzegu widać sąsiednie.
 .gal-carousel {
   --gal-card-width: min(74cqw, 21rem);
   --gal-side: calc((100cqw - var(--gal-card-width)) / 2);

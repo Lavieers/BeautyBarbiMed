@@ -5,16 +5,36 @@ export function mapEmbedSrc(value) {
 
   if (raw.includes('<iframe')) {
     const match = raw.match(/src=["']([^"']+)["']/i)
-    return forceRoadmap(match?.[1]?.trim() ?? '')
+    return allowedEmbed(forceRoadmap(match?.[1]?.trim() ?? ''))
   }
 
-  return forceRoadmap(raw)
+  return allowedEmbed(forceRoadmap(raw))
 }
 
 // Parametr `!5eN` w adresie embed wybiera typ mapy: 0 = zwykła, 1/2 = satelita,
 // 3 = teren. Zawsze startujemy od zwykłej mapy (satelita w tym miejscu wygląda słabo).
 function forceRoadmap(src) {
   return src.replace(/!5e[1-3](?=!|$)/, '!5e0')
+}
+
+// Na stronie zostaje ta sama mapa Google. Inny adres w iframe nie jest rysowany.
+function isGoogleHost(host) {
+  if (host === 'google.com' || host.endsWith('.google.com')) return true
+  return (
+    /^(?:[a-z0-9-]+\.)?google\.[a-z]{2,3}$/.test(host) ||
+    /^(?:[a-z0-9-]+\.)?google\.[a-z]{2}\.[a-z]{2}$/.test(host)
+  )
+}
+
+function allowedEmbed(src) {
+  try {
+    const url = new URL(src)
+    if (url.protocol !== 'https:' || !isGoogleHost(url.hostname.toLowerCase())) return ''
+    if (!url.pathname.startsWith('/maps')) return ''
+    return src
+  } catch {
+    return ''
+  }
 }
 
 export const defaultMapEmbedSrc =

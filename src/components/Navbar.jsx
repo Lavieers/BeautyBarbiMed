@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import logoMark from '../assets/logotb-mark.png'
 import Button from './Button'
 import { useContactInfo } from '../content/context'
 import { usePortfolioImages } from '../data/galleryFallback'
 import { navLinks } from './navLinks'
+import { useDismissOnBack } from '../lib/useModalBehavior'
 import './Navbar.scss'
 
 function BooksyMark() {
@@ -62,13 +63,6 @@ function Navbar() {
   }, [links])
 
   useEffect(() => {
-    document.body.style.overflow = menuOpen ? 'hidden' : ''
-    return () => {
-      document.body.style.overflow = ''
-    }
-  }, [menuOpen])
-
-  useEffect(() => {
     const onHashClick = (event) => {
       const link = event.target.closest('a[href^="#"]')
       if (!link) return
@@ -80,7 +74,8 @@ function Navbar() {
     return () => document.removeEventListener('click', onHashClick)
   }, [])
 
-  const closeMenu = () => setMenuOpen(false)
+  const closeMenu = useCallback(() => setMenuOpen(false), [])
+  useDismissOnBack(menuOpen, closeMenu)
 
   const onSectionClick = () => {
     setScrolled(true)

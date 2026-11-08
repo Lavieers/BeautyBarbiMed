@@ -210,9 +210,33 @@ create policy "reviews admin write" on public.reviews
 -- Storage: bucket na zdjęcia. Publiczny odczyt, wgrywanie tylko z panelu.
 -- ---------------------------------------------------------------------------
 
-insert into storage.buckets (id, name, public)
-values ('media', 'media', true)
-on conflict (id) do update set public = true;
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values (
+  'media',
+  'media',
+  true,
+  8388608,
+  array['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+)
+on conflict (id) do update set
+  public = true,
+  file_size_limit = excluded.file_size_limit,
+  allowed_mime_types = excluded.allowed_mime_types;
+
+-- Ukryte zdjęcia galerii. Strona publiczna ich nie rysuje; plik nie może
+-- zostać pod adresem /object/public, bo ten adres nie patrzy na is_published.
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values (
+  'media-private',
+  'media-private',
+  false,
+  8388608,
+  array['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+)
+on conflict (id) do update set
+  public = false,
+  file_size_limit = excluded.file_size_limit,
+  allowed_mime_types = excluded.allowed_mime_types;
 
 drop policy if exists "media public read" on storage.objects;
 create policy "media public read" on storage.objects
@@ -229,3 +253,21 @@ create policy "media admin update" on storage.objects
 drop policy if exists "media admin delete" on storage.objects;
 create policy "media admin delete" on storage.objects
   for delete using (bucket_id = 'media' and public.is_admin());
+
+drop policy if exists "media private admin read" on storage.objects;
+create policy "media private admin read" on storage.objects
+  for select using (bucket_id = 'media-private' and public.is_admin());
+
+drop policy if exists "media private admin insert" on storage.objects;
+create policy "media private admin insert" on storage.objects
+  for insert with check (bucket_id = 'media-private' and public.is_admin());
+
+drop policy if exists "media private admin update" on storage.objects;
+create policy "media private admin update" on storage.objects
+  for update
+  using (bucket_id = 'media-private' and public.is_admin())
+  with check (bucket_id = 'media-private' and public.is_admin());
+
+drop policy if exists "media private admin delete" on storage.objects;
+create policy "media private admin delete" on storage.objects
+  for delete using (bucket_id = 'media-private' and public.is_admin());

@@ -1,42 +1,26 @@
 import { useEffect, useState } from 'react'
-
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-
 import { isSupabaseConfigured } from '../lib/supabase'
-
 import { signOut, useAdminSession } from './auth'
-
 import { adminNavItems } from './adminNav'
 import { pathForSection, sectionFromPathname } from './adminRoutes'
 import { useAdminHomeMeta } from './useAdminDashboard'
-
 import AdminIcon from './AdminIcon'
-
 import Login from './Login'
-
 import AdminHome from './AdminHome'
-
 import AdminPageHeader from './AdminPageHeader'
 import { formatAdminDate } from './formatAdminDate'
 import { pageDescriptionParts } from './formatPageDescription'
-
 import './Admin.scss'
 import './AdminDashboard.scss'
 
-
-
 function Admin() {
-
   const { loading, session, isAdmin } = useAdminSession()
-
   const location = useLocation()
   const navigate = useNavigate()
   const section = sectionFromPathname(location.pathname)
   const activeId = section ?? 'home'
-
   const { pendingReviewCount } = useAdminHomeMeta()
-
-  // Na telefonie menu boczne rozwija się z góry jako „hamburger”.
   const [menuOpen, setMenuOpen] = useState(false)
 
   const goToSection = (id) => {
@@ -44,7 +28,7 @@ function Admin() {
     setMenuOpen(false)
   }
 
-  // Nieznany segment w URL (np. literówka) → wracamy na Przegląd.
+  // Literówka w adresie panelu wraca na Przegląd.
   useEffect(() => {
     if (section !== null) return
     if (!location.pathname.startsWith('/admin')) return
@@ -70,88 +54,44 @@ function Admin() {
     }
   }, [menuOpen])
 
-
-
   if (!isSupabaseConfigured) {
-
     return (
-
       <div className="adm-login">
-
         <div className="adm-login__box">
-
           <h1 className="adm-login__title">Brak konfiguracji</h1>
-
           <p className="adm-note">
-
             Skontaktuj się z osobą, która prowadzi stronę — panel wymaga połączenia z bazą
-
             danych.
-
           </p>
-
         </div>
-
       </div>
-
     )
-
   }
-
-
-
   if (loading) return <div className="adm-login">Wczytuję…</div>
+  if (!session) return <Login />
 
-  const previewUnlocked = false
-
-  if (!session && !previewUnlocked) return <Login />
-
-
-
-  if (!isAdmin && !previewUnlocked) {
-
+  if (!isAdmin) {
     return (
-
       <div className="adm-login">
-
         <div className="adm-login__box">
-
           <h1 className="adm-login__title">Brak uprawnień</h1>
-
           <p className="adm-note">
-
             Jesteś zalogowana, ale to konto nie może jeszcze edytować treści. Poproś
-
             administratora o dodanie uprawnień w Supabase.
-
           </p>
-
           <button type="button" className="adm-btn adm-btn--ghost" onClick={signOut}>
-
             Wyloguj
-
           </button>
-
         </div>
-
       </div>
-
     )
-
   }
-
-
 
   const active = adminNavItems.find((item) => item.id === activeId) ?? adminNavItems[0]
-
   const ActivePanel = active.Panel
 
-
-
   return (
-
     <div className={`adm${menuOpen ? ' adm--menu-open' : ''}`}>
-
       <button
         type="button"
         className="adm__backdrop"
@@ -159,73 +99,39 @@ function Admin() {
         tabIndex={-1}
         onClick={() => setMenuOpen(false)}
       />
-
       <aside className="adm__sidebar" id="adm-sidebar">
-
         <div className="adm__brand">
-
           <p className="adm__brand-name">Beauty Barbi Med</p>
-
         </div>
-
-
-
         <nav className="adm-nav" aria-label="Menu panelu">
-
           {adminNavItems.map((item) => (
-
             <button
-
               key={item.id}
-
               type="button"
-
               className={`adm-nav__link${item.id === activeId ? ' adm-nav__link--active' : ''}`}
-
               onClick={() => goToSection(item.id)}
-
             >
-
               <AdminIcon name={item.icon} className="adm-nav__icon" />
-
               <span className="adm-nav__text">{item.label}</span>
-
               {item.id === 'opinie' && pendingReviewCount > 0 && (
                 <span className="adm-nav__badge" aria-label={`${pendingReviewCount} opinii do publikacji`}>
                   {pendingReviewCount}
                 </span>
               )}
-
             </button>
-
           ))}
-
         </nav>
-
-
-
         <div className="adm__sidebar-foot">
-
           <button type="button" className="adm-btn adm-btn--sidebar-quiet" onClick={signOut}>
-
             <AdminIcon name="logout" className="adm-btn__icon" />
-
             Wyloguj się
-
           </button>
-
         </div>
-
       </aside>
-
-
-
       <div
         className={`adm__main${activeId === 'pakiety' ? ' adm__main--offer' : ''}${activeId === 'hero' ? ' adm__main--copy' : ''}${activeId === 'opinie' ? ' adm__main--reviews' : ''}`}
       >
-
         <header className="adm__mobile-bar">
-
           <button
             type="button"
             className="adm__burger"
@@ -238,17 +144,11 @@ function Admin() {
             <span />
             <span />
           </button>
-
           <p className="adm__mobile-title">{active.label}</p>
-
           <Link to="/" className="adm-btn adm-btn--quiet">
-
             Strona
-
           </Link>
-
         </header>
-
         {active.pageDescription ? (
           <div className="adm__mobile-desc">
             {String(active.pageDescription)
@@ -268,7 +168,6 @@ function Admin() {
               ))}
           </div>
         ) : null}
-
         <AdminPageHeader
           kicker={activeId === 'home' ? formatAdminDate() : undefined}
           title={active.label}
@@ -296,33 +195,18 @@ function Admin() {
             ) : null
           }
         />
-
         <main
           className={`adm__body${ActivePanel ? '' : ' adm__body--home'}${activeId === 'pakiety' ? ' adm__body--offer' : ''}${activeId === 'hero' ? ' adm__body--copy' : ''}${activeId === 'opinie' ? ' adm__body--reviews' : ''}`}
         >
-
           {ActivePanel ? (
-
             <ActivePanel />
-
           ) : (
-
             <AdminHome onSelect={goToSection} />
-
           )}
-
         </main>
-
       </div>
-
     </div>
-
   )
-
 }
 
-
-
 export default Admin
-
-

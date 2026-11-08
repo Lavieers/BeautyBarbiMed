@@ -20,7 +20,6 @@ $marker-gap: 1.25rem;
     align-items: stretch;
   }
 
-  // ── Lewa kolumna ───────────────────────────────────────────
   &__left {
     display: flex;
     flex-direction: column;
@@ -93,7 +92,6 @@ $marker-gap: 1.25rem;
     }
   }
 
-  // ── Prawa kolumna ──────────────────────────────────────────
   &__right {
     display: flex;
     flex-direction: column;
@@ -175,7 +173,6 @@ $marker-gap: 1.25rem;
     color: rgba(var(--color-cream-rgb), 0.62);
   }
 
-  // ── Responsywność ──────────────────────────────────────────
   @media (max-width: 860px) {
     /* Nad pasem oddech daje cytat między sekcjami. Pod spodem cennik nie ma górnego paddingu. */
     margin-top: 0;

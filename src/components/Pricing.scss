@@ -15,7 +15,6 @@
     );
   }
 
-  // ── Header ──────────────────────────────────────────────────────────────────
   &__header {
     @include section-inner(52rem);
     display: flex;
@@ -41,7 +40,6 @@
     margin-bottom: 0;
   }
 
-  // ── Price list ───────────────────────────────────────────────────────────────
   &__list {
     @include section-inner(80rem);
     display: grid;
@@ -83,7 +81,6 @@
     margin-bottom: 0.25rem;
   }
 
-  // ── Rows ─────────────────────────────────────────────────────────────────────
   &__rows {
     margin: 0;
   }
@@ -197,7 +194,6 @@
     color: var(--color-gold-ink);
   }
 
-  // ── Responsive ───────────────────────────────────────────────────────────────
   @media (max-width: 900px) {
     &__list {
       grid-template-columns: 1fr;

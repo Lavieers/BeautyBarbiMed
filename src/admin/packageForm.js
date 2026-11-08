@@ -1,7 +1,5 @@
 import { resolveCardText, resolveLead, resolveSteps } from '../lib/packageDetails'
 
-// ── Dane edytowanego pakietu ───────────────────────────────────────────────────
-
 let counter = 0
 export const uid = () => `k${Date.now().toString(36)}${(counter += 1)}`
 

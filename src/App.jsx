@@ -24,6 +24,7 @@ const TreatmentModal = lazy(loadTreatmentModal)
 
 function App() {
   const skinGuide = useSection('skinGuide')
+  const offer = useSection('offer')
 
   // „Dowiedz się więcej” przy pakiecie – pakiet zostaje w stanie po zamknięciu,
   // żeby okno mogło się płynnie wygasić z tą samą treścią.
@@ -67,7 +68,11 @@ function App() {
       <main>
         <Hero />
         <About />
-        <Offer onPackageInfo={openPackage} />
+        <Offer
+          onPackageInfo={openPackage}
+          revealedCategoryId={packageInfo.open ? packageInfo.category?.id ?? null : null}
+          revealedPackageId={packageInfo.open ? packageInfo.pkg?.id ?? null : null}
+        />
         <SkinGuide onTreatmentInfo={openTreatment} />
 
         {(skinGuide.quote || skinGuide.quoteSignature) && (
@@ -95,6 +100,7 @@ function App() {
             open={packageInfo.open}
             pkg={packageInfo.pkg}
             category={packageInfo.category}
+            categories={offer.categories ?? []}
             onSelect={openPackage}
             onClose={closePackage}
           />

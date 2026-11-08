@@ -29,7 +29,6 @@ const przeciw = (text) => ({ label: 'Przeciwwskazania', text })
 const wazne = (text) => ({ label: 'Ważne', text })
 
 const rawGuide = {
-  // ── Zabiegi na twarz i ciało ───────────────────────────────────────────────
   konsultacja: {
     image: consultImage,
     position: '45% 40%',
@@ -163,7 +162,6 @@ const rawGuide = {
     ],
   },
 
-  // ── Stylizacja rzęs ────────────────────────────────────────────────────────
   'uzup-1-1': {
     image: lashesNaturalImage,
     position: '55% 50%',

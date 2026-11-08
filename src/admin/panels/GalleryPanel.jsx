@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { mediaUrl, supabase } from '../../lib/supabase'
 import { useContent } from '../../content/context'
 import { useAdminTable } from '../useAdminTable'
-import { removeMedia, uploadMedia } from '../upload'
+import { concealMedia, hiddenMediaUrl, removeMedia, revealMedia, uploadMedia } from '../upload'
 import AdminIcon from '../AdminIcon'
 import './GalleryPanel.scss'
 
@@ -84,14 +84,14 @@ function MoveIcon({ direction }) {
   )
 }
 
-function GalleryForm({ value, onChange }) {
+function GalleryForm({ value, src, onChange }) {
   const patch = (next) => onChange({ ...value, ...next })
   const published = Boolean(value.is_published)
 
   return (
     <div className="adm-gallery__form">
       <div className="adm-gallery__preview">
-        <img src={mediaUrl(value.storage_path)} alt="" />
+        <img src={src || mediaUrl(value.storage_path)} alt="" />
       </div>
 
       <div className="adm-gallery__aside">
@@ -144,8 +144,42 @@ function GalleryPanel() {
   const [draggingId, setDraggingId] = useState(null)
   const [drop, setDrop] = useState(null)
   const [ghost, setGhost] = useState(null)
+  const [hiddenSrc, setHiddenSrc] = useState({})
 
   const ordered = useMemo(() => sortedRows(rows), [rows])
+
+  useEffect(() => {
+    let cancelled = false
+    const hidden = ordered.filter(
+      (row) => row.is_published === false && row.storage_path && !/^https?:\/\//.test(row.storage_path),
+    )
+
+    if (!hidden.length) return undefined
+
+    const settle = async () => {
+      const next = {}
+
+      for (const row of hidden) {
+        try {
+          await concealMedia(row.storage_path)
+        } catch {
+          // Miniatura zostaje na publicznym adresie, gdy pliku nie da się schować.
+        }
+
+        next[row.id] = (await hiddenMediaUrl(row.storage_path)) || mediaUrl(row.storage_path)
+      }
+
+      if (!cancelled) setHiddenSrc(next)
+    }
+
+    void settle()
+    return () => {
+      cancelled = true
+    }
+  }, [ordered])
+
+  const srcFor = (row) =>
+    row.is_published === false && hiddenSrc[row.id] ? hiddenSrc[row.id] : mediaUrl(row.storage_path)
 
   const display = useMemo(() => {
     if (!pendingIds) return ordered
@@ -273,7 +307,7 @@ function GalleryPanel() {
     suppressClick.current = false
     dragRef.current = {
       id: row.id,
-      src: mediaUrl(row.storage_path),
+      src: srcFor(row),
       pointerId: event.pointerId,
       startX: event.clientX,
       startY: event.clientY,
@@ -330,6 +364,16 @@ function GalleryPanel() {
   const saveModal = async () => {
     if (!modal) return
     const value = modal.value
+    const previous = rows.find((row) => sameId(row.id, value.id))
+    const wasPublished = previous?.is_published !== false
+    const nextPublished = Boolean(value.is_published)
+
+    try {
+      if (!wasPublished && nextPublished) await revealMedia(value.storage_path)
+    } catch (cause) {
+      setStatus({ kind: 'error', text: cause.message ?? 'Nie udało się przywrócić zdjęcia.' })
+      return
+    }
 
     const { error } = await supabase
       .from('gallery_images')
@@ -342,6 +386,19 @@ function GalleryPanel() {
     if (error) {
       setStatus({ kind: 'error', text: error.message })
       return
+    }
+
+    if (wasPublished && !nextPublished) {
+      try {
+        await concealMedia(value.storage_path)
+      } catch (cause) {
+        setModal(null)
+        await afterChange(
+          cause.message ||
+            'Zdjęcie zniknęło ze strony. Pliku nie udało się zdjąć z publicznego adresu.',
+        )
+        return
+      }
     }
 
     setModal(null)
@@ -409,7 +466,7 @@ function GalleryPanel() {
                     }}
                   >
                     <img
-                      src={mediaUrl(row.storage_path)}
+                      src={srcFor(row)}
                       alt=""
                       draggable="false"
                       loading="lazy"
@@ -455,7 +512,7 @@ function GalleryPanel() {
       <input
         ref={inputRef}
         type="file"
-        accept="image/*"
+        accept="image/png,image/jpeg,image/webp,image/gif"
         multiple
         className="adm-field__file"
         onChange={upload}
@@ -473,7 +530,11 @@ function GalleryPanel() {
 
       {modal ? (
         <GalleryModal title="Zdjęcie w portfolio" onClose={() => setModal(null)}>
-          <GalleryForm value={modal.value} onChange={(value) => setModal({ value })} />
+          <GalleryForm
+            value={modal.value}
+            src={srcFor(modal.value)}
+            onChange={(value) => setModal({ value })}
+          />
           <div className="adm-gallery__foot">
             <button type="button" className="adm-gallery__save" onClick={saveModal}>
               Zapisz

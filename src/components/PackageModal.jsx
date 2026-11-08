@@ -5,22 +5,37 @@ import useModalBehavior from '../lib/useModalBehavior'
 import useSwipe from '../lib/useSwipe'
 import './PackageModal.scss'
 
+function tabLabelFor(category) {
+  if (category?.tabLabel) return category.tabLabel.replace(/^mezoterapii$/i, 'MEZOTERAPIA')
+  const fromTitle = String(category?.title ?? '').replace(/^PAKIET(Y)? /i, '').trim()
+  return fromTitle || 'Pakiet zabiegowy'
+}
+
 // Okno „Dowiedz się więcej” przy pakiecie – pakiety rezerwuje się telefonicznie.
-function PackageModal({ open, pkg, category, onSelect, onClose }) {
+// Strzałki i gest idą przez wszystkie zakładki: po ostatnim pakiecie jednej wchodzi pierwsza z następnej.
+function PackageModal({ open, pkg, category, categories = [], onSelect, onClose }) {
   const reduced = useReducedMotion()
   const panelRef = useModalBehavior(open, onClose)
   const duration = reduced ? 0 : 0.3
 
-  // Strzałki: przechodzenie między pakietami tej samej kategorii (po ostatnim wraca pierwszy).
-  const list = useMemo(() => category?.packages ?? [], [category])
-  const position = pkg ? list.findIndex((item) => item.id === pkg.id) : -1
-  const canNavigate = list.length > 1 && position >= 0
+  const sequence = useMemo(() => {
+    const source = categories.length > 0 ? categories : category ? [category] : []
+    return source.flatMap((item) =>
+      (item.packages ?? []).map((entry) => ({ pkg: entry, category: item })),
+    )
+  }, [categories, category])
+  const position = pkg ? sequence.findIndex((item) => item.pkg.id === pkg.id) : -1
+  const current = position >= 0 ? sequence[position] : null
+  const siblings = current?.category?.packages ?? category?.packages ?? []
+  const localPosition = current ? siblings.findIndex((item) => item.id === current.pkg.id) : -1
+  const canNavigate = sequence.length > 1 && position >= 0
   const go = useCallback(
     (delta) => {
       if (!canNavigate) return
-      onSelect?.(list[(position + delta + list.length) % list.length], category)
+      const next = sequence[(position + delta + sequence.length) % sequence.length]
+      onSelect?.(next.pkg, next.category)
     },
-    [canNavigate, list, position, category, onSelect],
+    [canNavigate, sequence, position, onSelect],
   )
 
   // Na telefonie: przesunięcie palcem w lewo/prawo zmienia pakiet.
@@ -30,7 +45,7 @@ function PackageModal({ open, pkg, category, onSelect, onClose }) {
     if (!open || !canNavigate) return undefined
     const onKey = (event) => {
       if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return
-      event.stopPropagation() // strzałki nie mogą przełączać kategorii pod oknem
+      event.stopPropagation() // okno samo zmienia zakładkę; strzałka nie może jej przesunąć drugi raz
       go(event.key === 'ArrowLeft' ? -1 : 1)
     }
     document.addEventListener('keydown', onKey)
@@ -65,8 +80,17 @@ function PackageModal({ open, pkg, category, onSelect, onClose }) {
           >
             <PackageCard
               pkg={pkg}
-              category={category}
-              nav={canNavigate ? { go, position, total: list.length } : null}
+              category={current?.category ?? category}
+              kicker={tabLabelFor(current?.category ?? category)}
+              nav={
+                canNavigate
+                  ? {
+                      go,
+                      position: localPosition >= 0 ? localPosition : 0,
+                      total: Math.max(siblings.length, 1),
+                    }
+                  : null
+              }
               onClose={onClose}
             />
           </motion.div>

@@ -1,13 +1,12 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { useSection } from '../content/context'
 import { usePortfolioImages } from '../data/galleryFallback'
 import useMediaQuery from '../lib/useMediaQuery'
+import useModalBehavior from '../lib/useModalBehavior'
 import GalleryCarousel from './GalleryCarousel'
 import { TILE_HEIGHT, TILE_WIDTH, imageSrc, tileLabel, treatmentOf } from './galleryHelpers'
 import './Gallery.scss'
-
-const focusableSelector = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
 
 function layoutOf(count) {
   if (count <= 1) return 'single'
@@ -27,12 +26,11 @@ function Gallery() {
     setActiveIndex(null)
   }
 
-  const dialogRef = useRef(null)
-  const previouslyFocused = useRef(null)
   const openIndex = activeIndex !== null && activeIndex < images.length ? activeIndex : null
   const isOpen = openIndex !== null
 
   const close = useCallback(() => setActiveIndex(null), [])
+  const dialogRef = useModalBehavior(isOpen, close)
 
   const step = useCallback(
     (direction) => {
@@ -44,58 +42,10 @@ function Gallery() {
     [images.length],
   )
 
-  const trapFocus = useCallback((event) => {
-    const dialog = dialogRef.current
-    if (!dialog) return
-
-    const items = Array.from(dialog.querySelectorAll(focusableSelector))
-    if (!items.length) {
-      event.preventDefault()
-      return
-    }
-
-    const first = items[0]
-    const last = items[items.length - 1]
-    const active = document.activeElement
-
-    if (!dialog.contains(active)) {
-      event.preventDefault()
-      first.focus()
-      return
-    }
-
-    if (event.shiftKey && active === first) {
-      event.preventDefault()
-      last.focus()
-    } else if (!event.shiftKey && active === last) {
-      event.preventDefault()
-      first.focus()
-    }
-  }, [])
-
-  useEffect(() => {
-    if (!isOpen) return undefined
-
-    previouslyFocused.current = document.activeElement
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    const frame = requestAnimationFrame(() => dialogRef.current?.focus())
-
-    return () => {
-      cancelAnimationFrame(frame)
-      document.body.style.overflow = previousOverflow
-      previouslyFocused.current?.focus?.()
-    }
-  }, [isOpen])
-
   useEffect(() => {
     if (!isOpen) return undefined
 
     const onKeyDown = (event) => {
-      if (event.key === 'Escape') {
-        event.preventDefault()
-        close()
-      }
       if (event.key === 'ArrowRight') {
         event.preventDefault()
         step(1)
@@ -104,12 +54,11 @@ function Gallery() {
         event.preventDefault()
         step(-1)
       }
-      if (event.key === 'Tab') trapFocus(event)
     }
 
     document.addEventListener('keydown', onKeyDown)
     return () => document.removeEventListener('keydown', onKeyDown)
-  }, [isOpen, close, step, trapFocus])
+  }, [isOpen, step])
 
   if (!images.length) return null
 

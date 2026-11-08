@@ -1,13 +1,7 @@
-// Opisy pakietów – okno „Dowiedz się więcej”.
-//
-// Każdy pakiet ma podpis pod nagłówkiem (`lead`) oraz trzy punkty (`steps`): nazwa i krótki opis.
-// Klucz = id pakietu (patrz `offer` w defaults.js). Pakiet bez wpisu tutaj dostaje w oknie
-// zwykłą listę zabiegów z krótkimi opisami (treatmentInfo.js).
-//
-// Teksty warto przejrzeć z właścicielką: to ona wie najlepiej, jak zabiegi wyglądają w praktyce.
+// Opisy pakietów w oknie „Dowiedz się więcej”.
+// Klucz = id pakietu z oferty. Pakiet bez wpisu dostaje zwykłą listę zabiegów (treatmentInfo.js).
 
 export const packageStories = {
-  // ── Pakiety na twarz ───────────────────────────────────────────────────────
   'odswiezenie-blask': {
     lead: 'Dla skóry zmęczonej, pozbawionej energii i naturalnego blasku',
     steps: [
@@ -62,7 +56,6 @@ export const packageStories = {
     ],
   },
 
-  // ── Mezoterapia ────────────────────────────────────────────────────────────
   'mezo-mikro-3': {
     lead: 'Dla skóry wymagającej intensywnej przebudowy',
     steps: [
@@ -116,7 +109,6 @@ export const packageStories = {
       },
     ],
   },
-  // ── Rzęsy i brwi ───────────────────────────────────────────────────────────
   'piekne-spojrzenie': {
     lead: 'Kompletna stylizacja oczu, która podkreśla głębię Twojego spojrzenia',
     steps: [
@@ -171,7 +163,6 @@ export const packageStories = {
     ],
   },
 
-  // ── Pakiety na stopy ───────────────────────────────────────────────────────
   'klasyczny-relaks': {
     lead: 'Chwila wytchnienia dla Twoich stóp połączona z nieskazitelną elegancją.',
     steps: [
@@ -225,7 +216,6 @@ export const packageStories = {
       },
     ],
   },
-  // ── Pakiety łączone ────────────────────────────────────────────────────────
   'perfect-day': {
     lead: 'Gdy potrzebujesz natychmiastowego efektu „wow” i perfekcyjnej oprawy oczu',
     steps: [

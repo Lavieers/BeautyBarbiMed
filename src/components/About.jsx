@@ -1,9 +1,7 @@
-import { useEffect } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
 import salonImage from '../assets/salon.webp'
 import { useContactInfo, useSection } from '../content/context'
 import Icon from './Icon'
-import { getAboutScrollMarginTop } from '../lib/aboutSectionScroll'
 import './About.scss'
 
 function About() {
@@ -14,26 +12,6 @@ function About() {
   const locationCity = locationCityParts.join(', ')
   const reveal = (delay = 0) => reduced ? {} : { initial: { opacity: 0, y: 24 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: '-80px' }, transition: { duration: .85, delay, ease: [.22, 1, .36, 1] } }
   const imageReveal = reduced ? {} : { initial: { opacity: 0, scale: 1.06 }, whileInView: { opacity: 1, scale: 1 }, viewport: { once: true, margin: '-80px' }, transition: { duration: 1.1, ease: [.22, 1, .36, 1] } }
-
-  useEffect(() => {
-    const section = document.getElementById('o-nas')
-    if (!section) return undefined
-
-    const syncScrollMargin = () => {
-      section.style.scrollMarginTop = `${getAboutScrollMarginTop(section)}px`
-    }
-
-    syncScrollMargin()
-    const ro = new ResizeObserver(syncScrollMargin)
-    ro.observe(section)
-    const header = document.querySelector('header')
-    if (header) ro.observe(header)
-    window.addEventListener('resize', syncScrollMargin)
-    return () => {
-      ro.disconnect()
-      window.removeEventListener('resize', syncScrollMargin)
-    }
-  }, [])
 
   return <section className="about" id="o-nas" aria-labelledby="about-title"><div className="about__inner">
     <motion.div className="about__visual" {...reveal()}>

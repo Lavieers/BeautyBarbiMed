@@ -10,6 +10,10 @@ export const isSupabaseConfigured = Boolean(url && anonKey)
 
 export const MEDIA_BUCKET = 'media'
 
+// Ukryte zdjęcia galerii. Bucket nie jest publiczny, więc adres z mediów
+// opublikowanych na stronie zostaje ten sam.
+export const PRIVATE_MEDIA_BUCKET = 'media-private'
+
 export { url as supabaseUrl, anonKey as supabaseAnonKey }
 
 export function mediaUrl(storagePath) {

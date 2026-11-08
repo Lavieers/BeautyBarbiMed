@@ -4,21 +4,24 @@ const AUTO_MS = 4500 // odstęp między automatycznymi przesunięciami
 const PAUSE_MS = 9000 // po dotyku/przewinięciu przez użytkownika automat czeka
 const SETTLE_MS = 140 // tyle ciszy bez przewijania oznacza, że karuzela się zatrzymała
 
-// Logika zapętlonej karuzeli przewijanej palcem (scroll-snap): elementy występują w trzech
-// kopiach, a po zatrzymaniu wracamy do tej samej karty w środkowej kopii, więc nie ma końca.
-// Wspólna dla karuzeli pakietów i portfolio.
-//
-// Użycie: `trackRef` na liście (`ul`), `cardRefs.current[copy * count + i]` na kartach,
-// `trackProps` rozpięte na liście, `goTo(i)` dla kropek.
-export default function useLoopCarousel(count, autoPlay) {
+function mod(value, count) {
+  return ((value % count) + count) % count
+}
+
+// Trzy kopie kart i niezauważalny skok do środkowej — przewijanie palcem nie ma końca.
+// `initialItem` liczy się tylko przy pierwszym rysowaniu; później skacze `goTo`.
+export default function useLoopCarousel(count, autoPlay, initialItem = 0) {
   const loop = count > 1
   const copies = loop ? 3 : 1
   const base = loop ? count : 0 // indeks pierwszej karty w środkowej kopii
+  const initialItemRef = useRef(initialItem)
+  const startItem = count > 0 ? mod(initialItemRef.current, count) : 0
+  const startIndex = base + startItem
 
   const trackRef = useRef(null)
   const cardRefs = useRef([])
-  const [active, setActive] = useState(base)
-  const activeRef = useRef(base)
+  const [active, setActive] = useState(startIndex)
+  const activeRef = useRef(startIndex)
   const pausedUntil = useRef(0)
   const inView = useRef(true)
   const touching = useRef(false)
@@ -131,24 +134,22 @@ export default function useLoopCarousel(count, autoPlay) {
     }
   }, [autoPlay, loop, scrollToIndex])
 
-  // Start na pierwszej karcie środkowej kopii – bez animacji.
   useEffect(() => {
-    scrollToIndex(base, 'instant')
+    const item = count > 0 ? mod(initialItemRef.current, count) : 0
+    scrollToIndex(base + item, 'instant')
     syncActive()
-  }, [base, scrollToIndex, syncActive])
+  }, [base, count, scrollToIndex, syncActive])
 
   const goTo = (index) => {
     pause()
     scrollToIndex(index + base)
   }
 
-  // Powrót na pierwszą kartę środkowej kopii (bez animacji) – np. po zmianie szerokości okna.
   const reset = useCallback(() => {
     scrollToIndex(base, 'instant')
     syncActive()
   }, [base, scrollToIndex, syncActive])
 
-  // Wyśrodkowuje konkretną kartę (np. po kliknięciu sąsiedniej, wystającej z boku).
   const focusCard = (index) => {
     pause()
     scrollToIndex(index)

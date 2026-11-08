@@ -1,8 +1,6 @@
 // Krótkie opisy zabiegów pokazywane w oknie „Dowiedz się więcej” przy pakietach.
 // Dopasowanie idzie po nazwie zabiegu (pierwszy pasujący wzorzec wygrywa), więc kolejność
 // ma znaczenie: bardziej szczegółowe wzorce muszą stać przed ogólnymi.
-// Opisy bazują na treściach ze strony (FAQ, „Dobierz pielęgnację”) – warto, żeby
-// właścicielka je przejrzała i poprawiła, jeśli któryś odbiega od tego, jak zabieg wygląda u niej.
 
 const treatments = [
   {

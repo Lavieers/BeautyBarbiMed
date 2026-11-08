@@ -37,7 +37,7 @@ const hasValue = (value) => value != null && value !== ''
 // `still` wyłącza animacje wejścia (podgląd w panelu ma tylko się odświeżać).
 // `slots` pozwala panelowi admina podmienić wybrane miejsca na pola do pisania
 // (title, lead, steps, price, priceInfo, photoTools) – bez zmiany układu okna.
-function PackageCard({ pkg, category, nav, onClose, still = false, slots = {} }) {
+function PackageCard({ pkg, category, nav, onClose, still = false, slots = {}, kicker = '' }) {
   const contactData = useContactInfo()
 
   const lead = resolveLead(pkg)
@@ -88,7 +88,9 @@ function PackageCard({ pkg, category, nav, onClose, still = false, slots = {} })
         transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
       >
         <div className="package-modal__body">
-          <p className="package-modal__kicker">Pakiet zabiegowy</p>
+          <p className={`package-modal__kicker${kicker ? ' package-modal__kicker--tab' : ''}`}>
+            {kicker || 'Pakiet zabiegowy'}
+          </p>
           <h2 id="package-modal-title" className="package-modal__title">
             {slots.title ??
               packageTitleLines(pkg.name).map((line) => (

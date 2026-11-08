@@ -7,8 +7,6 @@ import { usePhotoUpload } from '../photoUpload'
 import { InlineNumber, InlinePhotoTools, InlineSteps, InlineText } from './InlineEdit'
 import './PackageEditor.scss'
 
-// ── Okno ───────────────────────────────────────────────────────────────────────
-
 // Okno edycji o stałym rozmiarze: nagłówek i przyciski zawsze widoczne, przewija się tylko treść.
 // Esc i kliknięcie w tło nie gubią wpisanych zmian bez pytania.
 export function PackageEditorModal({ title, size, dirty, onClose, footer, children }) {
@@ -63,8 +61,6 @@ export function PackageEditorModal({ title, size, dirty, onClose, footer, childr
     </div>
   )
 }
-
-// ── Okno „Nowy pakiet” ─────────────────────────────────────────────────────────
 
 function PhotoField({ value, onChange }) {
   const { inputRef, busy, error, open, pick } = usePhotoUpload(onChange)
@@ -150,8 +146,6 @@ export function CardFields({ value, tabs, categoryIndex, onCategory, onChange })
     </div>
   )
 }
-
-// ── Edycja na podglądzie ───────────────────────────────────────────────────────
 
 // Edycja istniejącego pakietu: okno „Dowiedz się więcej” jest od razu polem do pisania –
 // klikasz nazwę, opis, zabieg, cenę lub zdjęcie i zmieniasz. Poza oknem stoi tylko opis karty,
